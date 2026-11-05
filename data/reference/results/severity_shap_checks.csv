@@ -1,0 +1,5 @@
+Scenario,Model,method,n_pairs,n_columns,n_features_after_merging_missing_flags,max_additivity_error,seconds,boundary_crossing_fraction,mean_abs_gap_to_expected_class,max_abs_gap_to_expected_class,background_n
+S1_Mechanistic,ExtraTrees,"tree-path-dependent TreeExplainer (probability), expected severity class",1325,46,46,4.787281682183675e-13,0.355415,,,,
+S1b_Disease_Context,ExtraTrees,"tree-path-dependent TreeExplainer (probability), expected severity class",1325,64,64,5.1514348342607263e-14,0.258257,,,,
+S2_Mech_Pheno,OrdinalDecomp,interventional TreeExplainer (probability) summed over the three ordinal boundaries,1325,5375,5375,0.14076074730118426,99.957413,0.39622641509433965,0.0029244284873639727,0.8932268632961762,100.0
+S3_Phenotype,OrdinalDecomp,interventional TreeExplainer (probability) summed over the three ordinal boundaries,1325,5200,5200,1.078290345901678e-08,66.745804,0.5328301886792453,0.0196625448086728,1.1589644946041167,100.0

@@ -1,0 +1,2 @@
+Scenario,Model,group,rank,n_features,mean_abs_group_shap,mean_signed_group_shap,share_pairs_raised,top_feature,top_feature_label,top_feature_mean_abs_shap,share_of_total
+S3_Phenotype,OrdinalDecomp,HPO findings,1,5200,0.7939361829432803,-0.06917339733535116,0.4830188679245283,hpo_HP_0000252,Microcephaly,0.08060094235089009,1.0

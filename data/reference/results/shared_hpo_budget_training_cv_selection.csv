@@ -1,0 +1,12 @@
+hpo_binary_budget,status,n_successful_folds,n_required_folds,failure_message,mean_training_cv_qwk,mean_training_cv_mcc,mean_training_cv_balanced_accuracy,selection_partition,selection_scenario,applied_to_scenarios,selected_for_s2_and_s3
+200,valid,3,3,,0.643932100112385,0.45870129640307966,0.5996067939355356,training_only_nested_cv,S3_Phenotype,S2_Mech_Pheno|S3_Phenotype,False
+300,valid,3,3,,0.6635471494124833,0.4856750484520673,0.6278875004953922,training_only_nested_cv,S3_Phenotype,S2_Mech_Pheno|S3_Phenotype,False
+400,valid,3,3,,0.6707642024191006,0.49921096029034784,0.6484089323971829,training_only_nested_cv,S3_Phenotype,S2_Mech_Pheno|S3_Phenotype,False
+600,valid,3,3,,0.6702349759232357,0.5073653555831444,0.6576399728871283,training_only_nested_cv,S3_Phenotype,S2_Mech_Pheno|S3_Phenotype,False
+800,valid,3,3,,0.6721922590636898,0.515669871433207,0.6661678452460263,training_only_nested_cv,S3_Phenotype,S2_Mech_Pheno|S3_Phenotype,False
+1200,valid,3,3,,0.6779414031515106,0.5191774039910377,0.6720575132896572,training_only_nested_cv,S3_Phenotype,S2_Mech_Pheno|S3_Phenotype,False
+1600,valid,3,3,,0.6813132370531919,0.5235903468103156,0.676291187612135,training_only_nested_cv,S3_Phenotype,S2_Mech_Pheno|S3_Phenotype,False
+2400,valid,3,3,,0.6813284566719261,0.5266060407416673,0.6811345598453964,training_only_nested_cv,S3_Phenotype,S2_Mech_Pheno|S3_Phenotype,False
+3200,valid,3,3,,0.6815594654126235,0.5238788472308508,0.6778128785243176,training_only_nested_cv,S3_Phenotype,S2_Mech_Pheno|S3_Phenotype,False
+5200,valid,3,3,,0.6843830495823053,0.5272641425390658,0.6789371175028531,training_only_nested_cv,S3_Phenotype,S2_Mech_Pheno|S3_Phenotype,True
+10000,valid,3,3,,0.6843830495823053,0.5272641425390658,0.6789371175028531,training_only_nested_cv,S3_Phenotype,S2_Mech_Pheno|S3_Phenotype,False
