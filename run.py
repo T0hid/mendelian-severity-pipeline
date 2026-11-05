@@ -10,6 +10,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from collections import Counter
 from pathlib import Path
 
@@ -179,6 +180,7 @@ def reproduce(training_data, cohort, output_directory, permutations=None):
 
 
 def main(argv=None):
+    started = time.perf_counter()
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input',type=Path,help='CSV with sample_id and semicolon-separated hpo_terms. Omit to run the bundled example.')
     parser.add_argument('--data-dir',type=Path,help='Bundled model/example/reference data folder; normally detected automatically.')
@@ -188,6 +190,7 @@ def main(argv=None):
     modes.add_argument('--benchmark',action='store_true',help='Train and evaluate the gene-disease benchmark with the bundled inputs.')
     modes.add_argument('--train-scorer',action='store_true',help='Train and refit the disease-level phenotype scorer with the bundled inputs.')
     modes.add_argument('--check-inputs',action='store_true',help='Restore and verify the ten bundled training inputs without training.')
+    modes.add_argument('--figures',action='store_true',help='Export original figures and source data, and replot saved benchmark results without training.')
     parser.add_argument('--training-data',type=Path,help='Original training inputs for --full.')
     parser.add_argument('--cohort',type=Path,help='Authorised prenatal cohort for --full.')
     parser.add_argument('--permutations',type=int,help='Explicit benchmark permutation count for --full; otherwise preserve the source configuration.')
@@ -199,6 +202,15 @@ def main(argv=None):
             sys.path.insert(0,str(SOURCE))
         default_results=ROOT/'results' if data==ROOT/'data' else data.parent/'results'
         output=(args.output_dir or (default_results/'full_reproduction' if args.full else default_results)).resolve()
+        if args.figures:
+            if args.input or args.cohort or args.permutations is not None:
+                raise ValueError('--figures reads the bundled saved results; omit prediction/training arguments.')
+            from review_bundle import build_review_bundle
+            from run_pipeline import require_fresh_output
+            require_fresh_output(output)
+            build_review_bundle(data, output)
+            print(f'Figures and source data exported. Open {output/"index.html"}')
+            return 0
         if args.full or args.benchmark or args.train_scorer or args.check_inputs:
             if args.input:
                 raise ValueError('--input is for prediction; omit it for training and input verification.')
@@ -227,12 +239,20 @@ def main(argv=None):
             return 0
         input_path=(args.input or data/'example_profiles.csv').resolve()
         if not args.input:
+            from run_pipeline import require_fresh_output
+            require_fresh_output(output)
             model_path,_=check_model_file(data)
             verification=check_reference_results(model_path)
         rows=predict(input_path,output,data)
         if not args.input:
             (output/'verification.json').write_text(json.dumps(verification,indent=2)+'\n',encoding='utf-8')
+            from review_bundle import build_review_bundle
+            review = build_review_bundle(data, output)
+            (output/'execution.json').write_text(json.dumps({
+                'elapsed_seconds': time.perf_counter() - started,
+                'environment': review['environment'], 'model_training_performed': False}, indent=2)+'\n',encoding='utf-8')
             print('Demo and reference checks passed. No model was retrained.')
+            print(f'Open {output/"index.html"} to view figures and source-data downloads.')
         print(f'Wrote {len(rows)} predictions to {output/"predictions.csv"}')
         return 0
     except (ValueError,OSError,KeyError,ImportError,subprocess.CalledProcessError) as exc:
