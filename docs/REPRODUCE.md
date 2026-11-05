@@ -1,23 +1,14 @@
-# Reproduction commands
+# Reproduce the analyses
 
-## Demonstration and verification
-
-```shell
-python -m pip install -r requirements.txt
-python run.py --output-dir review_results
-```
-
-Open `review_results/index.html`. This checks the saved results and original computational definitions, predicts the invented examples, exports original figures/source tables and renders benchmark plots from saved numeric inputs. It performs no training or new inferential analysis.
-
-## Saved-data plotting
+## Plot saved results
 
 ```shell
 python run.py --figures --output-dir figure_results
 ```
 
-Original plotting functions render Figures 2–4 and Extended Data Figure 2. PCA reads the saved projected coordinates; SHAP reads saved arrays. Extended Data Figure 1 uses its saved descriptive tables in a compact layout. Original PNG/PDF/SVG/TIFF exports are separate, preserving them despite environment-dependent font differences.
+Open `figure_results/index.html`. The command exports the saved figures and regenerates Figures 2–4 and Extended Data Fig. 2 from saved results. The PCA plot uses the saved coordinates, and the SHAP plots use saved arrays. Extended Data Fig. 1 is also redrawn from its count tables.
 
-Figure 5's original composite and public source tables are exported. Its individual-family panels use the original prenatal workflow with authorised family data. Figure 1 is an independently prepared conceptual schematic with no analytical generation command.
+Figure 1 is a schematic. Figure 5 is supplied as a composite with aggregate source tables. Regenerating its family-level panels requires authorised cohort data. The [figure map](OUTPUT_MAP.csv) gives the source files and functions for each figure.
 
 ## Benchmark
 
@@ -27,34 +18,32 @@ python run.py --check-inputs
 python run.py --benchmark --output-dir benchmark_results
 ```
 
-The scenarios, model selection, evaluation, sensitivity analyses, explanations and publication rendering remain in `src/pipeline.py` and `src/publication_figures_v2.py`. The benchmark defaults to the completed 5 November 2026 reference configuration, including 100 gene-block permutations per feature set. The saved permutation table records 100 successful permutations per feature set and an adjusted P value of 0.00990099 for each. The demo checks this table from the saved run. An explicit `--permutations` override creates a separate run in a fresh output directory.
+The benchmark uses the 5 November 2026 configuration, including 100 gene-block permutations per feature set. The demo checks the permutation counts and adjusted P values against the saved results. Use `--permutations` with a fresh output directory to run a different number.
 
-## Disease-level scorer
+## Train the disease-level scorer
 
 ```shell
 python run.py --train-scorer --output-dir scorer_results
 ```
 
-This trains/evaluates the separate disease-level scorer and saves its refitted deployment model. It is distinct from the benchmark S3 model.
+This fits and evaluates the disease-level phenotype scorer and saves the refitted model for scoring new profiles.
 
-## Original prenatal workflow
+## Run the prenatal analysis
 
-After installing the full requirements, use an authorised local cohort:
-
-```shell
-python src/run_study.py prenatal --cohort PRIVATE_COHORT.csv --model data/model.pkl --scorer-heldout data/reference/scorer/held_out_test_predictions.csv --output-dir prenatal_results --score-channel phenotype
-```
-
-The schema and aliases are defined by `load_cohort` in the prenatal source. Family data remain in the authorised environment. Public outputs contain aggregate prenatal tables.
-
-## All three workflows
+Install the full requirements and supply a local cohort file you are authorised to use. The input schema is defined by `load_cohort` in the [prenatal analysis script](../src/prenatal_severity_analysis_v3_multichannel.py).
 
 ```shell
-python run.py --full --cohort PRIVATE_COHORT.csv --output-dir full_results
+python src/run_study.py prenatal --cohort cohort.csv --model data/model.pkl --scorer-heldout data/reference/scorer/held_out_test_predictions.csv --output-dir prenatal_results --score-channel phenotype
 ```
 
-The order is benchmark, scorer training, then prenatal application using that newly trained scorer and its held-out predictions. Workflows write separate directories and record commands/source hashes.
+## Run the full pipeline
 
-`src/FUNCTION_INVENTORY.csv` and `src/CLINICAL_FUNCTION_INVENTORY.csv` identify retained definitions. Checks cover 261 original functions and 20 classes. New reviewer interfaces are separate from the numerical modules.
+```shell
+python run.py --full --cohort cohort.csv --output-dir full_results
+```
 
-Saved-result replay checks available predictions, tables and arrays. It does not claim numerical identity for future training under every platform/version. The scorer/prenatal historical environment was not completely recorded. All ten public training inputs are bundled; individual prenatal data follow the existing access arrangements.
+This runs the benchmark, trains the disease-level scorer and uses the newly trained scorer for the prenatal analysis. The three workflows write to separate subdirectories. Some package versions from the original scorer and prenatal runs were unrecorded. New runs record their commands, source hashes and Python version in `workflow_execution.json`.
+
+## Code Ocean
+
+Place `run`, `run.py`, `Dockerfile`, `requirements.txt`, `src/` and `docs/` in Code. Copy the contents of `data/` to Data. Use Python 3.11 and `requirements.txt`, and select `run` as the run file. Outputs go to `/results`.

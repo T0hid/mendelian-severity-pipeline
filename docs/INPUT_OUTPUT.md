@@ -5,7 +5,7 @@ One UTF-8 prediction CSV row represents one HPO profile.
 | Input column | Requirement | Meaning |
 |---|---|---|
 | `sample_id` | Required, unique | User-selected identifier |
-| `hpo_terms` | Required column | Present HPO IDs separated by semicolons; empty values allowed |
+| `hpo_terms` | Required column | Present HPO IDs separated by semicolons. The value may be empty. |
 | `absent_hpo_terms` | Optional | Explicitly absent HPO IDs |
 
 Aliases `family_id` and `hpo_ids` remain supported. IDs use `HP:` followed by seven digits. Duplicate HPO IDs within a profile are normalised. Duplicate profile IDs, malformed HPO IDs and extra CSV fields are rejected.
@@ -25,8 +25,8 @@ Score/class/probability cells stay empty when evidence is insufficient. Finite p
 | Path below the output directory | Contents |
 |---|---|
 | `index.html` | Local figure gallery and download links |
-| `predictions.csv` | Two synthetic example predictions |
-| `verification.json` | Numerical/source-preservation checks |
+| `predictions.csv` | Predictions for the two synthetic profiles |
+| `verification.json` | Checks on the benchmark, scorer and prenatal results |
 | `execution.json` | Measured runtime and environment |
 | `review_manifest.json` | Asset hashes, exported files and replay scope |
 | `publication/benchmark/` | Original benchmark figures and source tables |
@@ -36,10 +36,10 @@ Score/class/probability cells stay empty when evidence is insufficient. Finite p
 | `publication/figure_map.csv` | Figure-to-code/data mapping |
 | `replotted/` | Plots rendered during this run and panel CSVs |
 
-Each values-only Excel workbook has a source index and the available original CSV tables. There are no formulas, external links or macros. The original CSV bytes remain authoritative and available separately. Original figure exports remain separate from replotted files.
+Each Excel workbook has an index of the CSV files used for the figure. The CSVs are also available separately.
 
 ## Training inputs
 
-`data/training_tables.zip` and `data/ontologies.zip` restore the ten files in `src/INPUTS.md`. Hashes are checked before use. The domain-carrier CSV is optional and excluded from required inputs. The supplied rebuilt mapping has a release hash; its historical hash was not recorded.
+`data/training_tables.zip` and `data/ontologies.zip` restore the ten files in `src/INPUTS.md`. Hashes are checked before use. The domain-carrier CSV is optional and excluded from required inputs. The input manifest records the checksum of the supplied rebuilt mapping. The historical checksum is unavailable.
 
-Individual prenatal records are excluded. Public aggregate outputs and invented examples are supplied. Use the original cohort through `--cohort` within its authorised environment.
+The prenatal outputs are aggregate tables. Use `--cohort` with an authorised local cohort.
