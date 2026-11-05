@@ -6,7 +6,9 @@ Predict severity from HPO profiles, check the supplied study results, or run the
 
 ## Run on GitHub
 
-Open **Actions → Run pipeline demo → Run workflow**. The run checks all ten training inputs, runs the regression tests, replays the saved results and scores the example profiles. Download **severity-demo-results** from the completed run for predictions and the verification report. Model execution runs in a container with networking disabled; dependencies are installed during the environment build.
+The repository owner can run it directly. Other users should **Fork** this repository first and enable workflows in their fork's **Actions** tab if GitHub prompts them.
+
+Open **Actions → Run pipeline demo → Run workflow** in the repository you own. The run checks all ten training inputs, runs the regression tests, replays the saved results and scores the example profiles. Download **severity-demo-results** from the completed run for predictions and the verification report. Model execution runs in a container with networking disabled; dependencies are installed during the environment build.
 
 ## Run on your computer
 
