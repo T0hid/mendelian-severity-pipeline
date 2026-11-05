@@ -80,7 +80,9 @@ def write_source_workbook(path, tables):
     rel_namespace = 'http://schemas.openxmlformats.org/package/2006/relationships'
     content_types = [('rels', 'application/vnd.openxmlformats-package.relationships+xml'),
                      ('xml', 'application/xml')]
-    workbook_sheets, workbook_relationships, overrides = [], [], []
+    workbook_sheets = []
+    workbook_relationships = ['<Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>']
+    overrides = ['<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>']
     seen = set()
     path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as archive:
@@ -104,14 +106,22 @@ def write_source_workbook(path, tables):
                             numeric = math.isfinite(float(text))
                         except ValueError:
                             pass
+                    style = ' s="1"' if row_number == 1 else ''
                     if numeric:
-                        cells.append(f'<c r="{address}"><v>{escape(text)}</v></c>')
+                        cells.append(f'<c r="{address}"{style}><v>{escape(text)}</v></c>')
                     else:
-                        cells.append(f'<c r="{address}" t="inlineStr"><is><t xml:space="preserve">{escape(text)}</t></is></c>')
-                xml_rows.append(f'<row r="{row_number}">' + ''.join(cells) + '</row>')
+                        cells.append(f'<c r="{address}"{style} t="inlineStr"><is><t xml:space="preserve">{escape(text)}</t></is></c>')
+                height = ' ht="34" customHeight="1"' if row_number == 1 else ''
+                xml_rows.append(f'<row r="{row_number}"{height}>' + ''.join(cells) + '</row>')
             width = max((len(row) for row in rows), default=1)
+            columns = []
+            for column in range(width):
+                lengths = [len(str(row[column])) for row in rows[:200] if len(row) > column]
+                size = min(44, max(16, max(lengths, default=16) + 2))
+                columns.append(f'<col min="{column+1}" max="{column+1}" width="{size}" customWidth="1"/>')
             archive.writestr(f'xl/worksheets/sheet{index}.xml',
-                f'<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="{namespace}"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols><col min="1" max="{width}" width="22" customWidth="1"/></cols><sheetData>' + ''.join(xml_rows) + '</sheetData></worksheet>')
+                f'<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="{namespace}"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>' + ''.join(columns) + '</cols><sheetData>' + ''.join(xml_rows) + f'</sheetData><autoFilter ref="A1:{_column_name(width)}{len(rows)}"/></worksheet>')
+        archive.writestr('xl/styles.xml', f'<styleSheet xmlns="{namespace}"><fonts count="2"><font><sz val="10"/><name val="Arial"/></font><font><b/><sz val="10"/><color rgb="FFFFFFFF"/><name val="Arial"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1B365D"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>')
         archive.writestr('xl/workbook.xml', f'<workbook xmlns="{namespace}" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>' + ''.join(workbook_sheets) + '</sheets></workbook>')
         archive.writestr('xl/_rels/workbook.xml.rels', f'<Relationships xmlns="{rel_namespace}">' + ''.join(workbook_relationships) + '</Relationships>')
         archive.writestr('_rels/.rels', f'<Relationships xmlns="{rel_namespace}"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>')

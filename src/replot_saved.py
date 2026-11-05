@@ -75,7 +75,13 @@ def _render_cohort(publication, destination, native):
     frame.pivot_table(index='family_label', columns='Scenario', values='n_features', aggfunc='sum').fillna(0).plot.barh(ax=axes[1, 1], legend=False)
     axes[1, 1].set(xscale='symlog', xlabel='Candidate features', ylabel='', title='e  Feature families')
     axes[1, 2].axis('off')
-    axes[1, 2].text(0, 1, 'Saved-data replay\n\nCounts and proportions are read\nfrom the original panel CSVs.\n\nNo training or feature selection\nis performed.', va='top', fontsize=7)
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    severity_legend = axes[1, 2].legend(handles, labels, title='Severity', loc='upper left',
+                                      fontsize=6, title_fontsize=7, frameon=False)
+    axes[1, 2].add_artist(severity_legend)
+    handles, labels = axes[1, 1].get_legend_handles_labels()
+    axes[1, 2].legend(handles, [native.SCENARIO_SHORT.get(label, label) for label in labels],
+                      title='Feature set', loc='lower left', fontsize=6, title_fontsize=7, frameon=False)
     fig.tight_layout(pad=1.4)
     native._save(fig, 'replay_extended_data_fig_1', str(destination))
 
