@@ -1,0 +1,29 @@
+[
+  {
+    "example_id": "synthetic_empty",
+    "present_terms": [],
+    "absent_terms": []
+  },
+  {
+    "example_id": "synthetic_neurological",
+    "present_terms": [
+      "HP:0001250",
+      "HP:0000252"
+    ],
+    "absent_terms": []
+  },
+  {
+    "example_id": "synthetic_cardiac",
+    "present_terms": [
+      "HP:0001629"
+    ],
+    "absent_terms": []
+  },
+  {
+    "example_id": "synthetic_unrecognised",
+    "present_terms": [
+      "HP:9999999"
+    ],
+    "absent_terms": []
+  }
+]
