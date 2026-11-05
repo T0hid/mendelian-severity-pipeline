@@ -28,7 +28,7 @@ jobs:
       - name: Run predictions, verification and publication plotting
         run: docker run --rm --network none -e MPLBACKEND=Agg -v "$PWD:/work" -w /work severity-demo python run.py
       - name: Record the resolved environment
-        run: docker run --rm --network none severity-demo python -m pip freeze > results/environment.txt
+        run: docker run --rm --network none -v "$PWD:/work" -w /work severity-demo sh -c 'python -m pip freeze > results/environment.txt'
       - name: Save results, figures and source data
         uses: actions/upload-artifact@v7
         with:
