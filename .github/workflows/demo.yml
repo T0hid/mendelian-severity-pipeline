@@ -1,0 +1,36 @@
+name: Run pipeline demo
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Build the pinned demo environment
+        run: docker build --tag severity-demo .
+      - name: Check original training inputs
+        run: docker run --rm --network none -v "$PWD:/work" -w /work severity-demo python run.py --check-inputs
+      - name: Run regression tests
+        run: docker run --rm --network none -v "$PWD:/work" -w /work severity-demo python -m unittest discover -s src/tests -v
+      - name: Run model and saved-result verification
+        run: docker run --rm --network none -e MPLBACKEND=Agg -v "$PWD:/work" -w /work severity-demo python run.py
+      - name: Save predictions and verification report
+        uses: actions/upload-artifact@v4
+        with:
+          name: severity-demo-results
+          path: results/
+          if-no-files-found: error
+          retention-days: 30
