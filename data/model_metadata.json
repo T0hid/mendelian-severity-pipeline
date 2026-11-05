@@ -1,0 +1,14 @@
+{
+  "model_sha256": "99d93d077ece2f1a69248b2bed6a5cf55e686f4ff0c59e83193d28fa2d574b74",
+  "model_version": "3.3-disease-level-ontology-severity-terms-configurable",
+  "channel": "phenotype",
+  "classes": [
+    "mild",
+    "moderate",
+    "severe",
+    "profound"
+  ],
+  "reported_class_rule": "round_expected_severity_using_numpy_rint",
+  "model_training_unit": "MONDO disease",
+  "prenatal_outcomes_used_for_scorer_training": false
+}

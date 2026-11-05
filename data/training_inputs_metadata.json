@@ -1,0 +1,58 @@
+{
+  "files": {
+    "final_output_with_severity.csv": {
+      "sha256": "da7dac61447a4be2e18b69e52063c5cde33996754eb14856e94b77977df28f84",
+      "bytes": 34807418
+    },
+    "final_gnn_dataset.csv": {
+      "sha256": "8de956183594d5aa5f0db50d767c87439db3af374372194132b139c5fd469f6a",
+      "bytes": 53011761
+    },
+    "CONSOLIDATED_FEATURES_v2/CORE_MECHANISTIC_FEATURES.csv": {
+      "sha256": "1721d82276b26274da1d808205e523b088837dbd1e8cf4fd6dfb47d16d427314",
+      "bytes": 3973165
+    },
+    "CONSOLIDATED_FEATURES_v2/EXTERNAL_MECHANISTIC_FEATURES_v4_6.csv": {
+      "sha256": "9cd15c54eb4e8b70cc44f42dafd4b207682c9408a4d40d3635f51893d1d7590d",
+      "bytes": 779500
+    },
+    "CONSOLIDATED_FEATURES_v2/NEW_GENE_LEVEL_FEATURES.csv": {
+      "sha256": "ae11ccc9bdab89f32ad53cdccd95d05eaa75a1414bd0e4ba72caff3ed4006845",
+      "bytes": 658393
+    },
+    "CONSOLIDATED_FEATURES_v2/MOUSE_LETHALITY_FEATURES.csv": {
+      "sha256": "2c6285e75aaae125e1fd3c7dcd1458f8e0e76cc170aad0954b0915771d12230b",
+      "bytes": 103555
+    },
+    "CONSOLIDATED_FEATURES_v2/MOUSE_HUMAN_PHENOTYPE_FEATURES.csv": {
+      "sha256": "2496de7a66331128eba90a3f2a6d75a638b56811fb1dd2ff8963f34bc89593eb",
+      "bytes": 1171948
+    },
+    "hp.obo": {
+      "sha256": "d1f3e411add1a1bbe68c00b628f7a2c8210433de1e478c6b79924a7c1e4dc737",
+      "bytes": 10323898
+    },
+    "mondo.obo": {
+      "sha256": "9be712b20f187726f5306a4adb0bb50617851c60d1a0fb7615892270ca11bda1",
+      "bytes": 51259763
+    },
+    "gene_disease_mapping_HPO_rebuilt.csv": {
+      "sha256": "57a57b088ca307e935affa1b58d5db3f35c670c2373c23bf35ee231a881b4c83",
+      "bytes": 2482787
+    }
+  },
+  "mapping_provenance": "Supplied by the author on 5 November 2026. The historical run did not record its hash; this release records the supplied copy.",
+  "individual_prenatal_data_included": false,
+  "archives": [
+    {
+      "file": "training_tables.zip",
+      "sha256": "5bfbbc55686368a85f4b2d1827e04ae2984636185154df60dde5e1eb7f8e3c32",
+      "bytes": 21634969
+    },
+    {
+      "file": "ontologies.zip",
+      "sha256": "ed4537c7650b9ede752af2a0d219dcbdb91a542602add3f1a7834a8a3cd6cc92",
+      "bytes": 9518539
+    }
+  ]
+}
