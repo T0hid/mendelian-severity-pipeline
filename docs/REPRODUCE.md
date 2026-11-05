@@ -27,13 +27,7 @@ python run.py --check-inputs
 python run.py --benchmark --output-dir benchmark_results
 ```
 
-The scenarios, model selection, evaluation, sensitivity analyses, explanations and publication rendering remain in `src/pipeline.py` and `src/publication_figures_v2.py`. The supplied configuration uses one permutation. An explicit override creates a separate run:
-
-```shell
-python run.py --benchmark --permutations 99 --output-dir benchmark_99_results
-```
-
-The frozen reference snapshot and existing output folders are preserved.
+The scenarios, model selection, evaluation, sensitivity analyses, explanations and publication rendering remain in `src/pipeline.py` and `src/publication_figures_v2.py`. The benchmark defaults to the completed 5 November 2026 reference configuration, including 100 gene-block permutations per feature set. The saved permutation table records 100 successful permutations per feature set and an adjusted P value of 0.00990099 for each. The demo checks this table from the saved run. An explicit `--permutations` override creates a separate run in a fresh output directory.
 
 ## Disease-level scorer
 

@@ -2,7 +2,7 @@
 
 ## Current statement
 
-The benchmark, disease-level scorer, prenatal analysis and publication visualisation code is available at https://github.com/T0hid/mendelian-severity-pipeline. Version 1.3.0 includes a runnable example, saved scorer, public training inputs, frozen reference results, figure exports, source-data exports, plotting instructions and verification checks. Installation and reproduction instructions are included. Individual prenatal records are excluded; the original workflow accepts an authorised local cohort. A project-wide reuse licence has not been selected by the rights holder and no additional licence grant is implied. No archive DOI has yet been assigned.
+The benchmark, disease-level scorer, prenatal analysis and publication visualisation code is available at https://github.com/T0hid/mendelian-severity-pipeline. Version 1.3.1 includes a runnable example, saved scorer, public training inputs, frozen reference results, figure exports, source-data exports, plotting instructions and verification checks. Installation and reproduction instructions are included. Individual prenatal records are excluded; the original workflow accepts an authorised local cohort. A project-wide reuse licence has not been selected by the rights holder and no additional licence grant is implied. No archive DOI has yet been assigned.
 
 ## Permanent deposit
 

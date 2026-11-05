@@ -1,20 +1,20 @@
 {
-  "version": "1.3.0",
+  "version": "1.3.1",
   "archives": [
     {
       "file": "publication_assets.zip",
-      "sha256": "c3a8b0b789adaa50daad80b9cee39b979cd050368b9a8416426240fd5ef9389e",
-      "size_bytes": 19282818
+      "sha256": "29759c7cc3efe523c4fc6c18288eb252dfa69dc32c366c1a566af414ab409537",
+      "size_bytes": 19121586
     },
     {
       "file": "explanation_assets.zip",
-      "sha256": "2a972b43965354993d7d73d60f4494c6b405e920e081679291f903dd8f97631e",
-      "size_bytes": 8992805
+      "sha256": "55dc5cbd4f9ce136c42c724c65202da20de79dab7c890172c20bfbf6efd459f2",
+      "size_bytes": 9047663
     },
     {
       "file": "benchmark_tables.zip",
-      "sha256": "77782cfdcf53c80e0c9e277743264181eaafec0c7ed1976f7897352543ec0054",
-      "size_bytes": 6345594
+      "sha256": "734869556da8e8e06eea06a6978ea600959fe3b338240d1be565ed5413bf4755",
+      "size_bytes": 6346746
     }
   ],
   "files": [
@@ -32,344 +32,344 @@
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_1a_partition_composition.csv",
-      "sha256": "047afe0a4f293f3fc089241ae1255a89d21e9931c89c462968b10114bce256f9",
-      "size_bytes": 498,
+      "sha256": "2b965bd45222b4c8fb6c7842f00f28ee3f87c31a83773ed07d80827fed981394",
+      "size_bytes": 511,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_1b_gene_pair_ccdf.csv",
-      "sha256": "a472bfcde61357b7d45d77d44a40153301ca3b101ac28128751f94dfea1f4ec2",
-      "size_bytes": 117,
+      "sha256": "3f855f3d27ad415983287720b89769a255b0c74e57ae20ceb0fdd1eb641ea9be",
+      "size_bytes": 136,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_1c_inheritance_prevalence.csv",
-      "sha256": "d074e14e53c55a4a159cf0740a840f06850842d69468852b2fc62fc887a5a3c0",
-      "size_bytes": 594,
+      "sha256": "b8ecc604e0b243a1b3aa566093a9542057023ec344e7526177a2b416153ce2b4",
+      "size_bytes": 607,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_1d_disease_pair_ccdf.csv",
-      "sha256": "c345a7af8ef98f303a3239f658c1835727a00c08f3f1b2538bda126fbf652286",
-      "size_bytes": 138,
+      "sha256": "28c7d34e3e0046ce586d4921fc389627bc99f682d5b810c944e3b1e74ea0d0d2",
+      "size_bytes": 161,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_1d_largest_diseases.csv",
-      "sha256": "c6ac2879b72a3282f69566c7a33bd8d816288dff57f84bc8a9e96f6fc9d27612",
-      "size_bytes": 2023,
+      "sha256": "522128bfd24585f2288c72393179dbbecf32b136ceeefa8a26b75cbdd9fe6935",
+      "size_bytes": 2054,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_1e_scenario_feature_families.csv",
-      "sha256": "abb48120850db3a441aba5728adcdf0113cddc5778c6ba8108e19c6eb552f4cb",
-      "size_bytes": 1283,
+      "sha256": "f9720d9f246420b0c55af96cb840ab83740a8bd7115d4355cffef98753810d8b",
+      "size_bytes": 1318,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_2_candidate_validation_metrics.csv",
-      "sha256": "81d3e408eb449196a36df43c9da36335d181a6e93e30b0328d5036d4cb70acd7",
-      "size_bytes": 3455,
+      "sha256": "32a85b8a2b41c0b23b7c9c3d4ba266aae25a1cda1f725ab299148d056775b49b",
+      "size_bytes": 3475,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_2_selected_test_metrics.csv",
-      "sha256": "c18d53ae327c40fd2cbbbc16adb68ab1a5544941a62724b243ef213b1b6a3251",
-      "size_bytes": 5620,
+      "sha256": "b428d707e4c0dd2c540fe8d993946e9808e279ea375956d4d5b7927dfd612876",
+      "size_bytes": 5588,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_2d_locked_test_forest.csv",
-      "sha256": "8640d7559558af9530c7af64e4e46dea3f4cd31d5f9c447d5fc87e930ad4109a",
-      "size_bytes": 1170,
+      "sha256": "e0b5842c8b672336e4759124cc34469da296ef391f3eaa3f1116f5d35f0991e4",
+      "size_bytes": 1182,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_2e_model_selection_margin.csv",
-      "sha256": "c69e83f01eb3e941d03144fbf632c59da0e4c162e8c2f87daef28867c0a2bf85",
-      "size_bytes": 293,
+      "sha256": "1c18659f1f2a68e57c98b57c43dde8f2960900fd5f29ac702993724ecc44793e",
+      "size_bytes": 297,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_2f_information_source_contrasts.csv",
-      "sha256": "e44f5a6457a06ec4d4dc826ef214b82411284b4884a0ac50328b8a204ace7f08",
-      "size_bytes": 272,
+      "sha256": "118962d09959e8087605eb9d67d8cde172ba3906b7ff629cf9bca1cb53d6e20d",
+      "size_bytes": 279,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_3_calibration_curves.csv",
-      "sha256": "91472896f80c47162fc52b65e58b07d5d201de671ab8ce20ef30bd9893eca70f",
-      "size_bytes": 10571,
+      "sha256": "63bc92fe36c6718f36d53d508f268526846b55fe0847300fca0e936a5c1aa1ee",
+      "size_bytes": 10660,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_3_confusion_matrices.csv",
-      "sha256": "b716f8d793d89a170c169e182bae3ba66a111a79ef3a0485f4021eb5661dac90",
-      "size_bytes": 4145,
+      "sha256": "57f124bb8f2cf9a8d4234b0bf89a212aa560565a8c97ce977175d71305381284",
+      "size_bytes": 4202,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_3i_per_class_ordinal_error_composition.csv",
-      "sha256": "8142a98e6c179f0f995366634a6a5005c848e96975cc36119c971bce52ebd063",
-      "size_bytes": 1631,
+      "sha256": "292c7a419fa95949dcbb0e5ca33344261af55a8d6d67de6d1f548d692782213c",
+      "size_bytes": 1644,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_3j_ece.csv",
-      "sha256": "52880b4ed2f31717b982339c2dfb75ccfdcbceac14bbc03dd273215d612ffe8a",
-      "size_bytes": 5109,
+      "sha256": "240923d54647808e45cf6b3ab2476f48642b9574f5e558bf84799c70c1d7f9c1",
+      "size_bytes": 4955,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_3k_calibration_improvement.csv",
-      "sha256": "071652b23b4c082957ea3c51465257e82d090f6e65a3ae694a0dd06bfb342f69",
-      "size_bytes": 253,
+      "sha256": "0011371bd86939d07c9693aa86329e7d605d67d8b3aa80ebd60b667c8bd02965",
+      "size_bytes": 258,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_4a_split_sensitivity.csv",
-      "sha256": "df9fb9fab29b25488684ade14f8f9cf43092aba8b4b0846f799959d137968266",
-      "size_bytes": 3002,
+      "sha256": "ea09d126792365d1704cda30aa0a288962706da37db53a491ff35ba0bab11c5b",
+      "size_bytes": 2994,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_4b_mi_threshold.csv",
-      "sha256": "3e5d0451fdd3fd466388c83bb1f3b92301919f3fa7ad2d5c03ebe850c07cb57c",
-      "size_bytes": 978,
+      "sha256": "584d5f55454d58ed8c0db3f25a876aab3e624e2edabc487f4228dd9ef79963b6",
+      "size_bytes": 985,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_4c_permutation.csv",
-      "sha256": "52c3f9f048bb47b402ba3079bed8d634e09058de46aad3bd27bc1c146e7de1c1",
-      "size_bytes": 1245,
+      "sha256": "97ecc1f982106f20ffb0f60805e113e4d7ded56ff81b5a64addf2e1cd7dfd6b5",
+      "size_bytes": 1466,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_4d_hpo_budget.csv",
-      "sha256": "2e1ad2060a1140ff4a51ed26cdd344ecd5808a1013634e976b38194cb92a15aa",
-      "size_bytes": 5176,
+      "sha256": "84634a2fd2e5bfa021c4b888e13cc1fbf691eae1de0aec3ef80740e3006455e9",
+      "size_bytes": 5199,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_4e_imbalance.csv",
-      "sha256": "63aea70157ceced3a253cd272f68bb757ccf179e8048cf049ae253986033cdaa",
+      "sha256": "d26f6f7a4640c9024d2ce81e62da3a9f820980f633be12f12b3e3e550ebdb1d1",
       "size_bytes": 1678,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_4f_leakage_audit.csv",
-      "sha256": "e6db460e2593ad32bdde8a9e1d77665aa79999ad4a04df5b3bdeb79e99c4b790",
-      "size_bytes": 697,
+      "sha256": "51eb16890f71bc44a860d5e331114ab7abaf3a292ce0dba02dff0022f26a6eb3",
+      "size_bytes": 712,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_5a_d_scenario_interpretation.csv",
-      "sha256": "9fa5f0757f23435ce2a8aed0e214b5751c9ab9adbc4304e2d093c3ac9fb1afc2",
-      "size_bytes": 5515,
+      "sha256": "ed4fa29b4e226300063421a154970db07c72fc61de60b6bd9fcdbb75e6a3f092",
+      "size_bytes": 5548,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_5e_panel_stats.csv",
-      "sha256": "7753995d832b8b0dc47f01cfbc98cb6bb31637acc70975c966024bc8a45b1eea",
-      "size_bytes": 662,
+      "sha256": "f4fea45c3c55041c83f3c695877cfe42b40465927aa990eff9ea1db765504f9c",
+      "size_bytes": 683,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_5e_s3_true_predicted_pca.csv",
-      "sha256": "4098c04adefc42a682ae889b6de56538043f9067efb2f15b55257c1cf48d67fd",
-      "size_bytes": 405095,
+      "sha256": "83ce8f7211f8f0d003b8f3a7af67b259416601b52113187ea2e664f10e25c1e1",
+      "size_bytes": 406421,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/figure_5f_family_summed_shap.csv",
-      "sha256": "f9fa4ce92a3f50ed6c44cd92f2fd03c60e10d84577a42a218cfa3e72c9b0bee8",
-      "size_bytes": 9048,
+      "sha256": "fb74d79f6b0f60cd570726c7b4c68e486ddd49dae350d905b344fd58fcc450b1",
+      "size_bytes": 9079,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/main_figure_manifest.csv",
-      "sha256": "b5b2c92b029a11b0bde78a51fd8c5a322d24b5cab3c9a736fa7414c52f9472d0",
-      "size_bytes": 1428,
+      "sha256": "bd74c720cf60cb4f358ae0b891b4bcf2ab4c330215956d8d2c50de7c3bf925e5",
+      "size_bytes": 1522,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/table_1_headline_metrics.csv",
-      "sha256": "efb5ffc4eb9d55e20aca4dc36e26ccc713d2964d0014ebda4829bb82b922a1ef",
-      "size_bytes": 1399,
+      "sha256": "a5be00c26d5d866e35e653708a8216df37f359c6056f6a0975e2e9f100192279",
+      "size_bytes": 1479,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/figure_data/table_2_gene_level_companion.csv",
-      "sha256": "3f1ecf00550dcd5dcef5e5d53e6ea4162529e4a128b94eb671c56f54bd877b9e",
-      "size_bytes": 806,
+      "sha256": "65184dd6540500062d5d8dd373c122304cbfeed7137bd1c22381d32ec89e3f68",
+      "size_bytes": 809,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/extended_data_fig_1_cohort_composition.pdf",
-      "sha256": "7094558ba30c12e9850cf773631c4b239e32703861e0540f8e4a44463ac08214",
-      "size_bytes": 38720,
+      "sha256": "4f717536a9139ca3840fa4408588e4c801a74b9229b8c13edb493220d200bdfa",
+      "size_bytes": 65920,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/extended_data_fig_1_cohort_composition.png",
-      "sha256": "3f990132942e713c149a489aa0e9dd0dbad6b141e8977a5d9a72801c8413bae0",
-      "size_bytes": 773124,
+      "sha256": "d16b3ed971433d44d5c756789e19b5332c0a6028f025932c2489cdb5d97225ef",
+      "size_bytes": 712678,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/extended_data_fig_1_cohort_composition.svg",
-      "sha256": "117273bdaef70c67a57a79e5cf8bd53489fd47c906ab7ee0c3213e6bbc0c71f4",
-      "size_bytes": 115880,
+      "sha256": "5501a75a6fe7050948511185bdc7f94bb0766edbaf30d8c3d4574b0173ee20b7",
+      "size_bytes": 118329,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/extended_data_fig_1_cohort_composition.tiff",
-      "sha256": "50fff7640aa3b335580770b13b9d7c10bd47d45277478e76ac0e3e7fad47cf24",
-      "size_bytes": 2159538,
+      "sha256": "f99e1fc214a5c8da8df032341c8b54570bc1ca7ae54728f9d2ff4a15f11ec4a3",
+      "size_bytes": 2149788,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/extended_data_fig_2_robustness_and_audits.pdf",
-      "sha256": "0936f7a2300a05de1c6b93d63c8fa351df28dac3ebdfde4e6d072a2f09613599",
-      "size_bytes": 37504,
+      "sha256": "a8f20f4f02dd0c97edc1ca1f96194da355f6c3d2e482c751f4582a1cb3910ece",
+      "size_bytes": 61913,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/extended_data_fig_2_robustness_and_audits.png",
-      "sha256": "90e7d98e541cd35b911df66fc169f5ff5d3357b969fe1d34d7b40608b8af37e3",
-      "size_bytes": 636236,
+      "sha256": "8cedb5ab91512929cbba98b251dd2c58f051f3cd6ff4a6ff3f6f01212ec0b4cc",
+      "size_bytes": 619233,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/extended_data_fig_2_robustness_and_audits.svg",
-      "sha256": "1e47c6d4bcba7f85fc9bf37a14fd3868b8a0310ebb2332106a9733d08fc11ce6",
-      "size_bytes": 100513,
+      "sha256": "225821fb11005483ef953fe00c96a847a7a3701f44e8433388fb7a49d041b91e",
+      "size_bytes": 102934,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/extended_data_fig_2_robustness_and_audits.tiff",
-      "sha256": "be5ab920c423399d2fe4b3627cee7aa5b412128f16a5f7e9671a3d079125dcc7",
-      "size_bytes": 1502988,
+      "sha256": "01a3c1da29c9b3edbd50388783193723afd4419bf51b9489110eff7a344713ec",
+      "size_bytes": 1507998,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_2_model_comparison.pdf",
-      "sha256": "517aac5275f2bc94021f7ff045d7d45613f1931f6e0cd1b1587e28573ac7febc",
-      "size_bytes": 32337,
+      "sha256": "ce97e419a6c4ded169320bd69839f535e0b42bafb537710d0a729590fb4ee238",
+      "size_bytes": 55949,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_2_model_comparison.png",
-      "sha256": "a627f64541030658cb07840a0a1c45c2e778fd048a9c4f20f41593694741801e",
-      "size_bytes": 742924,
+      "sha256": "c187c8556ece9086e39dff125881bd2ef985be26975d86b02fadf36bd7a94829",
+      "size_bytes": 691392,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_2_model_comparison.svg",
-      "sha256": "c57fd26b636ab9f3ef80eb07c0fc87caada737596ce074fc24baec707acc10ae",
-      "size_bytes": 92330,
+      "sha256": "1c99d5cbb278f250669c2b06af70ce7c249ba332f5ffbc2292ef4a2746285b78",
+      "size_bytes": 94302,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_2_model_comparison.tiff",
-      "sha256": "a39b2acba926458653bcdfd3945fbf321fead1fa33fd23b5c13caffaf6812635",
-      "size_bytes": 1527062,
+      "sha256": "c13de260aca101f3089e6252a2985a5aa36aa07f562e8880a1e805574eabba79",
+      "size_bytes": 1516116,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_3_prediction_and_calibration.pdf",
-      "sha256": "2e61ccb1128d189b237cb0d78c16164b64748cbb401dd2a1d26e4099a78ebcc5",
-      "size_bytes": 57453,
+      "sha256": "8fabe2c8c89747e6c326436e501bcc6c93e587e6d41ecd821a27fb92693307e2",
+      "size_bytes": 84585,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_3_prediction_and_calibration.png",
-      "sha256": "9cdc1c80345da304fb6470bdd75f38ac06ec0bbb11070cce5e5e879473ce3934",
-      "size_bytes": 1053951,
+      "sha256": "3a7699afe91ceedc1e7f8b347886ad2c9374ee22168390c07255547d47ff7903",
+      "size_bytes": 988708,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_3_prediction_and_calibration.svg",
-      "sha256": "e95ff314404ae53531c7f472a8ce54caac3913689e25b655386bdfe1655a7b4e",
-      "size_bytes": 190553,
+      "sha256": "6e83f2e43f0e3bbdc13f4f14dbf8cae6e9869011e19f8fb247477c1ef3514c51",
+      "size_bytes": 194404,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_3_prediction_and_calibration.tiff",
-      "sha256": "b83566f36dc4e39bc9c2ec6c3dcff0b4dd69a77817b3da0a999739d9eeb4cd8e",
-      "size_bytes": 3077898,
+      "sha256": "a4c2db2cb9b1d3885051ccd2cd4a1845e36a80091c2d535a3bac5103f1d076e3",
+      "size_bytes": 3001840,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_4_interpretation_and_biology.pdf",
-      "sha256": "752bcc8838a59755da1f07cfe42909676f51bb17bfc8371fc7c7c73906754536",
-      "size_bytes": 1003589,
+      "sha256": "bdcb2ba31fe59a0808ed4a5d40c0b9c8161e3ce4bc52cde73917bd37057d7285",
+      "size_bytes": 1023321,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_4_interpretation_and_biology.png",
-      "sha256": "3dd00242414cfe63b0199cdc072ad9c5194a77a2e11ba52a282100fd17333f0c",
-      "size_bytes": 2343777,
+      "sha256": "e655eb57d0ef5734f21ee40aa5a388c7d7132c017a00f464e3569f048453d32e",
+      "size_bytes": 2204628,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_4_interpretation_and_biology.svg",
-      "sha256": "f6afbfafcad38460321a71cf30b10dfa6f078c267ac8e3f1485b0b4728b17a7c",
-      "size_bytes": 1647619,
+      "sha256": "6a5a2117cdf74cf6c4edc3e6d3f557e74d2c4e3772ca892e8752110fefa3ef3b",
+      "size_bytes": 1608609,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_4_interpretation_and_biology.tiff",
-      "sha256": "a74bdbfee05d4e75d880ff94421bea0cb8aef5d52d059aa727fd3392ad7b00cd",
-      "size_bytes": 3714432,
+      "sha256": "c355fdbbbccc885cfcf5d4fabc17ee1dc30744ff8697e1a691d094f7991f7cea",
+      "size_bytes": 3669756,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/figure_name_map.csv",
-      "sha256": "d9fd306ab412a010efcb7ffdc220c9bad1fb4cb85c4dce560c54efb7bd560f55",
-      "size_bytes": 423,
+      "sha256": "7a2fb87836cc4abc1d75c85039901b9c4500adcb35a8deacd2aa7527f5f6e5c2",
+      "size_bytes": 429,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/main_figure_manifest.csv",
-      "sha256": "b5b2c92b029a11b0bde78a51fd8c5a322d24b5cab3c9a736fa7414c52f9472d0",
-      "size_bytes": 1428,
+      "sha256": "bd74c720cf60cb4f358ae0b891b4bcf2ab4c330215956d8d2c50de7c3bf925e5",
+      "size_bytes": 1522,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/table_1_headline_metrics.csv",
-      "sha256": "efb5ffc4eb9d55e20aca4dc36e26ccc713d2964d0014ebda4829bb82b922a1ef",
-      "size_bytes": 1399,
+      "sha256": "a5be00c26d5d866e35e653708a8216df37f359c6056f6a0975e2e9f100192279",
+      "size_bytes": 1479,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/table_1_headline_metrics.md",
-      "sha256": "b8719c86c94ea1ebdbfbc09ed11327c2279c2ddb4da0d9ade861055290506144",
-      "size_bytes": 686,
+      "sha256": "68ec9963698158ed507b526d25b0df204b06501a42debbf31928a35eb78ac6b5",
+      "size_bytes": 706,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/figures/publication/main/table_2_gene_level_companion.csv",
-      "sha256": "3f1ecf00550dcd5dcef5e5d53e6ea4162529e4a128b94eb671c56f54bd877b9e",
-      "size_bytes": 806,
+      "sha256": "65184dd6540500062d5d8dd373c122304cbfeed7137bd1c22381d32ec89e3f68",
+      "size_bytes": 809,
       "archive": "publication_assets.zip"
     },
     {
       "path": "benchmark/per_disease_explanations/severity_shap_S1_Mechanistic.npz",
-      "sha256": "da063294b9a7de48017cec97bd6d301c4473ce9b38e4a701f12444b281b2bd2b",
-      "size_bytes": 318266,
+      "sha256": "55cab1289782445396fe94bd71ea9ce1be693e31194e158d14c8874e36ff0f0f",
+      "size_bytes": 327212,
       "archive": "explanation_assets.zip"
     },
     {
       "path": "benchmark/per_disease_explanations/severity_shap_S1b_Disease_Context.npz",
-      "sha256": "4b01c286a9f66dbe3a4dab6fa5c35f3b7e4d6d5830c85921551b44f684303d3c",
-      "size_bytes": 458408,
+      "sha256": "dd03f168daefc77a2e40373bdb0fa3353667cb30b4a9d56ddd3a34d6a7128139",
+      "size_bytes": 469314,
       "archive": "explanation_assets.zip"
     },
     {
       "path": "benchmark/per_disease_explanations/severity_shap_S2_Mech_Pheno.npz",
-      "sha256": "6c800e3ae958058f838cee5196d170f94508a3bdfb0ba7a165e1cd8983dfed06",
-      "size_bytes": 4219645,
+      "sha256": "cc453c60b6f4bd1d93de453eea576ede98ba06cf10ed2d518f7d949b057fbc0d",
+      "size_bytes": 4248975,
       "archive": "explanation_assets.zip"
     },
     {
@@ -380,38 +380,38 @@
     },
     {
       "path": "benchmark/results/all_results.csv",
-      "sha256": "6f565fb093c055d9155d9f599ac4411980618a3861794ffddd97acd71fd339eb",
-      "size_bytes": 2296,
+      "sha256": "b7849f49152547ea1b21d0a8ed18d50b9926e7ab9624584b62d4d2eaca0bc188",
+      "size_bytes": 2264,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/bootstrap_cis.csv",
-      "sha256": "672a92fe17e88412aee2f08cd5f66a262d77a3987b3e4da859b495d392f405cb",
-      "size_bytes": 3403,
+      "sha256": "65dd69b32d909fdc1ed237e883adf1179445e19cd9512229f8d4a9f77aee1224",
+      "size_bytes": 3398,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/budget_sensitivity.csv",
-      "sha256": "2e1ad2060a1140ff4a51ed26cdd344ecd5808a1013634e976b38194cb92a15aa",
+      "sha256": "0e7212505bc203e73cbeb2805c73486884371991f6146fb5552f80ff10a1c1fc",
       "size_bytes": 5176,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/calibration_bins.csv",
-      "sha256": "de1940ee185a754fa79c3d7905db66baf134cee835036381684abd0401b74259",
-      "size_bytes": 19086,
+      "sha256": "7512d958e6a4e4f01dab67a66a121d2566d85dacf66972a60db686426672d0cb",
+      "size_bytes": 19235,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/calibration_ece.csv",
-      "sha256": "3d2f06c4638c7a534661e7a568a9f660aac8444f2dbec5e7a959fe86a0d15656",
-      "size_bytes": 9858,
+      "sha256": "c63604ae30f9c5dd2be1866123537f9f2d0ff56e0b97bc5fefc09afe369b00c5",
+      "size_bytes": 9827,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/calibration_metrics.csv",
-      "sha256": "3d2f06c4638c7a534661e7a568a9f660aac8444f2dbec5e7a959fe86a0d15656",
-      "size_bytes": 9858,
+      "sha256": "c63604ae30f9c5dd2be1866123537f9f2d0ff56e0b97bc5fefc09afe369b00c5",
+      "size_bytes": 9827,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -422,14 +422,14 @@
     },
     {
       "path": "benchmark/results/error_decomposition.csv",
-      "sha256": "d11d7052c1bb92d71862a49ea167e444cc614a14ab3c51c0ef606fedd561825e",
+      "sha256": "55c76d7cd94da592952fe1d35f93001e07e63ec3d00dca9f462de61c2f9db472",
       "size_bytes": 526,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/error_decomposition_per_class.csv",
-      "sha256": "b585d078642519566e4d5d68e51798af5cbc738bee7d608173128e4fd03e15e9",
-      "size_bytes": 1644,
+      "sha256": "60b15adbb98083e8e495d9a9ce8f5a8dd9922e217ef6f1439a3702b3116b8ae8",
+      "size_bytes": 1640,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -458,8 +458,8 @@
     },
     {
       "path": "benchmark/results/feature_provenance_table.csv",
-      "sha256": "d10c045558be1ad9dad62564ecef0e413f8005c97fefc82f08d0f22a2fb284c1",
-      "size_bytes": 2316231,
+      "sha256": "13097237a67c5cdd509d3bb6f8c04192c8a4c8192c1c573e2442216557a73938",
+      "size_bytes": 2316809,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -470,14 +470,14 @@
     },
     {
       "path": "benchmark/results/gene_level_evaluation.csv",
-      "sha256": "72e62105372d77f776bae8505f27fc16f7752553e271a587dc6ab06fec83f988",
+      "sha256": "816784f4e41c34605e3e415694909fe622a2eb4c9d0ab65e9393bf5079963982",
       "size_bytes": 1098,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/generalisation_evaluations.csv",
-      "sha256": "b7c08e0aeb76abd09a9cf6193b5d14104bc8740e279e50db94292b1b36aabc3e",
-      "size_bytes": 1142,
+      "sha256": "d14cbc2014b8eca3eed6ca34aeaa2f81b48006fc19fd629162360366fccb5dbe",
+      "size_bytes": 1139,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -500,8 +500,8 @@
     },
     {
       "path": "benchmark/results/imbalance_sensitivity.csv",
-      "sha256": "63aea70157ceced3a253cd272f68bb757ccf179e8048cf049ae253986033cdaa",
-      "size_bytes": 1678,
+      "sha256": "f9447b355389324c9246dd4d0fe7bb7defa0382bed85f27914178f58996c1e4a",
+      "size_bytes": 1684,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -536,104 +536,104 @@
     },
     {
       "path": "benchmark/results/mi_threshold_sensitivity.csv",
-      "sha256": "3e5d0451fdd3fd466388c83bb1f3b92301919f3fa7ad2d5c03ebe850c07cb57c",
-      "size_bytes": 978,
+      "sha256": "304375ffee7b1f7ee31753827400e60afd2d2c3b24cc5dbebb6ad92f86baf1d3",
+      "size_bytes": 976,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/model_selection_validation.csv",
-      "sha256": "3c6aaeac45d6e7bd516d11354cfa0f8ef500386b6f12747e66f6c24d85557c0d",
-      "size_bytes": 2662,
+      "sha256": "1ab224cdf0b6553bd395517e333a350867e4cbe1669de9ec6448829b59aeec6a",
+      "size_bytes": 2667,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S1_Mechanistic_splitseed43.csv",
-      "sha256": "694d81aa2abc396b0e3b3c71e88b586abe0c51631ffa623ea594e767f2e28589",
-      "size_bytes": 9850,
+      "sha256": "53a9f06134945972efadfab777ba58bcb88cb604fb145526e3492e48a2f691a2",
+      "size_bytes": 9997,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S1_Mechanistic_splitseed44.csv",
-      "sha256": "0cb370116d5d93316d5947c5d417685143a4b6d0523a2490a70ae3e5959aee78",
-      "size_bytes": 9842,
+      "sha256": "310a6dbc39c5cf7fc580ab9f27031fae4cf42096718c4342b793daff38d3df76",
+      "size_bytes": 9989,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S1_Mechanistic_splitseed45.csv",
-      "sha256": "419221fd0dd693e503dd5fa3b45ba70b70550e96542cc2c8fdba10d3329e073b",
-      "size_bytes": 9796,
+      "sha256": "5652d5c07dd46611bddfb14954d4d1972bd07fdc2237fc175f0a82311f67e14b",
+      "size_bytes": 9943,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S1_Mechanistic_splitseed46.csv",
-      "sha256": "d4444a18715fd66b7857d8e6e41b60be54f2939b824d026937233bd139acf1df",
-      "size_bytes": 9777,
+      "sha256": "9afe81b13fd42af68071accbad1fead872346113392727615a05225999949c03",
+      "size_bytes": 9922,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S1_Mechanistic_splitseed47.csv",
-      "sha256": "dbe7b04e29baf6d840617e0f2eec0a0349d26ea5d50e76ea56676487bec95c16",
-      "size_bytes": 9791,
+      "sha256": "e6ebf159d84fbcdf07ea16896485cf3ac0917e2944cfd98a84d16f5464b35f53",
+      "size_bytes": 9939,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S1b_Disease_Context_splitseed43.csv",
-      "sha256": "44003d29b8c1be7a4a7aac6c4b2c098f30dab7b549c4c96d44b5ced4505c478a",
-      "size_bytes": 14565,
+      "sha256": "9b1a799274fc7c2992dd6fe76d1c4e8003475b12f710811deca48c08afc6a59f",
+      "size_bytes": 14712,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S1b_Disease_Context_splitseed44.csv",
-      "sha256": "79536c3ac3bf134f056a1d2dc9ebb481e7031850bb51867fd9dc6cd26704d3cc",
-      "size_bytes": 14572,
+      "sha256": "6f3c2d0fb6f221872fc2bc093d2bebeed2b3a08569dba5ea9a0a6858bab5109d",
+      "size_bytes": 14719,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S1b_Disease_Context_splitseed45.csv",
-      "sha256": "949504ebdaa5f844af9b1fd54c980704699a47b70c17e1c68e9a08b56cb84a74",
-      "size_bytes": 14601,
+      "sha256": "d4e3d3aabedb364142a8c7b39fe84116bc499c11ef5ef1fb8d153e063f71cc06",
+      "size_bytes": 14748,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S1b_Disease_Context_splitseed46.csv",
-      "sha256": "5e00158f166454740e6aaaa6ed2b9017e3cade572e71799a7705731985e4f431",
-      "size_bytes": 14819,
+      "sha256": "183db73d7c2502f7c15917c9729bf5764bbcc8d46300fb8c176395a18f922e16",
+      "size_bytes": 14964,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S1b_Disease_Context_splitseed47.csv",
-      "sha256": "94be7b61062854e1159cd1b38eb0dea68efd2515b5e7b08c37319fbd2e9b38e4",
-      "size_bytes": 14601,
+      "sha256": "024e31d4d2822b050583a63508e271b767c30d6ba638ccdb86ea348f63b33638",
+      "size_bytes": 14749,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S2_Mech_Pheno_splitseed43.csv",
-      "sha256": "d3ccd33b707a273c45cf8ee07e39e56f55784fc80e874ebf38c126ad941814f9",
-      "size_bytes": 364654,
+      "sha256": "86d9270a871afd5c0d625b9c4684fd793b0d44a5d3ba645034cbe0f13dca8bda",
+      "size_bytes": 364801,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S2_Mech_Pheno_splitseed44.csv",
-      "sha256": "40a9de0a896c4a996714dd1bf7c6d6d6d5789979af92d26978be1dc3b7863587",
-      "size_bytes": 369402,
+      "sha256": "f020d1ab58501e6d3b302acc5338e00d2dc314f751c75f783dc8cd0f85992f22",
+      "size_bytes": 369549,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S2_Mech_Pheno_splitseed45.csv",
-      "sha256": "16ed136c3b0e8289ccb4f19c987fe8c93914e1802ed9fa0880a420020a3dd0cb",
-      "size_bytes": 368764,
+      "sha256": "134ade6430c87a04fb1e72406dea4741cc46d9e7a55e2c67275317c37dc0dc73",
+      "size_bytes": 368911,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S2_Mech_Pheno_splitseed46.csv",
-      "sha256": "1bddb3ce45a537e34ecd37c7892b2c4d1aca5aab9985354dcd403b73a33ab17c",
-      "size_bytes": 372506,
+      "sha256": "19c42521ef32155a3d7f3e6e0dd823a107f1674b445a0dc6a14dea5bd070f5fd",
+      "size_bytes": 372651,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_S2_Mech_Pheno_splitseed47.csv",
-      "sha256": "e4356dcbb067eb93abba12c262d5e9488db11b57510b034294248b4743ad455f",
-      "size_bytes": 369432,
+      "sha256": "d461187684ee4f21447cf0a89f5a31fd03f2fbc04de225a30c7328105ea053aa",
+      "size_bytes": 369580,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -668,74 +668,74 @@
     },
     {
       "path": "benchmark/results/mutual_information_scores_disease_disjoint_S1_Mechanistic_final.csv",
-      "sha256": "096879f7ab23c84920690c30b1d717e66fb7d0d585bd34af220ce93008f60785",
-      "size_bytes": 9849,
+      "sha256": "3974b5d38f6b0ca216319b9ccc73d626386e3753974a32f5386da5ef4c0bfbd8",
+      "size_bytes": 9996,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_disease_disjoint_S1_Mechanistic_nested_fold0.csv",
-      "sha256": "e8e799bfd95d44cfb7a94c0df6fa40be32957ddcab4774783e469a8776350f72",
-      "size_bytes": 9827,
+      "sha256": "9b68c6749b866058fa96e06f9bf750d7c7ac113395b50b1d8f9d143d6a42fcde",
+      "size_bytes": 9974,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_disease_disjoint_S1_Mechanistic_nested_fold1.csv",
-      "sha256": "5c314599c48c4813e1530f35b3f4a745f6c2acc93e9a13692d2dad3365789358",
-      "size_bytes": 9810,
+      "sha256": "210dc6123f4b758ce7bdd4aaf808900f1a745c85b25e5e791a2a53be8b3ad515",
+      "size_bytes": 9957,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_disease_disjoint_S1_Mechanistic_nested_fold2.csv",
-      "sha256": "733e95c5635dde0b0a1444280ad7b8e4a541d5af799829d1764c6b7edd9f0d7a",
-      "size_bytes": 9823,
+      "sha256": "d347374dad97d5a90263742897f46e19736a6dd615d2812ece0df42a95e91367",
+      "size_bytes": 9970,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_disease_disjoint_S1b_Disease_Context_final.csv",
-      "sha256": "46af5533c4187da6c1eef803abf2ebaae8fe80d05bbb319329ff79b9cdfe9bfa",
-      "size_bytes": 14821,
+      "sha256": "7041f7fc435ffb0ab817398c8d364d4e46786a4de423fe5fc4a075d5b204d048",
+      "size_bytes": 14968,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_disease_disjoint_S1b_Disease_Context_nested_fold0.csv",
-      "sha256": "4ca236ffdb7c265d0e7319b4337505403de5234bd36aff8e7ee8d862350c74fd",
-      "size_bytes": 14725,
+      "sha256": "45adf24f82d2b47ef16c5a0350b1c9762decd15b507b82bf75b199d2c12aec3d",
+      "size_bytes": 14872,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_disease_disjoint_S1b_Disease_Context_nested_fold1.csv",
-      "sha256": "84a706c1062f99cf4a3009aac9a47811af519150694a9694d1e23d1df5d15e9c",
-      "size_bytes": 14450,
+      "sha256": "bbffb9ebafed55740cab43805ddb5676156bad33d07b9078d55207c44c4f672b",
+      "size_bytes": 14597,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_disease_disjoint_S1b_Disease_Context_nested_fold2.csv",
-      "sha256": "7ca9ea874ef8f2e6c7ff260939401ddda70b39de83bff97980217178cd279426",
-      "size_bytes": 14643,
+      "sha256": "db991bc7661df730efb58c3acfed8008b88ab67795a0de9806e1fb814aafd5fc",
+      "size_bytes": 14790,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_disease_disjoint_S2_Mech_Pheno_final.csv",
-      "sha256": "2e0bdb1d1fd5a54fd9e1d31e5bde1afa6b38348990f276fe5f38300fb85e8ce8",
-      "size_bytes": 363531,
+      "sha256": "cdc21b28359aa6b3186032e81df8ed7c5c73f286c4794a42a18522afde9a7d90",
+      "size_bytes": 363678,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_disease_disjoint_S2_Mech_Pheno_nested_fold0.csv",
-      "sha256": "f979e58e5902c4232c1db8f9826d92b6e83b66fc7c88129551d93fab19385bc0",
-      "size_bytes": 299894,
+      "sha256": "a9393862d047e2ec2a5e685a5e53a4f6090abc3dc3370bd704d38e41ec81cdfe",
+      "size_bytes": 300041,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_disease_disjoint_S2_Mech_Pheno_nested_fold1.csv",
-      "sha256": "90bba43783f2e101fe9bafd9d30112fd6efe6a1014124479dc7bae53373db067",
-      "size_bytes": 306298,
+      "sha256": "554ed78e6c8c12ccea9017dd6aac7fda10189b279c2fedfde760c6efb57d8f53",
+      "size_bytes": 306445,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_disease_disjoint_S2_Mech_Pheno_nested_fold2.csv",
-      "sha256": "f7aebf3659d0b92b512dca49e8b8a2c4d701b15bd4dae660f4019df8261eb0bf",
-      "size_bytes": 301170,
+      "sha256": "7a07619f030a96407beb6e8d637460c64e6dabca089322d1ffca37268da67110",
+      "size_bytes": 301317,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -962,74 +962,74 @@
     },
     {
       "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S1_Mechanistic_final.csv",
-      "sha256": "0e56ec2b435b09054cbd6c7d8538d61b107aee8ce423ab3198963f91caf3d242",
-      "size_bytes": 9787,
+      "sha256": "f68ee039b4a782f045ab083c7a8d696f87269f6334589b09102d45c4d55a3c15",
+      "size_bytes": 9947,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S1_Mechanistic_nested_fold0.csv",
-      "sha256": "af5bb2ec1c36199d20b363e696a28e2493878a702367e7daee54bb135019353b",
-      "size_bytes": 9722,
+      "sha256": "6934cbc674b4d26396ae344026efc660913b077c01a67a4576e28da97ad82e3f",
+      "size_bytes": 9868,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S1_Mechanistic_nested_fold1.csv",
-      "sha256": "5ebe81eb362604a5854ad0bb506832b43e95d94e30fa3461d4ae59722acffe58",
-      "size_bytes": 9799,
+      "sha256": "04777b6bef586051e31df24c367c2a1f84c2c41e2b68944641a49081d3a32fee",
+      "size_bytes": 9959,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S1_Mechanistic_nested_fold2.csv",
-      "sha256": "fee8aae8803450b23276793e1b28b390373838906281953b563e85cd2433b5f1",
-      "size_bytes": 9733,
+      "sha256": "934e31cec7695621b98b671f30e4bbda8481053674e0428873cfb085aa0ea430",
+      "size_bytes": 9881,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S1b_Disease_Context_final.csv",
-      "sha256": "7428a63e0b8611d51edfd31355eacd53d8c22ba135749bf268d9018711cf07c6",
-      "size_bytes": 14834,
+      "sha256": "401c2957bcb8fdc62914192829c03a41e0ca766b47e3a49fb9b369df7ddf25a9",
+      "size_bytes": 14994,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S1b_Disease_Context_nested_fold0.csv",
-      "sha256": "8844d0ece31b2feb7bc573d1655bb7582c516b82fcc869131ce983580c6b694a",
-      "size_bytes": 14459,
-      "archive": "benchmark_tables.zip"
-    },
-    {
-      "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S1b_Disease_Context_nested_fold1.csv",
-      "sha256": "a03de041a34a4ef683e77d2a4338e89dae2d00db1a03068f424d28f842c9771c",
+      "sha256": "1ed514944501495c05419833677ae27be5a62e356c1cb0026e35f2f08f59b49d",
       "size_bytes": 14605,
       "archive": "benchmark_tables.zip"
     },
     {
+      "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S1b_Disease_Context_nested_fold1.csv",
+      "sha256": "06574b7c0737e72bdb21bbfec9c199dd7a1bbe30005325a3e7826f0313301c79",
+      "size_bytes": 14765,
+      "archive": "benchmark_tables.zip"
+    },
+    {
       "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S1b_Disease_Context_nested_fold2.csv",
-      "sha256": "25444de55bee9384098be29fabf4da49e5950797441883c3239423e9f318cfc8",
-      "size_bytes": 14537,
+      "sha256": "c42850c7cd74292b492ed1327f94d2284ae7e828a87a85781e10a4fe9b6cf95a",
+      "size_bytes": 14685,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S2_Mech_Pheno_final.csv",
-      "sha256": "47ed2e3644bb1873823b086cc1db8348300235bc04fb0bdcddb409064d9fb15a",
-      "size_bytes": 366640,
+      "sha256": "04cd660369372324a5f4a42f54004493ec45e45fc042d8d75a2af4cda37d802f",
+      "size_bytes": 366800,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S2_Mech_Pheno_nested_fold0.csv",
-      "sha256": "b32a117ea9b45ec8cd27dfbadcf722374b4d6cda988be7d929fb88f9372568e8",
-      "size_bytes": 303215,
+      "sha256": "04715561985c9b2bdd6566ecc0d5ce96ea2ac3df6157b8e94c9c177f10a90e2e",
+      "size_bytes": 303361,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S2_Mech_Pheno_nested_fold1.csv",
-      "sha256": "76543874c13234ef98e709f4d6a72aa5d047091593f1e9866b529be28df65aa8",
-      "size_bytes": 312043,
+      "sha256": "13d52a306734dc33df02716ca94e0d21bf0642bdbf59cf5d3f0575a46460f030",
+      "size_bytes": 312203,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_gene_and_disease_disjoint_S2_Mech_Pheno_nested_fold2.csv",
-      "sha256": "e0c48c71a3e09f6a6b37ca7d53daa5c2643bb5a5ecf2ee4482a717506bef85e1",
-      "size_bytes": 301679,
+      "sha256": "afa70ecf811ef50f1b4ba7884b9d2857838e8d4bde31c54b312dc6ff86563d14",
+      "size_bytes": 301827,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -1256,74 +1256,74 @@
     },
     {
       "path": "benchmark/results/mutual_information_scores_primary_S1_Mechanistic_final.csv",
-      "sha256": "c085b5246d67135901408e432e4414dd28f7485bd6d817e8535f1b48aed4aef8",
-      "size_bytes": 9886,
+      "sha256": "41fcf9c9e9d0b6c933b45b0d8e24d86f3917b6878a3338bfc7ae17cf4670c53f",
+      "size_bytes": 10032,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_primary_S1_Mechanistic_nested_fold0.csv",
-      "sha256": "8d3ce955ecf4bc2c508cb3b54c07be560a2657fe89e44e4653be352f0360de3b",
-      "size_bytes": 9896,
+      "sha256": "eb44f41acafb3226b3a37faa3bff2fb56822a3c7919258ffdc1e2896a4ea051b",
+      "size_bytes": 10042,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_primary_S1_Mechanistic_nested_fold1.csv",
-      "sha256": "c819defd3ad19e8b06929b0276205a78e3de0aab21d4718574dcd8627d0a1472",
-      "size_bytes": 9839,
+      "sha256": "7b7a42403c57b545148fe42e28e9a12218c43d393862112651292fd6307909e2",
+      "size_bytes": 9998,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_primary_S1_Mechanistic_nested_fold2.csv",
-      "sha256": "b2caa656f960a6fe13768c3c7d2b18d22c63ff5019d0e2bc1d4fda0393387e4d",
-      "size_bytes": 9842,
+      "sha256": "807029a947de7792cb15e0175d41975b087dcc9a1bbde069d87f8ceb0853ede6",
+      "size_bytes": 9988,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_primary_S1b_Disease_Context_final.csv",
-      "sha256": "724fb4bad14938d5f7b615e99c2811af9ba737e6ee758826da78f6603a51b388",
-      "size_bytes": 14848,
+      "sha256": "54058f48e00c892767d661a1605ff63a91b8dc62e8d80496502f034a414a20e2",
+      "size_bytes": 14994,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_primary_S1b_Disease_Context_nested_fold0.csv",
-      "sha256": "06db3c3b1e65e10ef1f30211b1aebe3cde4233f026db451bca59ca578718504c",
-      "size_bytes": 14626,
+      "sha256": "98284f8c7c9df4cbae1827f606e794d3ffea0175cd62e0bfa2e20ba58c677d2b",
+      "size_bytes": 14772,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_primary_S1b_Disease_Context_nested_fold1.csv",
-      "sha256": "fa744fc1c2bfc6e3db5d90f21fd5e7d1dbf7e1839d24c79d341c6384960d71c7",
-      "size_bytes": 14710,
+      "sha256": "791619380c9345b881d88afcadc3637c4e583bb61e9c10247f7cc0c66ab685c8",
+      "size_bytes": 14869,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_primary_S1b_Disease_Context_nested_fold2.csv",
-      "sha256": "53fe0935bfc94c7be890070235aca4acb7f8bac3acbe75e8624021c20a5f7f84",
-      "size_bytes": 14720,
+      "sha256": "7b1fa7570863f28e7c8e26039a853388a39ebe07dd7bce4d397e73769330725f",
+      "size_bytes": 14866,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_primary_S2_Mech_Pheno_final.csv",
-      "sha256": "c8b11f252ce42ea420a332bfd78fb85947f9fce780b2eafc809306baf3e30a60",
-      "size_bytes": 370405,
+      "sha256": "f289cca39c790066f92f05e6c8a468bf2e97e65821ccc9e61dccc8c068fc5bc3",
+      "size_bytes": 370551,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_primary_S2_Mech_Pheno_nested_fold0.csv",
-      "sha256": "11ffe49661603d939f3adebf0f42a2ef88deed6a3d09125200ccc3bd418f31ea",
-      "size_bytes": 310191,
+      "sha256": "6452a9a98c33852010cc821d2de8ee553712f61841baa25aad3fbac7033ed311",
+      "size_bytes": 310337,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_primary_S2_Mech_Pheno_nested_fold1.csv",
-      "sha256": "99dffeda78dab619af90968d809beff0fa9a725358f46756064a8b358299d000",
-      "size_bytes": 310133,
+      "sha256": "53310d7f2a7ca36cb2792ef5254fd991d0888a83b41f6149da0d8a1215449eea",
+      "size_bytes": 310292,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/mutual_information_scores_primary_S2_Mech_Pheno_nested_fold2.csv",
-      "sha256": "0005feea03f8bb6e8291b869395a84653f0f1f25a18729bfb6ddb8b98629a22a",
-      "size_bytes": 307839,
+      "sha256": "1a359c8724ceac7492990cde2e26d94b76f924d2d914578020f628ea6688fb0f",
+      "size_bytes": 307985,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -1550,8 +1550,8 @@
     },
     {
       "path": "benchmark/results/mutual_information_scores_severity_hpo_removed_S2_Mech_Pheno.csv",
-      "sha256": "c8b11f252ce42ea420a332bfd78fb85947f9fce780b2eafc809306baf3e30a60",
-      "size_bytes": 370405,
+      "sha256": "f289cca39c790066f92f05e6c8a468bf2e97e65821ccc9e61dccc8c068fc5bc3",
+      "size_bytes": 370551,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -1562,8 +1562,8 @@
     },
     {
       "path": "benchmark/results/mutual_information_scores_severity_hpo_retained_S2_Mech_Pheno.csv",
-      "sha256": "c8b11f252ce42ea420a332bfd78fb85947f9fce780b2eafc809306baf3e30a60",
-      "size_bytes": 370405,
+      "sha256": "f289cca39c790066f92f05e6c8a468bf2e97e65821ccc9e61dccc8c068fc5bc3",
+      "size_bytes": 370551,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -1580,20 +1580,20 @@
     },
     {
       "path": "benchmark/results/nested_cv_tuning_S1_Mechanistic.csv",
-      "sha256": "e6ec1a33ea0b0d77d628b92e2f02d58be0872b91aadd14b7fbc544ec9d7078c5",
-      "size_bytes": 18105,
+      "sha256": "aac85fde2caeea94f01e4e09b83b5db93c499a288a7920b31dda5206e5dec7ca",
+      "size_bytes": 18120,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/nested_cv_tuning_S1b_Disease_Context.csv",
-      "sha256": "d17a68249ea9336d9244fdd027ef38ee9f1477f78408c2b4b020ea6fd28c6ef0",
-      "size_bytes": 18324,
+      "sha256": "40ab1026c52fd301999b09366648dae3387e9dd0bd4ab2ae7cdab80ab8a498c2",
+      "size_bytes": 18341,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/nested_cv_tuning_S2_Mech_Pheno.csv",
-      "sha256": "c50ce2720028c192e0e1ff2f89ca2a3b4ef61cac83aa067a93957d573d64d15a",
-      "size_bytes": 17946,
+      "sha256": "fb884b44b62734ab7238f30a6441cdf2c7ba492c0561c3907d3f6febfc43939f",
+      "size_bytes": 17954,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -1604,25 +1604,25 @@
     },
     {
       "path": "benchmark/results/paired_scenario_contrasts.csv",
-      "sha256": "1a098c8fc425fe5e31bf3edaa3364cb5027a7c7c49ba9c3d72090eec570ea476",
-      "size_bytes": 2474,
+      "sha256": "169e061642fa42a1dee9c6fcd7d216823a6672cf6833335a99b72bc21ec0bc4a",
+      "size_bytes": 2461,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/permutation_test.csv",
-      "sha256": "8178af6ce13fbe46199a428ff51326a8ba33a8e28b7d3e8bb5a589bba2c40239",
-      "size_bytes": 1234,
+      "sha256": "38b8396a3724743d1d64677b5a0259837695ed494bc0c81ec83db96cf9542044",
+      "size_bytes": 1450,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/publication_table.csv",
-      "sha256": "532d0c168c99351e9e6e24da012d4b403698d3d02afa6497c1eb2a8b54d58abc",
-      "size_bytes": 2112,
+      "sha256": "e4df54f93448ddaf23e010b1a18816a77b1dce51b2f9bfa1ebbb17665fac437a",
+      "size_bytes": 2107,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/severity_hpo_term_sensitivity.csv",
-      "sha256": "eb240826278dadd41f1f205b41adee9c74ee83e07c701e12aef55ce6c474884a",
+      "sha256": "4a9f9e8eb65981fdd6d70b88224e5f446b48680271e22a850e4121b5ed5cf27b",
       "size_bytes": 1040,
       "archive": "benchmark_tables.zip"
     },
@@ -1640,32 +1640,32 @@
     },
     {
       "path": "benchmark/results/severity_shap_checks.csv",
-      "sha256": "181a95db8fa5f345b1a09b7ed05e2ba056d0286cff0c45f0386d561feafd7e12",
-      "size_bytes": 954,
+      "sha256": "950643a9d4cf7fc46acdf72952d88de90a398f2274649b2032f25806834ff088",
+      "size_bytes": 950,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/severity_shap_features.csv",
-      "sha256": "2b2403877d431ed30c433ff042160ba023e00a3c873c822e39a5190de3b79fdf",
-      "size_bytes": 1506845,
+      "sha256": "daac777143f6336bd93db2e42e89e5af0dae7bbda2d139d162d7faf02bf0cf45",
+      "size_bytes": 1507855,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/severity_shap_features_S1_Mechanistic.csv",
-      "sha256": "9d7c711f03a8a6308496f7026f1585859f606bc232dbf13827a2a92eb045eb8a",
-      "size_bytes": 11581,
+      "sha256": "0268df6677a8351637749222dc65657215a3c920766aa3c7dcbb7cc07c432377",
+      "size_bytes": 12113,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/severity_shap_features_S1b_Disease_Context.csv",
-      "sha256": "08d8c3c79ab8e1ff7d5334d5500bcf993f960312ffa1d09190d4b22e5dcfb098",
-      "size_bytes": 17178,
+      "sha256": "7d234504f3c57460b39510c3cb32605c27dbff1fad651088675e58bae2935705",
+      "size_bytes": 17794,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/severity_shap_features_S2_Mech_Pheno.csv",
-      "sha256": "7c0ad7a24d94cdbc6150db40019b2d54fdd3dacccd203b70064cc5a26d5362c2",
-      "size_bytes": 752097,
+      "sha256": "116e6df8f1c9eb705ca906aae34a36cdbcfbd0092064ae6e622fb7221c46d002",
+      "size_bytes": 751959,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -1676,26 +1676,26 @@
     },
     {
       "path": "benchmark/results/severity_shap_groups.csv",
-      "sha256": "f5329505e0f520807a1e5d560e10846679a44fba2ebb043c054318a58e22c587",
-      "size_bytes": 8032,
+      "sha256": "adc06f1a15166c1d67cfdb79320f50b7393034fd3e2347a8c843f891ef5f15e8",
+      "size_bytes": 8043,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/severity_shap_groups_S1_Mechanistic.csv",
-      "sha256": "567a9fef20c11dcfe161f0fe08df93b126a9d7d8e72b0fd1a6a7b6d2883d9e88",
-      "size_bytes": 2429,
+      "sha256": "f6b2a5964f527b1c9ac309a198add233d93bf1bf41af77d7d299bcdb69356775",
+      "size_bytes": 2427,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/severity_shap_groups_S1b_Disease_Context.csv",
-      "sha256": "a6a88d866669dd016e5c49f31a7e18717369ee6e47aa4d1155465e8a7aefcee7",
-      "size_bytes": 2699,
+      "sha256": "dc59c42464771626964a3d016ed71b3a54375ee93061e03408b5557f5f574106",
+      "size_bytes": 2703,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/severity_shap_groups_S2_Mech_Pheno.csv",
-      "sha256": "ef685f5ec24450814671871805dd28864a7023a64599bf368312a495d12c831e",
-      "size_bytes": 3086,
+      "sha256": "8e52998e2e38b790b0fb72bc6243e53314eb15357b488bc4ab0bd954a3ce8446",
+      "size_bytes": 3095,
       "archive": "benchmark_tables.zip"
     },
     {
@@ -1736,13 +1736,13 @@
     },
     {
       "path": "benchmark/results/split_sensitivity_fixed_configuration.csv",
-      "sha256": "df9fb9fab29b25488684ade14f8f9cf43092aba8b4b0846f799959d137968266",
-      "size_bytes": 3002,
+      "sha256": "5d7f0d178aa7245e5464219a29a538a6fea4869b8daa675b4dac2ae1cb919440",
+      "size_bytes": 3009,
       "archive": "benchmark_tables.zip"
     },
     {
       "path": "benchmark/results/split_sensitivity_fixed_configuration_summary.csv",
-      "sha256": "21141f04ff7f1132dc841a1e9218854127333b6b00732b038bcd9b3a1e4b5c65",
+      "sha256": "6668b6138b19a6d734ae106c37d8898aa4f93cf285679333268c7f46405bad0f",
       "size_bytes": 928,
       "archive": "benchmark_tables.zip"
     },

@@ -1,10 +1,10 @@
 # Software submission checklist answers
 
-Nature Medicine code-review materials, version 1.3.0. This file supplies answers and evidence locations; it is not a signed journal form or editorial approval.
+Nature Medicine code-review materials, version 1.3.1. Answers and evidence locations are listed below.
 
 | Item | Answer and evidence |
 |---|---|
-| Software/version | Mendelian severity pipeline 1.3.0; `CITATION.cff` |
+| Software/version | Mendelian severity pipeline 1.3.1 (`CITATION.cff`) |
 | Source | https://github.com/T0hid/mendelian-severity-pipeline |
 | Language | Python 3.11; Bash capsule launcher |
 | Systems tested | Ubuntu 24.04 through GitHub; Windows local checks. Exact environments accompany runs |

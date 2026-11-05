@@ -55,7 +55,7 @@ def main(argv=None) -> int:
                         help='Fresh output directory; existing results are never overwritten.')
     parser.add_argument('--check-inputs', action='store_true', help='Report missing inputs/dependencies without importing the pipeline.')
     parser.add_argument('--permutations', type=int,
-                        help='Explicitly change the reference count of 1; a different count produces a new inference run.')
+                        help='Explicitly change the reference count of 100; a different count produces a new inference run.')
     args = parser.parse_args(argv)
     data_dir = args.data_dir.resolve()
     if args.permutations is not None and args.permutations < 1:

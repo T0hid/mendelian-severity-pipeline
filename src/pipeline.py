@@ -1,7 +1,7 @@
 """Gene-disease severity prediction: reviewer-oriented submission source.
 
 Author: Tohid Ghasemnejad
-Reference analysis: 4.9.1-one-specificity-per-level-20261104
+Reference analysis: 4.9.0-redundancy-pruned-20261103
 
 Review order: configuration, source data, grouped partitions, training-only
 feature learning and nested tuning, validation selection/calibration, one
@@ -444,7 +444,6 @@ class Config:
         "feat_dominant_low_constraint", "feat_recessive_high_constraint",
         # One specificity measure per level (). Not duplicates: rho 0.71 with
         # gtex_tau (tissue) and 0.80 with the HPA cell-lineage grade (cell).
-        "hpa_tissue_specificity_ord", "hpa_celltype_specificity_ord",
     )
 
     # interpretation. SHAP explains the expected severity class
@@ -461,7 +460,7 @@ class Config:
     RUN_BUDGET_SENSITIVITY = True
     RUN_PERMUTATION_TEST = True
     # Reference outputs contain one permutation. See SUBMISSION_NOTES.md.
-    N_PERMUTATIONS = 1
+    N_PERMUTATIONS = 100
     PERMUTATION_MODE = "gene_block_candidate_selection_fixed_hyperparameters"
     PERMUTATION_MIN_MOVABLE_FRACTION = 0.80
     RUN_ADDITIONAL_GENERALISATION = True
@@ -601,7 +600,7 @@ class DataContainer:
         return self.scenario_cols.get(scenario, [])
 
 
-PIPELINE_VERSION = "4.9.1-one-specificity-per-level-20261104"
+PIPELINE_VERSION = "4.9.0-redundancy-pruned-20261103"
 
 
 RANDOM_SEED = 42

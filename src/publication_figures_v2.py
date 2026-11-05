@@ -73,9 +73,8 @@ CLASS_INDICES = {n: i for i, n in enumerate(CLASS_NAMES)}
 # The dict KEYS are the pipeline scenario identifiers and must not be renamed:
 # they index results, fold artefacts and on-disk output files. Only the VALUES
 # are reader-facing. Manuscript naming: S1 = gene-level, S1b = disease-context,
-# S2 = combined, S3 = phenotype-only. "Mechanistic" is retained ONLY as the name
-# of the mechanistic_core FEATURE FAMILY (see FAMILY label map below), never as
-# the name of a feature set.
+# S2 = combined, S3 = phenotype-only. The mechanistic_core family is displayed
+# as Gene-level core.
 SCENARIO_LABELS = {
     "S1_Mechanistic":      "S1: Gene-level",
     "S1b_Disease_Context": "S1b: Gene-level + disease context",
@@ -1418,7 +1417,7 @@ def _family_display(family: str) -> str:
         "gnn_text": "Functional annotations",
         "primary_text": "Primary text",
         "engineered": "Engineered",
-        "mechanistic_core": "Mechanistic",
+        "mechanistic_core": "Gene-level core",
         "mouse_lethality": "Mouse lethality",
         "mouse_phenotype": "Mouse phenotype",
         "variant": "Variants",
@@ -2253,10 +2252,11 @@ def figure_1_study_design(
         _detail["percent_of_pairs"] = (
             _detail["n_pairs"] / max(n_pairs_total, 1) * 100.0
         )
+        # A saved run supplies its original ordering for tied disease counts.
+        saved_detail = getattr(container, "largest_diseases", None)
         _save_csv(
-            _detail.head(30),
-            "figure_1d_largest_diseases.csv",
-            fig_data_dir,
+            _detail.head(30) if saved_detail is None else saved_detail,
+            "figure_1d_largest_diseases.csv", fig_data_dir,
         )
         _soft_title(ax, "Disease-level clustering")
         _panel_label(ax, "d", x=-0.13)
@@ -2710,8 +2710,8 @@ def _humanize_drop_reason(reason: str) -> str:
     """Return short, manuscript-facing labels for provenance exclusions."""
     key = str(reason).strip().lower()
     exact = {
-        "high_mi_provenance_review_not_dropped": "High-MI provenance\nreview",
-        "high_mi_provenance_review_noted": "High-MI provenance\nreview",
+        "high_mi_provenance_review_not_dropped": "High-MI review\n(retained)",
+        "high_mi_provenance_review_noted": "High-MI review\n(retained)",
         "high_missing_training_fold": "Missing in\ntraining fold",
         "hpo_low_frequency_training_fold": "Rare HPO term",
         "low_variance_training_fold": "Low variance",
@@ -2932,7 +2932,7 @@ def figure_4_robustness_composite(
     fig_data_dir: str,
     logger=print,
 ):
-    """Robustness figure with per-class ordinal-error composition as panel g."""
+    """Plot split sensitivity, validation sweeps and the feature audit."""
     seed_df = _read_result_dataframe(
         pub_outputs, "seed_sensitivity", output_dir,
         ["split_sensitivity_fixed_configuration.csv", "seed_sensitivity.csv"],
@@ -2987,7 +2987,7 @@ def figure_4_robustness_composite(
                             ecolor="#555555", elinewidth=0.9, capsize=2.4, zorder=4)
         ax.set_xticks(range(len(scenarios)))
         ax.set_xticklabels(_scenario_short_list(scenarios))
-        ax.set_ylabel("Validation MCC")
+        ax.set_ylabel("Test-set MCC")
         _finish_axis(ax, "y")
         _save_csv(seed_df, "figure_4a_split_sensitivity.csv", fig_data_dir)
     else:
@@ -3157,14 +3157,10 @@ def figure_4_robustness_composite(
         _save_csv(leakage, "figure_4f_leakage_audit.csv", fig_data_dir)
     else:
         _empty_panel(ax, "Leakage audit unavailable")
-    _soft_title(ax, "Provenance-based exclusions")
+    _soft_title(ax, "Feature exclusions and review")
     _panel_label(ax, "f", x=-0.16)
-    # The per-class ordinal error composition that used to sit here as panel g
-    # has moved to the prediction-and-calibration figure. It was the only
-    # locked-test panel in a figure otherwise built entirely on the validation
-    # partition, and it duplicated two panels there exactly.
     _save(fig, "figure_4_robustness_and_audits", out_dir)
-    logger("[figure_4] saved panels a-f (validation partition only)")
+    logger("[figure_4] saved test split sensitivity, validation sweeps and feature audit")
 # Compact high-capacity heatmaps for 50 features.
 FIGURE_5_SHARED_FEATURE_COUNT = 50
 FIGURE_5_S3_PHENOTYPE_COUNT = 50
@@ -3229,6 +3225,12 @@ def _build_s3_locked_test_pca(
             None,
             "No validation-selected S3 model was found.",
         )
+    saved_projection = pub_outputs.get("s3_locked_test_pca")
+    if saved_projection is not None:
+        variance = saved_projection[[
+            "PC1_explained_variance_ratio", "PC2_explained_variance_ratio",
+        ]].iloc[0].to_numpy(dtype=float)
+        return saved_projection, variance, str(model_name), ""
     result = (
         all_results.get(scenario, {})
         .get("all", {})
@@ -3966,6 +3968,8 @@ def figure_5_interpretation_biology(
         )
     if pca_reason:
         logger(f"[figure_5] S3 PCA unavailable: {pca_reason}")
+    elif "s3_locked_test_pca" in pub_outputs:
+        logger(f"[figure_5] reused the saved S3 locked-test PCA: n={len(pca_frame)}")
     else:
         logger(
             f"[figure_5] S3 PCA plotted: n={len(pca_frame)}, "
@@ -3985,10 +3989,10 @@ def figure_5_interpretation_biology(
 def _write_main_figure_manifest(out_dir: str, fig_data_dir: str) -> None:
     rows = [
         (
-            "Figure 1",
+            "Extended Data Fig. 1",
             "a–e",
             "Severity composition, gene clustering, inheritance prevalence, "
-            "disease classes and candidate representations",
+            "disease clustering and candidate representations",
             "descriptive cohort summaries",
         ),
         (
@@ -4023,21 +4027,21 @@ def _write_main_figure_manifest(out_dir: str, fig_data_dir: str) -> None:
             "locked test; selected models only",
         ),
         (
-            "Figure 4",
+            "Extended Data Fig. 2",
             "a–f",
             "Split, feature selection, permutation, HPO capacity, imbalance and "
             "leakage audit",
-            "validation partition only",
+            "a: additional held-out test sets; b-e: primary validation set; f: feature audit",
         ),
         (
-            "Figure 5",
+            "Figure 4",
             "a–e",
             "Enlarged scenario interpretation panels and combined S3 phenotype PCA",
             "selected models; PCA fitted on S3 training features and projected to locked test",
         ),
         (
-            "Figure 5",
-            "f (data only)",
+            "Figure 4",
+            "companion data",
             "SHAP summed within feature family, correcting the per-feature "
             "understatement of multi-column families",
             "locked test; selected models only",
