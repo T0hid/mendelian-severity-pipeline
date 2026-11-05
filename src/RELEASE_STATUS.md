@@ -1,16 +1,16 @@
 # Software release status
 
-Version 1.3.0 adds a local results gallery, original figure/source exports, values-only Excel workbooks, saved-data plotting and code-submission documentation. Numerical source, saved model and original result files are retained.
+Version 1.3.1 packages the completed 5 November 2026 benchmark and the corresponding publication exports. The frozen disease-level scorer and prenatal aggregate files are retained.
 
 ## Verified scope
 
 The demo checks ten bundled public inputs, original computational definitions, saved-result snapshots and frozen-model predictions for invented profiles. Plotting reads saved inputs without training, SHAP recalculation or PCA refitting. Original images remain separate from newly rendered plots.
 
-The three original research workflows remain executable. They have not been retrained during packaging. The original prenatal cohort is excluded; its authorised local command is documented.
+The three original research workflows remain executable. The demo runs from saved outputs and the frozen scorer. The original prenatal cohort is excluded; its authorised local command is documented.
 
-Checks cover 261 original functions and 20 classes. The six numerical/support modules remain byte-identical to the prior prepared repository. Nine input hashes match the saved run. The rebuilt mapping includes all saved benchmark pairs and has a release checksum; its historical hash was not recorded.
+Checks cover 261 original functions and 20 classes. The benchmark configuration and its saved outputs were aligned with the run recorded in the benchmark manifest. Nine input hashes match the saved run. The rebuilt mapping includes all saved benchmark pairs and has a release checksum; its historical hash was not recorded.
 
-The saved benchmark uses one permutation. Explicit overrides create separate runs. The frozen prenatal snapshot lacks two term-count tables produced by the current source; the verifier reports their absence without fabricating outputs.
+The saved benchmark records 100 successful gene-block permutations per feature set, with adjusted P = 0.00990099 for each. The reviewer demo verifies these counts and the adjustment. Explicit overrides create separate runs. The frozen prenatal snapshot lacks two term-count tables produced by the current source; the verifier reports their absence without fabricating outputs.
 
 ## Figure coverage
 

@@ -2,7 +2,7 @@
 
 [![Run pipeline demo](https://github.com/T0hid/mendelian-severity-pipeline/actions/workflows/demo.yml/badge.svg)](https://github.com/T0hid/mendelian-severity-pipeline/actions/workflows/demo.yml)
 
-Version **1.3.0**. Run the trained phenotype scorer, check the supplied results and view the study figures with one command. The original benchmark, scorer training, prenatal analysis and publication plotting code are included.
+Version **1.3.1**. Run the trained phenotype scorer, check the supplied results and view the study figures with one command. The original benchmark, scorer training, prenatal analysis and publication plotting code are included.
 
 ## Run and see the results
 
@@ -62,7 +62,7 @@ All ten public training inputs are bundled and unpacked automatically. For all t
 python run.py --full --cohort PRIVATE_COHORT.csv --output-dir new_full_run
 ```
 
-The original configuration and numerical source are retained. Explicit parameter changes create a new run. See [reproduction instructions](docs/REPRODUCE.md).
+The benchmark defaults match the completed 5 November 2026 run, including 100 gene-block permutations per feature set. Explicit parameter changes create a new run. See [reproduction instructions](docs/REPRODUCE.md).
 
 ## Documentation
 

@@ -297,6 +297,23 @@ def verify(results_dir, report_path=None, check_file_fingerprints=False):
             require(sha256_file(p) == expected['sha256'], f'Reference output changed: {name}')
             file_comparisons += 1
     permutation = pd.read_csv(results_dir / 'results/permutation_test.csv')
+    count = manifest['config']['N_PERMUTATIONS']
+    require(permutation['Scenario'].is_unique and set(permutation['Scenario']) == set(selected),
+            'Expected one permutation result per selected scenario')
+    require(permutation['n_permutations_requested'].eq(count).all()
+            and permutation['n_permutations_successful'].eq(count).all()
+            and permutation['n_permutations_failed'].eq(0).all(),
+            'Saved permutation counts differ from the completed run configuration')
+    require(permutation['Observed_Model'].eq(permutation['Scenario'].map(selected)).all(),
+            'Observed permutation models differ from the validation-selected models')
+    empirical = permutation['empirical_p_value'].to_numpy(dtype=float)
+    adjusted = permutation['bh_adjusted_p_value'].to_numpy(dtype=float)
+    require(np.allclose(empirical * (count + 1), np.rint(empirical * (count + 1)), rtol=0, atol=1e-10)
+            and np.all(empirical >= 1 / (count + 1) - 1e-12) and np.all(empirical <= 1),
+            'Saved empirical P values do not match the permutation count')
+    bh = source_functions(['_benjamini_hochberg'], manifest['config'])['_benjamini_hochberg']
+    require(np.allclose(adjusted, bh(empirical), rtol=1e-12, atol=1e-12),
+            'Saved adjusted P values differ from Benjamini–Hochberg correction')
     report = {
         'status': 'passed', 'scope': 'Source preservation and saved-result replay; no model was trained or refitted.',
         'prediction_source': prediction_source, 'source_preservation': source,
@@ -309,10 +326,10 @@ def verify(results_dir, report_path=None, check_file_fingerprints=False):
         'saved_shap_summary_replay': shap_checks,
         'shared_direct_hpo_features': len(hpo['S2_Mech_Pheno']),
         'reference_files_unchanged': file_comparisons,
+        'permutation_adjusted_p_values': dict(zip(permutation['Scenario'], adjusted)),
         'permutations_recorded': sorted(permutation['n_permutations_successful'].astype(int).unique().tolist()),
         'environment': {name: importlib.metadata.version(name) for name in ['numpy','pandas','scipy','scikit-learn']},
         'limitations': ['Training and SHAP estimation were not rerun.',
-                        'One recorded permutation cannot substantiate a 99-permutation Methods statement.',
                         'Exact full reproduction requires the original inputs and recorded dependencies.'],
     }
     if report_path is not None:

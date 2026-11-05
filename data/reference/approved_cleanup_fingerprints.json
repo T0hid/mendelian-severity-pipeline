@@ -1,7 +1,7 @@
 {
   "definitions": {
     "Config": {
-      "canonical_sha256": "825cc0494b7df62a74b793fe514f867f5b9643bb32553ab5a0d363821af20926",
+      "canonical_sha256": "8d76714830af227c0eea4bfecc7af3f698091c201995b59d22ad572572c377f0",
       "reason": "Only the default output directory changed; numerical settings were compared separately with the saved manifest."
     },
     "main": {
@@ -21,7 +21,7 @@
     "_initialise_runtime": "853f38e552a59cc611b561b3207305c63afe466a89422ad372946ce94dac32fb"
   },
   "preserved_globals": {
-    "PIPELINE_VERSION": "691673767edde7e02646d1a16c6f6f4af37ccc8d53fbf7e3a58fd83664d835b4",
+    "PIPELINE_VERSION": "e8cbee2443b301a2928eda108663122689eaff5fded7c51bee8b5a0c2d5d5156",
     "RANDOM_SEED": "234c0a7d4d99bf0bbc41fa7b3210ade25ea38ccbaeeb2f5dc9eb390a79583d89",
     "qwk_scorer": "2f4e21019e8bac63efb6146b066faf8baa2ac26d275d40adcc92aa81e033e536",
     "_high_mi_audit_records": "af714a66b94874a53e4ae85bd5bd7acb38bdb97dd9bba88d08e9fe599053c6b8",

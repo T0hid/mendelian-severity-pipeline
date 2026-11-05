@@ -135,6 +135,8 @@ def check_reference_results(model_path):
         item['classes_retained'] for item in clinical['source'].values())
     return {'status':'passed','scope':'Saved-result replay and frozen-model checks; no retraining or new inference analyses.',
             'benchmark_metric_checks':benchmark['metric_checks'],
+            'benchmark_permutations_per_feature_set':benchmark['permutations_recorded'][0],
+            'benchmark_permutation_adjusted_p_values':benchmark['permutation_adjusted_p_values'],
             'scorer_metric_checks':clinical['scorer']['metric_comparisons'],
             'prenatal_aggregate_checks':clinical['prenatal_aggregate']['aggregate_numeric_checks'],
             'synthetic_model_profiles_checked':clinical['deployment_model']['synthetic_profiles_checked'],

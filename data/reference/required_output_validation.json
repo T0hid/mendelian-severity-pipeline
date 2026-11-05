@@ -1,41 +1,41 @@
 {
-  "validated_at": "2026-11-04T14:51:08.321896",
+  "validated_at": "2026-11-05T15:26:46.843878",
   "status": "passed",
   "required_file_checks": [
     {
       "path": "results/all_results.csv",
       "exists": true,
-      "size_bytes": 2296,
+      "size_bytes": 2264,
       "valid": true
     },
     {
       "path": "results/all_results_full.pkl",
       "exists": true,
-      "size_bytes": 420362988,
+      "size_bytes": 418681592,
       "valid": true
     },
     {
       "path": "results/model_selection_validation.csv",
       "exists": true,
-      "size_bytes": 2662,
+      "size_bytes": 2667,
       "valid": true
     },
     {
       "path": "results/publication_table.csv",
       "exists": true,
-      "size_bytes": 2112,
+      "size_bytes": 2107,
       "valid": true
     },
     {
       "path": "results/bootstrap_cis.csv",
       "exists": true,
-      "size_bytes": 3403,
+      "size_bytes": 3398,
       "valid": true
     },
     {
       "path": "results/paired_scenario_contrasts.csv",
       "exists": true,
-      "size_bytes": 2474,
+      "size_bytes": 2461,
       "valid": true
     },
     {
@@ -53,13 +53,13 @@
     {
       "path": "results/permutation_test.csv",
       "exists": true,
-      "size_bytes": 1234,
+      "size_bytes": 1450,
       "valid": true
     },
     {
       "path": "results/split_sensitivity_fixed_configuration.csv",
       "exists": true,
-      "size_bytes": 3002,
+      "size_bytes": 3009,
       "valid": true
     },
     {
@@ -89,13 +89,13 @@
     {
       "path": "results/generalisation_evaluations.csv",
       "exists": true,
-      "size_bytes": 1142,
+      "size_bytes": 1139,
       "valid": true
     },
     {
       "path": "results/feature_provenance_table.csv",
       "exists": true,
-      "size_bytes": 2316231,
+      "size_bytes": 2316809,
       "valid": true
     },
     {
@@ -107,13 +107,13 @@
     {
       "path": "SUMMARY_REPORT.txt",
       "exists": true,
-      "size_bytes": 7129,
+      "size_bytes": 7120,
       "valid": true
     },
     {
       "path": "pipeline_manifest.json",
       "exists": true,
-      "size_bytes": 283802,
+      "size_bytes": 283949,
       "valid": true
     }
   ],
@@ -132,7 +132,7 @@
     "gene_and_disease_disjoint:S2_Mech_Pheno": 1,
     "gene_and_disease_disjoint:S3_Phenotype": 1
   },
-  "n_permutations_configured": 1,
+  "n_permutations_configured": 100,
   "generalisation_enabled": true,
   "severity_hpo_sensitivity_enabled": true
 }

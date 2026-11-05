@@ -104,7 +104,8 @@ class ReviewWorkflowTests(unittest.TestCase):
                 config=SimpleNamespace(**self.manifest['config']), report_path=path)
             text = path.read_text()
             self.assertIn(self.manifest['config']['TARGET_LABEL_PROVENANCE'], text)
-            self.assertIn('Configured permutations: 1', text)
+            self.assertEqual(self.manifest['config']['N_PERMUTATIONS'], 100)
+            self.assertIn('Configured permutations: 100', text)
             self.assertIn('5200', text)
             self.assertNotIn('assigned by expert curators', text)
 
