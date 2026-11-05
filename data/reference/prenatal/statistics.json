@@ -1,0 +1,387 @@
+{
+  "audit": {
+    "n_start_rows": 614,
+    "family_id_generated_from_rows": false,
+    "n_missing_family_ids_replaced": 0,
+    "n_after_exclude_studies_rows": 614,
+    "n_nonlivebirth_dropped_from_explicit_lb_only_studies": 0,
+    "n_after_livebirth_only_rule_rows": 614,
+    "n_exact_duplicate_rows_observed": 0,
+    "n_multirow_families": 8,
+    "n_rows_in_multirow_families": 16,
+    "n_family_profiles": 606,
+    "n_final": 606,
+    "n_outcome_conflict_families": 0,
+    "n_with_hpo": 584,
+    "n_without_hpo": 22,
+    "n_mapped_to_3group": 552,
+    "n_mapped_to_4group": 552,
+    "n_missing_or_unmapped_outcome": 54,
+    "outcome_counts": {
+      "Live birth": 193,
+      "TOP": 262,
+      "Death": 97
+    },
+    "outcome_4group_counts": {
+      "Live birth (no NICU)": 93,
+      "NICU / special care": 100,
+      "TOP": 262,
+      "Death": 97
+    },
+    "score_channel": "phenotype",
+    "score_label": "Phenotype-derived severity score",
+    "n_scoreable": 583,
+    "n_not_scoreable": 23,
+    "n_analyzed_3group": 531,
+    "n_analyzed_4group": 531,
+    "scoring_status_counts": {
+      "scored": 583,
+      "no_hpo_terms": 22,
+      "insufficient_information": 1
+    },
+    "outcome_counts_analyzed_3group": {
+      "Live birth": 190,
+      "TOP": 257,
+      "Death": 84
+    },
+    "outcome_counts_analyzed_4group": {
+      "Live birth (no NICU)": 90,
+      "NICU / special care": 100,
+      "TOP": 257,
+      "Death": 84
+    }
+  },
+  "correlation_3group": {
+    "spearman_rho": 0.36086415385395065,
+    "kendall_tau_b": 0.28466398854447594,
+    "ordinal_concordance": 0.6815971659450323,
+    "ordinal_concordance_ci95_low": 0.6420695578340115,
+    "ordinal_concordance_ci95_high": 0.7201960514233253,
+    "ordinal_concordance_perm_p": 0.0004997501249375312,
+    "ci95_low": 0.28260071863986513,
+    "ci95_high": 0.43555350879244614,
+    "perm_p": 0.0004997501249375312,
+    "n_boot_used": 2000,
+    "n_perm_used": 2000,
+    "n": 531,
+    "score_col": "severity_score",
+    "outcome_col": "outcome_3level"
+  },
+  "proportional_odds_3group": {
+    "available": true,
+    "method": "statsmodels_ordered_logit",
+    "score_col": "severity_score",
+    "or_per_sd": 2.1093784190302185,
+    "ci95": [
+      1.7688155579793914,
+      2.5155123125179255
+    ],
+    "p_value": 0.0,
+    "beta": 0.746393315951029,
+    "se": 0.08983835186046167,
+    "outcome_col": "outcome_3level"
+  },
+  "correlation_4group": {
+    "spearman_rho": 0.3834269040694177,
+    "kendall_tau_b": 0.29833435762140326,
+    "ordinal_concordance": 0.6811161903164251,
+    "ordinal_concordance_ci95_low": 0.6460936669054798,
+    "ordinal_concordance_ci95_high": 0.7162080994090879,
+    "ordinal_concordance_perm_p": 0.0004997501249375312,
+    "ci95_low": 0.30944513703222765,
+    "ci95_high": 0.45551324663238935,
+    "perm_p": 0.0004997501249375312,
+    "n_boot_used": 2000,
+    "n_perm_used": 2000,
+    "n": 531,
+    "score_col": "severity_score",
+    "outcome_col": "outcome_4level"
+  },
+  "proportional_odds_4group": {
+    "available": true,
+    "method": "statsmodels_ordered_logit",
+    "score_col": "severity_score",
+    "or_per_sd": 2.2114378570441438,
+    "ci95": [
+      1.855856809413923,
+      2.635148019373539
+    ],
+    "p_value": 0.0,
+    "beta": 0.7936429180192227,
+    "se": 0.08943695751616988,
+    "outcome_col": "outcome_4level"
+  },
+  "roc_contrasts_3group": [
+    {
+      "name": "(TOP+Death) vs live birth",
+      "auc": 0.7339404229047692,
+      "n_pos": 341,
+      "n_neg": 190
+    },
+    {
+      "name": "TOP vs live birth",
+      "auc": 0.7334118369854599,
+      "n_pos": 257,
+      "n_neg": 190
+    },
+    {
+      "name": "Death vs rest",
+      "auc": 0.6142138063279002,
+      "n_pos": 84,
+      "n_neg": 447
+    },
+    {
+      "name": "Death vs live birth",
+      "auc": 0.7355576441102757,
+      "n_pos": 84,
+      "n_neg": 190
+    }
+  ],
+  "roc_contrasts_4group": [
+    {
+      "name": "Death vs live birth (no NICU)",
+      "auc": 0.7936507936507935,
+      "n_pos": 84,
+      "n_neg": 90
+    },
+    {
+      "name": "TOP vs live birth (no NICU)",
+      "auc": 0.8033073929961089,
+      "n_pos": 257,
+      "n_neg": 90
+    },
+    {
+      "name": "Death vs NICU / special care",
+      "auc": 0.6832738095238096,
+      "n_pos": 84,
+      "n_neg": 100
+    }
+  ],
+  "adjacent_level_separation_3group": [
+    {
+      "boundary": "Live birth vs TOP",
+      "lower_level": 0,
+      "upper_level": 1,
+      "n_lower": 190,
+      "n_upper": 257,
+      "mean_lower": 0.4026472215972913,
+      "mean_upper": 0.5171228152808364,
+      "mean_difference": 0.11447559368354504,
+      "prob_more_severe_scores_higher": 0.7334118369854598,
+      "ci95_low": 0.685295412656154,
+      "ci95_high": 0.7773535736227728,
+      "resolved_at_95pct": true,
+      "n_boot_used": 2000,
+      "score_col": "severity_score"
+    },
+    {
+      "boundary": "TOP vs Death",
+      "lower_level": 1,
+      "upper_level": 2,
+      "n_lower": 257,
+      "n_upper": 84,
+      "mean_lower": 0.5171228152808364,
+      "mean_upper": 0.5298067664184265,
+      "mean_difference": 0.012683951137590133,
+      "prob_more_severe_scores_higher": 0.5245043542708913,
+      "ci95_low": 0.4496421623123958,
+      "ci95_high": 0.6047016861219194,
+      "resolved_at_95pct": false,
+      "n_boot_used": 2000,
+      "score_col": "severity_score"
+    }
+  ],
+  "adjacent_level_separation_4group": [
+    {
+      "boundary": "Live birth (no NICU) vs NICU / special care",
+      "lower_level": 0,
+      "upper_level": 1,
+      "n_lower": 90,
+      "n_upper": 100,
+      "mean_lower": 0.36995064463207217,
+      "mean_upper": 0.4320741408659884,
+      "mean_difference": 0.06212349623391622,
+      "prob_more_severe_scores_higher": 0.6765,
+      "ci95_low": 0.5999416666666666,
+      "ci95_high": 0.7487888888888888,
+      "resolved_at_95pct": true,
+      "n_boot_used": 2000,
+      "score_col": "severity_score"
+    },
+    {
+      "boundary": "NICU / special care vs TOP",
+      "lower_level": 1,
+      "upper_level": 2,
+      "n_lower": 100,
+      "n_upper": 257,
+      "mean_lower": 0.4320741408659884,
+      "mean_upper": 0.5171228152808364,
+      "mean_difference": 0.08504867441484798,
+      "prob_more_severe_scores_higher": 0.6705058365758755,
+      "ci95_low": 0.6102772373540856,
+      "ci95_high": 0.726966926070039,
+      "resolved_at_95pct": true,
+      "n_boot_used": 2000,
+      "score_col": "severity_score"
+    },
+    {
+      "boundary": "TOP vs Death",
+      "lower_level": 2,
+      "upper_level": 3,
+      "n_lower": 257,
+      "n_upper": 84,
+      "mean_lower": 0.5171228152808364,
+      "mean_upper": 0.5298067664184265,
+      "mean_difference": 0.012683951137590133,
+      "prob_more_severe_scores_higher": 0.5245043542708913,
+      "ci95_low": 0.4516826477672781,
+      "ci95_high": 0.6061260885677228,
+      "resolved_at_95pct": false,
+      "n_boot_used": 2000,
+      "score_col": "severity_score"
+    }
+  ],
+  "source_composition_4group": [
+    {
+      "contributing_source": "EP_* (progressive pES)",
+      "outcome_level_0": 9,
+      "outcome_level_1": 0,
+      "outcome_level_2": 19,
+      "outcome_level_3": 9,
+      "n_families": 37
+    },
+    {
+      "contributing_source": "ES_negative_cohort",
+      "outcome_level_0": 12,
+      "outcome_level_1": 0,
+      "outcome_level_2": 8,
+      "outcome_level_3": 3,
+      "n_families": 23
+    },
+    {
+      "contributing_source": "PED_cohort",
+      "outcome_level_0": 0,
+      "outcome_level_1": 0,
+      "outcome_level_2": 134,
+      "outcome_level_3": 47,
+      "n_families": 181
+    },
+    {
+      "contributing_source": "PreGen (in-house)",
+      "outcome_level_0": 69,
+      "outcome_level_1": 100,
+      "outcome_level_2": 96,
+      "outcome_level_3": 25,
+      "n_families": 290
+    }
+  ],
+  "source_rank_sensitivity_4group": [
+    {
+      "analysis": "within-source",
+      "stratum": "EP_* (progressive pES)",
+      "n": 37,
+      "n_outcome_levels": 3.0,
+      "spearman_rho": 0.43550355630934223,
+      "p_value": 0.0070580270465609735
+    },
+    {
+      "analysis": "within-source",
+      "stratum": "ES_negative_cohort",
+      "n": 23,
+      "n_outcome_levels": 3.0,
+      "spearman_rho": 0.27743467052038634,
+      "p_value": 0.1999592254193252
+    },
+    {
+      "analysis": "within-source",
+      "stratum": "PED_cohort",
+      "n": 181,
+      "n_outcome_levels": 2.0,
+      "spearman_rho": 0.026046017231540416,
+      "p_value": 0.7278066307349337
+    },
+    {
+      "analysis": "within-source",
+      "stratum": "PreGen (in-house)",
+      "n": 290,
+      "n_outcome_levels": 4.0,
+      "spearman_rho": 0.3684926052089983,
+      "p_value": 9.327950097725151e-11
+    },
+    {
+      "analysis": "within-source",
+      "stratum": "sample-size-weighted mean",
+      "n": 531,
+      "n_outcome_levels": NaN,
+      "spearman_rho": 0.25248929121456287,
+      "p_value": NaN
+    },
+    {
+      "analysis": "leave-one-source-out",
+      "stratum": "excluding EP_* (progressive pES)",
+      "n": 494,
+      "n_outcome_levels": 4.0,
+      "spearman_rho": 0.37784735262192926,
+      "p_value": 3.2765389138890753e-18
+    },
+    {
+      "analysis": "leave-one-source-out",
+      "stratum": "excluding ES_negative_cohort",
+      "n": 508,
+      "n_outcome_levels": 4.0,
+      "spearman_rho": 0.38354981170359065,
+      "p_value": 2.998341827266672e-19
+    },
+    {
+      "analysis": "leave-one-source-out",
+      "stratum": "excluding PED_cohort",
+      "n": 350,
+      "n_outcome_levels": 4.0,
+      "spearman_rho": 0.3842988702570483,
+      "p_value": 9.197040198269032e-14
+    },
+    {
+      "analysis": "leave-one-source-out",
+      "stratum": "excluding PreGen (in-house)",
+      "n": 241,
+      "n_outcome_levels": 3.0,
+      "spearman_rho": 0.19474377502903953,
+      "p_value": 0.0023922726793880306
+    },
+    {
+      "analysis": "pooled (primary)",
+      "stratum": "all sources",
+      "n": 531,
+      "n_outcome_levels": 4.0,
+      "spearman_rho": 0.3834269040694177,
+      "p_value": 4.8477483914050605e-20
+    }
+  ],
+  "source_adjusted_proportional_odds_4group": [
+    {
+      "model": "severity score only (unadjusted, primary)",
+      "available": true,
+      "or_per_sd": 2.2114378570441438,
+      "ci95_low": 1.855856809413923,
+      "ci95_high": 2.635148019373539,
+      "p_value": 0.0,
+      "beta": 0.7936429180192227,
+      "se": 0.08943695751616988,
+      "n": 531
+    },
+    {
+      "model": "severity score + contributing source (adjusted)",
+      "available": true,
+      "or_per_sd": 1.774207015159657,
+      "ci95_low": 1.478053861121331,
+      "ci95_high": 2.129699475399118,
+      "p_value": 7.585458927650279e-10,
+      "beta": 0.5733535710812337,
+      "se": 0.09317719761421477,
+      "n": 531
+    }
+  ],
+  "model": "3.3-disease-level-ontology-severity-terms-configurable",
+  "score_channel": "phenotype",
+  "score_label": "Phenotype-derived severity score"
+}

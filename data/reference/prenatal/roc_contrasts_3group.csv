@@ -1,0 +1,5 @@
+contrast,auc,n_pos,n_neg
+(TOP+Death) vs live birth,0.7339404229047692,341,190
+TOP vs live birth,0.7334118369854599,257,190
+Death vs rest,0.6142138063279002,84,447
+Death vs live birth,0.7355576441102757,84,190

@@ -1,0 +1,11 @@
+analysis,stratum,n,n_outcome_levels,spearman_rho,p_value
+within-source,EP_* (progressive pES),37,3.0,0.43550355630934223,0.0070580270465609735
+within-source,ES_negative_cohort,23,3.0,0.27743467052038634,0.1999592254193252
+within-source,PED_cohort,181,2.0,0.026046017231540416,0.7278066307349337
+within-source,PreGen (in-house),290,4.0,0.3684926052089983,9.327950097725151e-11
+within-source,sample-size-weighted mean,531,,0.25248929121456287,
+leave-one-source-out,excluding EP_* (progressive pES),494,4.0,0.37784735262192926,3.2765389138890753e-18
+leave-one-source-out,excluding ES_negative_cohort,508,4.0,0.38354981170359065,2.998341827266672e-19
+leave-one-source-out,excluding PED_cohort,350,4.0,0.3842988702570483,9.197040198269032e-14
+leave-one-source-out,excluding PreGen (in-house),241,3.0,0.19474377502903953,0.0023922726793880306
+pooled (primary),all sources,531,4.0,0.3834269040694177,4.8477483914050605e-20

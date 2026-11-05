@@ -1,0 +1,3 @@
+boundary,lower_level,upper_level,n_lower,n_upper,mean_lower,mean_upper,mean_difference,prob_more_severe_scores_higher,ci95_low,ci95_high,resolved_at_95pct,n_boot_used,score_col
+Live birth vs TOP,0,1,190,257,0.4026472215972913,0.5171228152808364,0.11447559368354504,0.7334118369854598,0.685295412656154,0.7773535736227728,True,2000,severity_score
+TOP vs Death,1,2,257,84,0.5171228152808364,0.5298067664184265,0.012683951137590133,0.5245043542708913,0.4496421623123958,0.6047016861219194,False,2000,severity_score
