@@ -1,0 +1,2 @@
+n_source_rows,n_hpo_records,n_gene_disease_pairs,n_diseases,n_pairs,n_conflicting_label_diseases,n_conflicting_label_pairs,n_present_absent_term_conflicts_removed,negative_annotation_column_detected,dimension_columns
+163100,163100,6625,6204,6204,0,0,0,False,{}

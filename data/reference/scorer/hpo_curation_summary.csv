@@ -1,0 +1,2 @@
+present_invalid_format,present_unknown_ontology,present_severity_coded,present_clinical_modifier_excluded,present_duplicates,absent_invalid_format,absent_unknown_ontology,absent_severity_coded,absent_clinical_modifier_excluded,absent_duplicates,pairs_removed_no_usable_present_terms
+0,1,1513,0,23,0,0,0,0,0,0

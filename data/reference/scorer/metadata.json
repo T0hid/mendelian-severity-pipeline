@@ -1,0 +1,230 @@
+{
+  "created": "2026-09-22T10:24:32",
+  "pipeline_version": "3.3-disease-level-ontology-severity-terms-configurable",
+  "random_seed": 42,
+  "training_unit": "MONDO disease",
+  "split_group": "mondo_id",
+  "split_audit": {
+    "development_diseases": 4963,
+    "test_diseases": 1241,
+    "overlapping_diseases": 0
+  },
+  "n_diseases": 6204,
+  "n_pairs": 6204,
+  "n_gene_disease_associations": 6625,
+  "n_genes": 4630,
+  "selected_config": {
+    "C": 1.0,
+    "mild_C": 0.25,
+    "mild_class_weight": "balanced",
+    "other_class_weight": "balanced",
+    "mild_calibration": "isotonic",
+    "min_count": 10,
+    "max_freq": 0.9,
+    "max_hops": 3,
+    "ancestor_decay": 0.75,
+    "ic_weighting": false,
+    "explicit_channel_scale": 0.35,
+    "explicit_min_abs_logit": 0.15,
+    "absent_channel_scale": 0.5,
+    "organ_channel_scale": 0.5,
+    "interaction_channel_scale": 0.5,
+    "low_burden_channel_scale": 0.5,
+    "interaction_min_count": 10,
+    "max_interactions": 250,
+    "use_organ_burden": true,
+    "use_interactions": true,
+    "use_explicit_channel": false,
+    "use_absent_channel": true,
+    "use_low_burden_channel": true,
+    "severity_term_policy": "phenotype"
+  },
+  "severity_term_handling": {
+    "policy": "phenotype",
+    "description": "Severity-naming HPO terms are retained in the ordinary phenotype channel.",
+    "separate_explicit_channel_enabled": false
+  },
+  "organ_mapping": {
+    "mapping_version": "hpo_branch_v1",
+    "resolved_roots": {
+      "nervous_system": [
+        "HP:0000707"
+      ],
+      "cardiovascular": [
+        "HP:0001626"
+      ],
+      "respiratory": [
+        "HP:0002086"
+      ],
+      "renal_urinary": [
+        "HP:0000079"
+      ],
+      "digestive_hepatic": [
+        "HP:0025031"
+      ],
+      "musculoskeletal": [
+        "HP:0033127"
+      ],
+      "immune": [
+        "HP:0002715"
+      ],
+      "hematologic": [
+        "HP:0001871"
+      ],
+      "endocrine_metabolic": [
+        "HP:0000818",
+        "HP:0001939"
+      ],
+      "eye": [
+        "HP:0000478"
+      ],
+      "ear": [
+        "HP:0000598"
+      ],
+      "integument": [
+        "HP:0001574"
+      ],
+      "reproductive": [
+        "HP:0000078",
+        "HP:0000080",
+        "HP:0012243"
+      ],
+      "growth": [
+        "HP:0001507"
+      ],
+      "prenatal_and_birth": [
+        "HP:0001197"
+      ],
+      "head_or_neck": [
+        "HP:0000152"
+      ],
+      "limbs": [
+        "HP:0040064"
+      ],
+      "thoracic_cavity": [
+        "HP:0045027"
+      ],
+      "voice": [
+        "HP:0001608"
+      ],
+      "breast": [
+        "HP:0000769"
+      ],
+      "neoplasm": [
+        "HP:0002664"
+      ],
+      "constitutional": [
+        "HP:0025142"
+      ],
+      "cellular": [
+        "HP:0025354"
+      ]
+    },
+    "fallback_systems": []
+  },
+  "explicit_channel": {
+    "enabled": false,
+    "encoding": "maximum_observed_ordinal_level",
+    "minimum_absolute_logit_contribution": 0.15,
+    "training_level_counts": {},
+    "unmapped_training_terms": {}
+  },
+  "feature_counts": {
+    "phenotype": 4132,
+    "explicit_severity": 0,
+    "organ_and_system_interactions": 278,
+    "observed_low_burden": 2,
+    "phenotype_interactions": 250,
+    "absent": 0,
+    "combined_total": 4662
+  },
+  "learned_dimensions": [],
+  "curation": {
+    "n_source_rows": 163100,
+    "n_hpo_records": 163100,
+    "n_gene_disease_pairs": 6625,
+    "n_diseases": 6204,
+    "n_pairs": 6204,
+    "n_conflicting_label_diseases": 0,
+    "n_conflicting_label_pairs": 0,
+    "n_present_absent_term_conflicts_removed": 0,
+    "negative_annotation_column_detected": false,
+    "dimension_columns": {}
+  },
+  "hpo_curation": {
+    "present_invalid_format": 0,
+    "present_unknown_ontology": 1,
+    "present_severity_coded": 1513,
+    "present_clinical_modifier_excluded": 0,
+    "present_duplicates": 23,
+    "absent_invalid_format": 0,
+    "absent_unknown_ontology": 0,
+    "absent_severity_coded": 0,
+    "absent_clinical_modifier_excluded": 0,
+    "absent_duplicates": 0,
+    "pairs_removed_no_usable_present_terms": 0
+  },
+  "held_out_phenotype": {
+    "qwk": 0.9218461960281981,
+    "mcc": 0.8318554713407232,
+    "balanced_accuracy": 0.8546603796273116,
+    "mae_expected": 0.15709642247391553,
+    "multiclass_log_loss": 0.2910441687645972,
+    "ordinal_brier": 0.028324197075704934,
+    "mild_mae_expected": 0.30139925455023736,
+    "mild_median_expected": 0.2517173787722833,
+    "mild_p95_expected": 1.012590428873685,
+    "mild_mean_probability": 0.7281984939426762,
+    "mild_class_recall": 0.7636363636363637,
+    "mild_boundary_brier": 0.1593521132014887,
+    "n": 1241
+  },
+  "held_out_combined": {
+    "qwk": 0.9212034420832342,
+    "mcc": 0.8305544488748993,
+    "balanced_accuracy": 0.8544111370880784,
+    "mae_expected": 0.16296140597443748,
+    "multiclass_log_loss": 0.32011281547960224,
+    "ordinal_brier": 0.02917649691793715,
+    "mild_mae_expected": 0.3042515430441652,
+    "mild_median_expected": 0.10667660990452718,
+    "mild_p95_expected": 0.9316596553683144,
+    "mild_mean_probability": 0.7288820519193733,
+    "mild_class_recall": 0.7636363636363637,
+    "mild_boundary_brier": 0.15233016932274984,
+    "n": 1241
+  },
+  "visualization_artifacts": {
+    "png": "/media/tower1/DATA4/Tohid/2025/Main_Codes/PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL_final/model_visualization_panel.png",
+    "pdf": "/media/tower1/DATA4/Tohid/2025/Main_Codes/PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL_final/model_visualization_panel.pdf",
+    "low_end_csv": "/media/tower1/DATA4/Tohid/2025/Main_Codes/PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL_final/low_end_diagnostics.csv",
+    "low_end_png": "/media/tower1/DATA4/Tohid/2025/Main_Codes/PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL_final/low_end_diagnostics_panel.png",
+    "low_end_pdf": "/media/tower1/DATA4/Tohid/2025/Main_Codes/PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL_final/low_end_diagnostics_panel.pdf",
+    "shap_definition": "Sum of exact LinearExplainer SHAP values for the three uncalibrated ordinal-threshold logits."
+  },
+  "model_selection_complete_configs": 24,
+  "inputs": {
+    "severity_csv": {
+      "path": "/media/tower1/DATA4/Tohid/2025/Main_Codes/final_output_with_severity.csv",
+      "sha256": "da7dac61447a4be2e18b69e52063c5cde33996754eb14856e94b77977df28f84"
+    },
+    "hpo_obo": {
+      "path": "/media/tower1/DATA4/Tohid/2025/Main_Codes/hp.obo",
+      "sha256": "d1f3e411add1a1bbe68c00b628f7a2c8210433de1e478c6b79924a7c1e4dc737"
+    }
+  },
+  "caveats": [
+    "The model learns associations from disease-level phenotype profiles unless patient-level rows are supplied.",
+    "Severity-naming HPO terms are ordinary phenotype predictors under the default policy and can therefore strongly reflect annotation wording; this requires external validation.",
+    "Under the optional separate policy, severity terms are pooled by ordinal word level and coefficient signs are projected toward that level.",
+    "New organ-system features use HPO branch ancestry; boundary-aware text fallback is used only for unresolved branches.",
+    "Absent terms affect scores only when enough negative annotations survive training-frequency filtering.",
+    "Organ-system branch roots and any unresolved fallback mappings should be validated for the local HPO release.",
+    "Pairwise interactions are selected by training-fold co-occurrence and are associations, not causal effects.",
+    "Low-burden features describe observed evidence only; undocumented findings are never treated as absent.",
+    "The Mild boundary is tuned and calibrated using severity labels only, never prenatal outcome.",
+    "Optional dimension models are fitted only when corresponding target columns are present.",
+    "Dashboard SHAP values sum exact linear SHAP values across the three raw ordinal logits; they do not include calibration or monotonic projection.",
+    "Independent patient-level external validation is required before clinical use."
+  ]
+}

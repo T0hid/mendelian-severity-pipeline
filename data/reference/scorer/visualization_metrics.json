@@ -1,0 +1,30 @@
+{
+  "n_held_out": 1241,
+  "balanced_accuracy": 0.8544111370880784,
+  "quadratic_weighted_kappa": 0.9212034420832342,
+  "matthews_correlation": 0.8305544488748993,
+  "mae_expected": 0.16296140597443748,
+  "log_loss": 0.32011281547960224,
+  "mild_mean_expected": 0.3042515430441652,
+  "mild_median_expected": 0.10667660990452718,
+  "mild_mean_probability": 0.7288820519193733,
+  "mild_recall": 0.7636363636363637,
+  "shap_profiles": 400,
+  "shap_features": 4234,
+  "shap_explained_thresholds": 3,
+  "roc": [
+    {
+      "boundary": "Y > Mild",
+      "auc": 0.9828683121263222
+    },
+    {
+      "boundary": "Y > Moderate",
+      "auc": 0.9869094673442499
+    },
+    {
+      "boundary": "Y > Severe",
+      "auc": 0.9886473749702153
+    }
+  ],
+  "shap_definition": "Sum of exact LinearExplainer SHAP values for the three uncalibrated ordinal-threshold logits."
+}
