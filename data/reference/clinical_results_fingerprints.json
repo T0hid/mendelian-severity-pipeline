@@ -1,0 +1,162 @@
+{
+  "scorer": {
+    "combined_feature_weights.csv": {
+      "sha256": "6b0dfd936a2d3ab515403f3c4b5af7d11b4dcf0497dde500e256f978a64448f0",
+      "size_bytes": 393467
+    },
+    "disease_split_membership.csv": {
+      "sha256": "87da08fb0d9c0a683dec22e67efb90b642425c8882f5614b6ef59c3922282795",
+      "size_bytes": 217218
+    },
+    "gene_disease_mapping_filter_audit.csv": {
+      "sha256": "fe403a6b81149eb63ea8232803c9448228d52cb41837d6b6dd324d0d97c155f1",
+      "size_bytes": 3809
+    },
+    "held_out_ordinal_shap_importance.csv": {
+      "sha256": "1eb60e354fcc5acf7efd817ed7570c04d043ba9589fee27203f5c4dd253fc61f",
+      "size_bytes": 461963
+    },
+    "held_out_test_predictions.csv": {
+      "sha256": "048ddb7db6300fc74819877c4e41f99a49f7ddc7dca920e18747ba26d45b00ef",
+      "size_bytes": 163095
+    },
+    "hpo_curation_summary.csv": {
+      "sha256": "d65f34a863d3b719da9548993f4d90a6b649a64c3a8a072769f135acb431986a",
+      "size_bytes": 309
+    },
+    "input_curation_summary.csv": {
+      "sha256": "677a9248967fcb98712cb65ba9a9398090861a8e8107233a94e0fd8bd77e40f1",
+      "size_bytes": 261
+    },
+    "low_end_diagnostics.csv": {
+      "sha256": "ef274e16ab278baf42617a8fedc437f490fd99cf2173ad5a53c264278e0bea94",
+      "size_bytes": 840
+    },
+    "low_end_diagnostics_panel.pdf": {
+      "sha256": "9ce0538d1aec8afcb8ef5938e6201e88d18c5e706d002b254e0092318ab93e79",
+      "size_bytes": 21305
+    },
+    "low_end_diagnostics_panel.png": {
+      "sha256": "a422ab897cf61c1a1501d6fb9fd5f6e303c1e29987580067ff2c3379c9550250",
+      "size_bytes": 193459
+    },
+    "metadata.json": {
+      "sha256": "971bb37e7ce27a64c3c9b1b009b416160faaa7f780caf4cc7aa8e7e081afa2d5",
+      "size_bytes": 7923
+    },
+    "model.pkl": {
+      "sha256": "99d93d077ece2f1a69248b2bed6a5cf55e686f4ff0c59e83193d28fa2d574b74",
+      "size_bytes": 5435057
+    },
+    "model_selection_results.csv": {
+      "sha256": "835e9f3cc431c4c4b656b4fe998015923f225014769647c407dc6b5166846a93",
+      "size_bytes": 15955
+    },
+    "model_visualization_panel.pdf": {
+      "sha256": "5ca798f2a8a42e0c4c89c07c80b7636794e8d821e3dd6221814665e802af334b",
+      "size_bytes": 145976
+    },
+    "model_visualization_panel.png": {
+      "sha256": "372e06f91e219c3f9df34cf4a9014b3fb2726452e2b6d70db86e1fa813d26d17",
+      "size_bytes": 1590586
+    },
+    "visualization_metrics.json": {
+      "sha256": "af16c9fb2728a89e16d4acbd5cef3c391fb108d53c1a7d70ce098102867acb41",
+      "size_bytes": 859
+    }
+  },
+  "prenatal": {
+    "adjacent_level_separation_3group.csv": {
+      "sha256": "64aa27b0dea9d3452120b82c1c8a18a9b341676a2e52f6e84cec355b3d2cb6dd",
+      "size_bytes": 512
+    },
+    "adjacent_level_separation_4group.csv": {
+      "sha256": "d402338d99a77418c3d780d63ae57f3bfc661e85412504919cf60511e0644485",
+      "size_bytes": 705
+    },
+    "families_missing_or_unmapped_outcome.csv": {
+      "sha256": "94a9c34fa0384a500e84de0ae044a5245c74f621d54c1efa4363a5f4d4d20944",
+      "size_bytes": 94285
+    },
+    "family_aggregation_audit.csv": {
+      "sha256": "6675028e8036aaa2c3b02e2ac33f11615d23accaa62373806c1a8604a1d61986",
+      "size_bytes": 16785
+    },
+    "mean_by_outcome.csv": {
+      "sha256": "315f7368a21be3a4b0036cbb4458b6cbb65c486570d40c002726cacd748a35f3",
+      "size_bytes": 244
+    },
+    "mean_by_outcome_3group.csv": {
+      "sha256": "315f7368a21be3a4b0036cbb4458b6cbb65c486570d40c002726cacd748a35f3",
+      "size_bytes": 244
+    },
+    "mean_by_outcome_4group.csv": {
+      "sha256": "19cedcf9cd3c8f286759551c05ab4509d88c4d053bfa61f7c04261678ecb46fc",
+      "size_bytes": 336
+    },
+    "prenatal_severity_figure.png": {
+      "sha256": "a6181312319413a805976387fbe5b689a204eedcd35e52323dba1eb48f833b31",
+      "size_bytes": 281351
+    },
+    "prenatal_severity_figure_4group.png": {
+      "sha256": "5dbef53c2b689d4b3686dee7ce35a8d72fe38756235b6cb68d64dbeb8f456abf",
+      "size_bytes": 589417
+    },
+    "prenatal_severity_figure_4group_WITH_ROC.pdf": {
+      "sha256": "dc9e288c6f88761325baccce30fa94836e0e2a58743910a83d8dbe2965e22431",
+      "size_bytes": 99826
+    },
+    "prenatal_severity_figure_4group_WITH_ROC.png": {
+      "sha256": "5dbef53c2b689d4b3686dee7ce35a8d72fe38756235b6cb68d64dbeb8f456abf",
+      "size_bytes": 589417
+    },
+    "results_paragraph.txt": {
+      "sha256": "6268724ab13ad488c93d3ecf020a064f3a851a16735301662eabebabd4391136",
+      "size_bytes": 2010
+    },
+    "roc_contrasts.csv": {
+      "sha256": "da61060fce2bef9b321dedf075944d3ad824d7ecfb6c8501ad35e7fba8c83f83",
+      "size_bytes": 209
+    },
+    "roc_contrasts_3group.csv": {
+      "sha256": "da61060fce2bef9b321dedf075944d3ad824d7ecfb6c8501ad35e7fba8c83f83",
+      "size_bytes": 209
+    },
+    "roc_contrasts_4group.csv": {
+      "sha256": "da696a4e686855f08673bf4b0945c58cf4f9d0e83c727cd7473177a07187e99e",
+      "size_bytes": 189
+    },
+    "severity_analysis_3group.csv": {
+      "sha256": "698500c62280782e54534ab326051ecd80f50dedc5fb3e9baff1cddf43c38060",
+      "size_bytes": 1053448
+    },
+    "severity_analysis_4group.csv": {
+      "sha256": "698500c62280782e54534ab326051ecd80f50dedc5fb3e9baff1cddf43c38060",
+      "size_bytes": 1053448
+    },
+    "severity_by_family.csv": {
+      "sha256": "a102be960f519b72e4cab37900e9a88be86dd9cd383835c5ff47f87a3d5cb06a",
+      "size_bytes": 1155290
+    },
+    "severity_scoring_exclusions.csv": {
+      "sha256": "2eac4c99b9dfc4fa58872ee0b02059ba2a2986824b4a1a86c6161d67811c6357",
+      "size_bytes": 10675
+    },
+    "source_adjusted_proportional_odds_4group.csv": {
+      "sha256": "0e6c987b77acb3056e128af7266b3ecf8c594d576b21f0d2362f0e121a9b1a72",
+      "size_bytes": 386
+    },
+    "source_composition_4group.csv": {
+      "sha256": "2b154104abadbd490fbd81f652dc670f9c878213315af778661b5faf50f1599d",
+      "size_bytes": 222
+    },
+    "source_rank_sensitivity_4group.csv": {
+      "sha256": "02d5b4344b805689e97c73058c1ca704f82a894ac0975ae185b4372dd3129436",
+      "size_bytes": 916
+    },
+    "statistics.json": {
+      "sha256": "c6507d39882beb6f11ae4298106bdde689631b35981dcd378f28432b0b864e8f",
+      "size_bytes": 10816
+    }
+  }
+}

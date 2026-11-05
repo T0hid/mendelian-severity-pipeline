@@ -1,0 +1,20 @@
+{
+  "phenotype_severity_scorer_v3_3_monotone_ontology.py": {
+    "original_sha256": "20ae357bb4c2cefa66499406c307cace5cfe2f2ab930314f71c6b16e87423b7c",
+    "clean_sha256": "20ae357bb4c2cefa66499406c307cace5cfe2f2ab930314f71c6b16e87423b7c",
+    "semantic_module_sha256": "a920693b1d79e6dafc8c6be8f39700c354a8f36b2dafb820a3fc8e0896b4660a",
+    "functions": 47,
+    "classes": 14,
+    "original_lines": 3321,
+    "clean_lines": 3321
+  },
+  "prenatal_severity_analysis_v3_multichannel.py": {
+    "original_sha256": "7f60f96245b0e10815e0e9cde89ae621f3e313ce1fb7accddc21e79af0b2eb77",
+    "clean_sha256": "8d15a76b84331287f68593990de6f4cb1cbd19ff61569d5353adaed566925aee",
+    "semantic_module_sha256": "30887ecc996e7576895ade85eb342332a24f2840bbb2685a249e6caf8f1e46f2",
+    "functions": 43,
+    "classes": 1,
+    "original_lines": 2702,
+    "clean_lines": 2701
+  }
+}

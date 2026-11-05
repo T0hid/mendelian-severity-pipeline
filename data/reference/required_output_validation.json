@@ -1,0 +1,138 @@
+{
+  "validated_at": "2026-11-04T14:51:08.321896",
+  "status": "passed",
+  "required_file_checks": [
+    {
+      "path": "results/all_results.csv",
+      "exists": true,
+      "size_bytes": 2296,
+      "valid": true
+    },
+    {
+      "path": "results/all_results_full.pkl",
+      "exists": true,
+      "size_bytes": 420362988,
+      "valid": true
+    },
+    {
+      "path": "results/model_selection_validation.csv",
+      "exists": true,
+      "size_bytes": 2662,
+      "valid": true
+    },
+    {
+      "path": "results/publication_table.csv",
+      "exists": true,
+      "size_bytes": 2112,
+      "valid": true
+    },
+    {
+      "path": "results/bootstrap_cis.csv",
+      "exists": true,
+      "size_bytes": 3403,
+      "valid": true
+    },
+    {
+      "path": "results/paired_scenario_contrasts.csv",
+      "exists": true,
+      "size_bytes": 2474,
+      "valid": true
+    },
+    {
+      "path": "results/disease_overlap_audit.csv",
+      "exists": true,
+      "size_bytes": 1873,
+      "valid": true
+    },
+    {
+      "path": "results/split_summary.csv",
+      "exists": true,
+      "size_bytes": 192,
+      "valid": true
+    },
+    {
+      "path": "results/permutation_test.csv",
+      "exists": true,
+      "size_bytes": 1234,
+      "valid": true
+    },
+    {
+      "path": "results/split_sensitivity_fixed_configuration.csv",
+      "exists": true,
+      "size_bytes": 3002,
+      "valid": true
+    },
+    {
+      "path": "results/split_sensitivity_fixed_configuration_summary.csv",
+      "exists": true,
+      "size_bytes": 928,
+      "valid": true
+    },
+    {
+      "path": "results/severity_hpo_term_sensitivity.csv",
+      "exists": true,
+      "size_bytes": 1040,
+      "valid": true
+    },
+    {
+      "path": "results/severity_hpo_terms_removed.csv",
+      "exists": true,
+      "size_bytes": 1958,
+      "valid": true
+    },
+    {
+      "path": "results/high_mi_provenance_flags.csv",
+      "exists": true,
+      "size_bytes": 22662,
+      "valid": true
+    },
+    {
+      "path": "results/generalisation_evaluations.csv",
+      "exists": true,
+      "size_bytes": 1142,
+      "valid": true
+    },
+    {
+      "path": "results/feature_provenance_table.csv",
+      "exists": true,
+      "size_bytes": 2316231,
+      "valid": true
+    },
+    {
+      "path": "results/gene_level_evaluation.csv",
+      "exists": true,
+      "size_bytes": 1098,
+      "valid": true
+    },
+    {
+      "path": "SUMMARY_REPORT.txt",
+      "exists": true,
+      "size_bytes": 7129,
+      "valid": true
+    },
+    {
+      "path": "pipeline_manifest.json",
+      "exists": true,
+      "size_bytes": 283802,
+      "valid": true
+    }
+  ],
+  "failures": [],
+  "primary_test_registry": {
+    "primary:S1_Mechanistic": 1,
+    "primary:S1b_Disease_Context": 1,
+    "primary:S2_Mech_Pheno": 1,
+    "primary:S3_Phenotype": 1,
+    "disease_disjoint:S1_Mechanistic": 1,
+    "disease_disjoint:S1b_Disease_Context": 1,
+    "disease_disjoint:S2_Mech_Pheno": 1,
+    "disease_disjoint:S3_Phenotype": 1,
+    "gene_and_disease_disjoint:S1_Mechanistic": 1,
+    "gene_and_disease_disjoint:S1b_Disease_Context": 1,
+    "gene_and_disease_disjoint:S2_Mech_Pheno": 1,
+    "gene_and_disease_disjoint:S3_Phenotype": 1
+  },
+  "n_permutations_configured": 1,
+  "generalisation_enabled": true,
+  "severity_hpo_sensitivity_enabled": true
+}

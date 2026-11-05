@@ -1,0 +1,50 @@
+{
+  "definitions": {
+    "Config": {
+      "canonical_sha256": "825cc0494b7df62a74b793fe514f867f5b9643bb32553ab5a0d363821af20926",
+      "reason": "Only the default output directory changed; numerical settings were compared separately with the saved manifest."
+    },
+    "main": {
+      "canonical_sha256": "ab9f43c11ed51b5c12596438ce4cf1ced890ebe64c96a60e4b873e2dca79743d",
+      "reason": "The fresh-directory check and runtime initialisation precede the original analysis call sequence."
+    },
+    "validate_preflight_inputs_and_reporting": {
+      "canonical_sha256": "010f71109d3de86ca012b89e655adf6d2bc6e3e1251b7a355f2e951055050c10",
+      "reason": "An enabled rebuilt mapping is required and its schema checked before training."
+    },
+    "write_pipeline_manifest": {
+      "canonical_sha256": "89697432ec19a915cee7a099eb15f8ab9f420b77fe768c943a0602fbb8fba31b",
+      "reason": "Correct missingness wording; record mapping and source hashes. Numerical result fields are unchanged."
+    }
+  },
+  "new_definitions": {
+    "_initialise_runtime": "853f38e552a59cc611b561b3207305c63afe466a89422ad372946ce94dac32fb"
+  },
+  "preserved_globals": {
+    "PIPELINE_VERSION": "691673767edde7e02646d1a16c6f6f4af37ccc8d53fbf7e3a58fd83664d835b4",
+    "RANDOM_SEED": "234c0a7d4d99bf0bbc41fa7b3210ade25ea38ccbaeeb2f5dc9eb390a79583d89",
+    "qwk_scorer": "2f4e21019e8bac63efb6146b066faf8baa2ac26d275d40adcc92aa81e033e536",
+    "_high_mi_audit_records": "af714a66b94874a53e4ae85bd5bd7acb38bdb97dd9bba88d08e9fe599053c6b8",
+    "_REPORTING_MODULE_CACHE": "384c950233d052beb0511642f62d2b4321903fe59c8599a25818ad3661a7b032",
+    "SEVERITY_HPO_IDS": "2dea80cc546009f6a6260697eca220d32da577ee216ceca908e3fc062e5939ea",
+    "SEVERITY_HPO_KEYWORDS": "5b3e4d893ca24d3d0ede8e49a431e86a69decedb67670dc5b7a61d13f45876ee",
+    "PLI_HIGH_CONSTRAINT": "6a63d08686558539957c73d55e3afa108cb6a3e2a4a6e608890d6f8b5a273de8",
+    "PLI_LOW_CONSTRAINT": "e92f14ea8cabd48819a3eff42e991d62c680c646d2f8073efc8ff01d84b8e547",
+    "_UNWEIGHTED_TUNING_FALLBACKS": "23656c0ba9dfcc9edfa223553d3b3332c7dd2b7306ec6cf12a7bb9983e08bab9",
+    "_test_evaluation_registry": "9bdf2b3169730d97c7eb177fcc225a0d32dfaff9c7f1d5c68cf0a7ce8ac0fb9a",
+    "_fold_artifacts": "9073cbb507e1129caf4de5c7311f3e56951c7985d66e3bfca39b166ba1795073",
+    "FEATURE_DISPLAY_LABELS": "e3ec948e5f38d5de44abaa8d9d4d2109a4e0887db903d958bb802f7cb0ea6778",
+    "_FEATURE_SOURCE_PREFIXES": "33d5543978332166b72875f774345830c4065ae6ff0dbcc7e5e472f645c1eac9",
+    "_FEATURE_LABEL_CACHE": "a41ee9005f09fc7d6f02d152a8c5c4d133ec3a2102ea580cbe84a3e7294079bb",
+    "_FEATURE_LABEL_LOADED": "7505a03fb25fe622eeeb6c02de48a7bb383a39187e4e5659b87eefbb918eb123",
+    "_HPO_ID_NAME_CACHE": "31bf049405788b919b7c0481ecf977080af490d3f88d3f408e09afe2b1e6f9da",
+    "_HPO_ID_NAME_LOADED": "d44f9e2e47eb25c7e1f30475ec1f7c3fa869d271cf4add16ad9e866e3cc0651f",
+    "_TEXT_STRUCT_COLS": "a2c1561bead33eb671d5f89606e55de49f036f503b5de36a53661ebf01470db7",
+    "SCENARIO_TEXT_SOURCES": "96dc713a0ade1f254db7006e2251b5047f1bcdba992a5eba5c1e9592935fbfb1",
+    "_generalisation_results": "5c627977aee66fdf5b5e7ca414493e8d33ff57400cf741ce002bf5cff44a7f77",
+    "PAIRED_SCENARIO_CONTRASTS": "db141663dbd318ecbe25e51ef1a880da9fb77047316be3c6a7c1cd425803b3c7",
+    "PAIRED_CONTRAST_METRICS": "3a2f833974619ccc5e957dc835873a15f088af4bf254e3c880999a25c90961cd",
+    "DISEASE_OVERLAP_MIN_GENES": "1cfa9a71fea02e3468fc7ec70cef124de0915008c9af124094bac62d1d3f2c8b",
+    "_CLASS_SHAP_CACHE": "f20937be84893ced9dda785d8a23df310a882784a01e910e29ffcfb27a33e0bd"
+  }
+}

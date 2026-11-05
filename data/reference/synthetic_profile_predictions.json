@@ -1,0 +1,54 @@
+[
+  {
+    "example_id": "synthetic_empty",
+    "status": "insufficient_information",
+    "phenotype_score_0_1": null,
+    "combined_score_0_1": null,
+    "phenotype_probabilities": null,
+    "combined_probabilities": null
+  },
+  {
+    "example_id": "synthetic_neurological",
+    "status": "scored",
+    "phenotype_score_0_1": 0.7237232618545296,
+    "combined_score_0_1": 0.7549755664860477,
+    "phenotype_probabilities": {
+      "Mild": 0.0,
+      "Moderate": 0.14746462096920399,
+      "Severe": 0.5339009724980034,
+      "Profound": 0.3186344065327926
+    },
+    "combined_probabilities": {
+      "Mild": 0.0,
+      "Moderate": 0.11877564999412316,
+      "Severe": 0.4975220005536104,
+      "Profound": 0.38370234945226644
+    }
+  },
+  {
+    "example_id": "synthetic_cardiac",
+    "status": "scored",
+    "phenotype_score_0_1": 0.38301971948482233,
+    "combined_score_0_1": 0.3920364534125933,
+    "phenotype_probabilities": {
+      "Mild": 0.04526748971193417,
+      "Moderate": 0.7653307465050863,
+      "Severe": 0.18447687939955812,
+      "Profound": 0.004924884383421459
+    },
+    "combined_probabilities": {
+      "Mild": 0.05691056910569103,
+      "Moderate": 0.7163875143954999,
+      "Severe": 0.22038390365414726,
+      "Profound": 0.006318012844661901
+    }
+  },
+  {
+    "example_id": "synthetic_unrecognised",
+    "status": "insufficient_information",
+    "phenotype_score_0_1": null,
+    "combined_score_0_1": null,
+    "phenotype_probabilities": null,
+    "combined_probabilities": null
+  }
+]
