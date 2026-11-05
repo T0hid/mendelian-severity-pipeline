@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   demo:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       MPLBACKEND: Agg
@@ -28,7 +28,7 @@ jobs:
       - name: Run model and saved-result verification
         run: docker run --rm --network none -e MPLBACKEND=Agg -v "$PWD:/work" -w /work severity-demo python run.py
       - name: Save predictions and verification report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: severity-demo-results
           path: results/
