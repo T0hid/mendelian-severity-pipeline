@@ -190,11 +190,12 @@ def main(argv=None):
     modes=parser.add_mutually_exclusive_group()
     modes.add_argument('--full',action='store_true',help='Run all three research workflows; requires an authorised --cohort.')
     modes.add_argument('--benchmark',action='store_true',help='Train and evaluate the gene-disease benchmark with the bundled inputs.')
+    modes.add_argument('--prenatal',action='store_true',help='Replay the prenatal analysis with the bundled scorer and a cohort CSV.')
     modes.add_argument('--train-scorer',action='store_true',help='Train and refit the disease-level phenotype scorer with the bundled inputs.')
     modes.add_argument('--check-inputs',action='store_true',help='Restore and verify the ten bundled training inputs without training.')
     modes.add_argument('--figures',action='store_true',help='Export original figures and source data, and replot saved benchmark results without training.')
     parser.add_argument('--training-data',type=Path,help='Original training inputs for --full.')
-    parser.add_argument('--cohort',type=Path,help='Authorised prenatal cohort for --full.')
+    parser.add_argument('--cohort',type=Path,help='Prenatal cohort CSV for --prenatal or --full.')
     parser.add_argument('--permutations',type=int,help='Explicit benchmark permutation count for --full; otherwise preserve the source configuration.')
     args=parser.parse_args(argv)
     try:
@@ -204,6 +205,18 @@ def main(argv=None):
             sys.path.insert(0,str(SOURCE))
         default_results=ROOT/'results' if data==ROOT/'data' else data.parent/'results'
         output=(args.output_dir or (default_results/'full_reproduction' if args.full else default_results)).resolve()
+        if args.prenatal:
+            if args.cohort is None or not args.cohort.is_file():
+                parser.error('--prenatal requires an existing --cohort CSV.')
+            if args.input or args.training_data or args.permutations is not None:
+                parser.error('--prenatal uses --cohort, --data-dir and --output-dir.')
+            model_path,_=check_model_file(data)
+            destination=output/'prenatal' if args.output_dir is None else output
+            subprocess.run([sys.executable,str(SOURCE/'run_study.py'),'prenatal',
+                            '--cohort',str(args.cohort.resolve()),'--model',str(model_path),
+                            '--scorer-heldout',str(data/'reference/scorer/held_out_test_predictions.csv'),
+                            '--output-dir',str(destination),'--score-channel','phenotype'],check=True)
+            return 0
         if args.figures:
             if args.input or args.cohort or args.permutations is not None:
                 raise ValueError('--figures reads the bundled saved results; omit prediction/training arguments.')

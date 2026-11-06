@@ -30,11 +30,14 @@ This fits and evaluates the disease-level phenotype scorer and saves the refitte
 
 ## Run the prenatal analysis
 
-Install the full requirements and supply a local cohort file you are authorised to use. The input schema is defined by `load_cohort` in the [prenatal analysis script](../src/prenatal_severity_analysis_v3_multichannel.py).
+Supply a local copy of the cohort CSV. The input schema is defined by `load_cohort` in the [prenatal analysis script](../src/prenatal_severity_analysis_v3_multichannel.py).
 
 ```shell
-python src/run_study.py prenatal --cohort cohort.csv --model data/model.pkl --scorer-heldout data/reference/scorer/held_out_test_predictions.csv --output-dir prenatal_results --score-channel phenotype
+python -m pip install -r src/requirements-full.txt
+python run.py --prenatal --cohort prenatal_cohort_merged.csv --output-dir prenatal_results
 ```
+
+This uses the bundled frozen scorer and regenerates the prenatal analyses and plots. Compare `statistics.json` and the aggregate CSVs with [the saved outputs](../data/reference/prenatal/). The output directory also contains family-level scores and should be kept local.
 
 ## Run the full pipeline
 

@@ -41,6 +41,6 @@ python run.py --check-inputs
 python run.py --benchmark --output-dir benchmark_results
 ```
 
-The benchmark uses the 5 November 2026 configuration, with 100 gene-block permutations per feature set. For scorer training and the prenatal analysis, see the [reproduction guide](docs/REPRODUCE.md). Prenatal analysis requires an authorised local cohort.
+The benchmark uses the 5 November 2026 configuration, with 100 gene-block permutations per feature set. For scorer training and the prenatal analysis, see the [reproduction guide](docs/REPRODUCE.md). To rerun the prenatal analysis with the frozen scorer, use `python run.py --prenatal --cohort prenatal_cohort_merged.csv --output-dir prenatal_results` after installing the full requirements.
 
 [Installation](docs/INSTALL.md) · [Inputs and outputs](docs/INPUT_OUTPUT.md) · [Code availability](docs/CODE_AVAILABILITY.md) · [Citation](CITATION.cff)
