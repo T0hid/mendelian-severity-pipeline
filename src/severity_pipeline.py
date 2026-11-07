@@ -1,17 +1,4 @@
-"""Gene-disease severity prediction: reviewer-oriented submission source.
-
-Author: Tohid Ghasemnejad
-Reference analysis: 1.0.0
-
-Review order: configuration, source data, grouped partitions, training-only
-feature learning and nested tuning, validation selection/calibration, one
-locked test evaluation per scenario, uncertainty, sensitivity and reporting.
-
-Use run_severity_pipeline.py to check inputs and run into a fresh output directory.
-Use verify_results.py to check saved predictions without model training.
-All original scientific functions are retained; FUNCTION_INVENTORY.csv maps
-their original names and lines to this file.
-"""
+"""Train and evaluate gene-disease severity models with grouped data splits."""
 
 
 import os
@@ -100,7 +87,6 @@ class Config:
     """Single authoritative configuration for the complete pipeline."""
 
     # Set to False to drop the organ-criticality block from all scenarios.
-    USE_ORGAN_CRITICALITY_FEATURES = False
     ORGAN_CRITICALITY_COLUMNS = [
         "critical_brain", "critical_heart", "critical_lung", "critical_kidney",
         "critical_liver", "critical_immune", "critical_metabolic",
@@ -136,7 +122,7 @@ class Config:
     # Listed per source file, because the CORE and EXTERNAL files share some column
     # names (the CORE paralogue columns hold real values; the EXTERNAL ones are empty).
     REMOVED_INPUT_COLUMNS_CORE = {
-        # Minimum across all gnomAD v2.1.1 transcripts; pLI/oe_lof/oe_mis were exact
+        
         # copies of gnomad_regional_*. The standard gene-level gnomad_* values are kept.
         "pLI": "gnomad_min_across_transcripts",
         "oe_lof": "gnomad_min_across_transcripts",
@@ -369,7 +355,7 @@ class Config:
     ORDINAL_BOUNDARY_MULT = [2.5, 1.5, 1.0, 1.0]
 
     # (2 Nov 2026). Features that record how well a gene or disease is
-    # documented rather than its biology are no longer offered to any model.
+    
     DROP_RECORD_KEEPING_FEATURES = True
     RECORD_KEEPING_COLUMNS = (
         "feat_mondo_depth",                      # level of the disease in the MONDO tree
@@ -477,7 +463,7 @@ class Config:
     ALLOW_OUTPUT_REUSE = False
 
     # This string is written verbatim into pipeline_manifest.json and the summary
-    # report, so it must match how the labels are described in the manuscript.
+    
     # The labels come from an evidence-grounded artificial-intelligence
     # agent operationalising the Lazarin and ACMG framework, validated against
     # expert-curated cohorts rather than produced by case-by-case expert review.
@@ -658,7 +644,7 @@ _fold_artifacts: Dict[str, Dict[str, Any]] = {}
 
 
 FEATURE_DISPLAY_LABELS: Dict[str, str] = {
-    # ---- published gene-level constraint / expression block ---------------
+    
     "shet_log10": "LoF selection, log10 s_het",
     "shet_post_mean": "LoF selection (s_het)",
     "shet_percentile": "s_het percentile rank",
@@ -692,7 +678,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "gdi_raw": "Gene damage index (GDI)",
     "gdi_log": "Gene damage index, log10 (GDI)",
     "gdi_mendelian_damage_high": "High background damage in Mendelian genes (GDI)",
-    # ---- constraint --------------------------------------------------------
+    
     "gnomad_pLI": "Loss-of-function intolerance (pLI)",
     "pLI": "Loss-of-function intolerance (pLI)",
     "gnomad_regional_pLI": "Regional loss-of-function intolerance (pLI)",
@@ -716,7 +702,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "feat_missz_minus_synz": "Missense minus synonymous constraint",
     "feat_missz_x_pli": "Missense constraint x pLI",
     "feat_triple_constraint": "Constrained by LoF, missense and dosage",
-    # ---- dosage ------------------------------------------------------------
+    
     "pHaplo": "Haploinsufficiency probability (pHaplo)",
     "pTriplo": "Triplosensitivity probability (pTriplo)",
     "collins_pHI": "Haploinsufficiency probability (Collins)",
@@ -734,7 +720,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "dosage_sensitive_any": "ClinGen HI or TS flag set",
     "ordered_dosage_sensitive": "Dosage sensitivity, graded",
     "hi_no_backup": "Haploinsufficient with no paralogue backup",
-    # ---- essentiality ------------------------------------------------------
+    
     "depmap_mean_score": "Cell-line essentiality (DepMap mean)",
     "depmap_mean_effect": "Mean gene-effect score (DepMap)",
     "depmap_min_effect": "Strongest gene-effect score (DepMap)",
@@ -745,10 +731,10 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "depmap_is_context_essential": "Essential in 10-90% of cell lines (DepMap)",
     "feat_essential_constrained": "Essential and constrained",
     "feat_central_essential": "Network-central and essential",
-    # ---- expression --------------------------------------------------------
+    
     "gtex_tau": "Tissue specificity of expression (GTEx tau)",
     "gtex_max_exp": "Peak tissue expression (GTEx)",
-    # ---- inheritance -------------------------------------------------------
+    
     "feat_is_dominant": "Dominant inheritance",
     "feat_is_recessive": "Recessive inheritance",
     "feat_is_xlinked": "X-linked inheritance",
@@ -763,7 +749,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "feat_pli_x_recessive": "pLI in recessive genes",
     "feat_dominant_low_constraint": "Dominant gene under weak constraint",
     "feat_recessive_high_constraint": "Recessive gene under strong constraint",
-    # ---- paralogues and redundancy ----------------------------------------
+    
     "paralog_count": "Number of paralogues",
     "n_paralogs": "Number of paralogues",
     "max_paralog_identity_x": "Closest paralogue sequence identity",
@@ -783,7 +769,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "paralog_expression_corr": "Expression correlation with closest paralogue",
     "feat_constrained_no_paralog": "Constrained with no paralogue",
     "rigid_no_backup": "Structurally rigid with no paralogue backup",
-    # ---- structure ---------------------------------------------------------
+    
     "af_mean_plddt": "AlphaFold confidence, mean pLDDT",
     "af_median_plddt": "AlphaFold confidence, median pLDDT",
     "af_plddt_std": "AlphaFold confidence variability",
@@ -804,7 +790,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "is_nuclear": "Nuclear-localised protein",
     "is_mitochondrial": "Mitochondrial protein",
     "is_secreted": "Secreted protein",
-    # ---- network -----------------------------------------------------------
+    
     "ppi_degree": "Protein interaction partners",
     "ppi_betweenness": "Interaction network betweenness",
     "ppi_closeness": "Interaction network closeness",
@@ -829,7 +815,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "feat_hub_essential": "Network hub and essential",
     "complex_corum_complex_count": "Protein complexes joined (CORUM)",
     "complex_corum_avg_complex_size": "Mean protein complex size (CORUM)",
-    # ---- variants ----------------------------------------------------------
+    
     "var_n_pathogenic_clinvar": "Pathogenic ClinVar variants",
     "var_n_lof": "Reported LoF variants",
     "var_n_missense": "Reported missense variants",
@@ -842,7 +828,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "feat_density_lof": "LoF variants per coding base",
     "feat_density_missense": "Missense variants per coding base",
     "feat_ratio_lof_missense": "LoF-to-missense variant ratio",
-    # ---- conservation ------------------------------------------------------
+    
     "conservation_score": "Cross-species conservation",
     "gene_age": "Evolutionary age of the gene",
     "is_ancient": "Ancient gene family",
@@ -852,13 +838,13 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "has_fly_ortholog": "Fly orthologue present",
     "has_worm_ortholog": "Worm orthologue present",
     "has_yeast_ortholog": "Yeast orthologue present",
-    # ---- transcripts -------------------------------------------------------
+    
     "n_transcripts": "Annotated transcripts",
     "n_transcripts_log": "Annotated transcripts, log",
     "has_multiple_isoforms": "Has multiple isoforms",
     "gene_length": "Gene length",
     "gene_length_log": "Gene length, log",
-    # ---- mouse -------------------------------------------------------------
+    
     "mouse_lethal_pheno_max": "Strongest mouse-lethal phenotype match",
     "mouse_lethal_pheno_mean": "Mean mouse-lethal phenotype match",
     "mouse_lethal_pheno_n_hpos_with_data": "Phenotype terms with mouse-lethal data",
@@ -1994,7 +1980,7 @@ def engineer_features(df: pd.DataFrame, feature_cols: List[str]) -> Tuple[pd.Dat
     missense_col = find_col(["var_n_missense", ("n_", "missense")], eng_df.columns)
     # Density features depend only on protein length; proportion features depend only
     # on the total-variant count. Each is gated on the input it actually uses, so a
-    # missing var_total no longer suppresses valid length-based density features.
+    
     if len_col:
         len_safe = eng_df[len_col].clip(lower=1.0)
         if clinvar_col:
@@ -2470,21 +2456,20 @@ def _assemble_source_dataframe() -> DataContainer:
     container.scenario_cols["S2_Combined"] = list(dict.fromkeys(s2_cols))
     container.scenario_cols["S3_Phenotype"] = list(dict.fromkeys(s3_cols))
 
-    if not Config.USE_ORGAN_CRITICALITY_FEATURES:
-        _organ_criticality_drop = set(Config.ORGAN_CRITICALITY_COLUMNS)
-        _organ_criticality_removed = set()
-        for _scenario, _columns in container.scenario_cols.items():
-            _organ_criticality_removed.update(
-                column for column in _columns if column in _organ_criticality_drop
-            )
-            container.scenario_cols[_scenario] = [
-                column for column in _columns if column not in _organ_criticality_drop
-            ]
-        logger.log(
-            f"  Organ-criticality block disabled: removed "
-            f"{len(_organ_criticality_removed)}/{len(Config.ORGAN_CRITICALITY_COLUMNS)} "
-            f"columns from all scenario candidate sets"
+    _organ_criticality_drop = set(Config.ORGAN_CRITICALITY_COLUMNS)
+    _organ_criticality_removed = set()
+    for _scenario, _columns in container.scenario_cols.items():
+        _organ_criticality_removed.update(
+            column for column in _columns if column in _organ_criticality_drop
         )
+        container.scenario_cols[_scenario] = [
+            column for column in _columns if column not in _organ_criticality_drop
+        ]
+    logger.log(
+        f"  Organ-criticality block disabled: removed "
+        f"{len(_organ_criticality_removed)}/{len(Config.ORGAN_CRITICALITY_COLUMNS)} "
+        f"columns from all scenario candidate sets"
+    )
 
     if getattr(Config, "DROP_DUPLICATE_COLUMNS", False):
         # ALL SCENARIOS. Redundant twins introduced by merging several upstream
@@ -2509,7 +2494,7 @@ def _assemble_source_dataframe() -> DataContainer:
     if getattr(Config, "DROP_MONDO_AVAILABILITY_FLAG", True) and "has_mondo_record" in full_df.columns:
         # the MONDO availability flag (disease ID found in mondo.obo) is constant or
         # nearly so in this corpus and was always removed by the variance filter. Like the
-        # source-availability flags, it is no longer offered to any model.
+        
         _mondo_flag_counts = (
             pd.to_numeric(full_df["has_mondo_record"], errors="coerce").value_counts(dropna=False).to_dict()
         )
@@ -2646,10 +2631,10 @@ def _assemble_source_dataframe() -> DataContainer:
     container.feature_family_lookup = family_lookup
     container.full_df = full_df
 
-    # Feature audit hook.
+    # Feature check hook.
     # Set env var DUMP_FEATURE_MATRIX=1 to dump the assembled full feature matrix,
     # the per-column family map, and the per-scenario candidate columns, so that
-    # feature_audit_toolkit.py can audit EVERY feature (mechanistic, engineered,
+    # feature_audit_toolkit.py can check EVERY feature (mechanistic, engineered,
     # HPO, MONDO, ANNOTATION, mouse, text). Off by default; normal runs are unchanged.
     if os.environ.get("DUMP_FEATURE_MATRIX"):
         try:
@@ -2674,7 +2659,7 @@ def _assemble_source_dataframe() -> DataContainer:
             logger.log(
                 f"  [audit] feature matrix dump failed: {_audit_err}", level="WARNING"
             )
-    # --- END FEATURE AUDIT HOOK ------------------------------------------------
+    # --- END FEATURE check HOOK ------------------------------------------------
 
     for scenario, columns in container.scenario_cols.items():
         logger.log(f"  Scenario {scenario}: {len(columns)} candidate columns")
@@ -3364,28 +3349,7 @@ class FoldPreprocessor:
                     hpo_training_matrix.shape[1],
                     max(n_train - 1, 1),
                 )
-                if Config.DROP_HPO_PCA or n_components < 5:
-                    self.pca = None
-                else:
-                    weighted = (
-                        hpo_training_matrix
-                        * self.hpo_ic_scores[np.newaxis, :]
-                    )
-                    row_norms = np.linalg.norm(
-                        weighted,
-                        axis=1,
-                        keepdims=True,
-                    )
-                    row_norms_safe = np.where(
-                        row_norms == 0,
-                        1,
-                        row_norms,
-                    )
-                    self.pca = PCA(
-                        n_components=n_components,
-                        random_state=RANDOM_SEED,
-                    )
-                    self.pca.fit(weighted / row_norms_safe)
+                self.pca = None
                 hpo_derived = self._add_hpo_derived_features(
                     hpo_training_matrix
                 )
@@ -4436,7 +4400,7 @@ def _audit_shared_hpo_selection(
     )
 
 
-# 4. Candidate models, nested tuning, validation selection and the locked test
+# 4. Candidate models, nested tuning, validation selection and the held-out test
 
 
 def _compute_discrimination_metrics(y_true, y_pred, y_prob) -> Dict[str, float]:
@@ -4879,13 +4843,6 @@ def _predict_uncalibrated_candidate(result: Dict[str, Any], X: np.ndarray) -> np
     model_name = result.get("model_name", "")
     if model_name == "OrdinalDecomp":
         return _predict_ordinal_probabilities(result["model"], X)
-    if model_name == "StackEnsemble":
-        base_results = result["stack_base_results"]
-        base_names = result["base_model_order"]
-        meta_features = np.hstack(
-            [_predict_uncalibrated_candidate(base_results[name], X) for name in base_names]
-        )
-        return result["model"].predict_proba(meta_features)
     return result["model"].predict_proba(X)
 
 
@@ -4957,7 +4914,7 @@ def evaluate_frozen_selected_model_on_test(
         )
 
     _register_final_test_evaluation(scenario_name, model_name)
-    # Raw and calibrated outputs are generated in the same locked final-analysis
+    # Raw and calibrated outputs are generated in the same held-out final-analysis
     # stage. They cannot alter selection, fitting, or calibration.
     raw_test_probability = _predict_uncalibrated_candidate(result, X_test)
     calibrated_test_probability = _predict_calibrated_candidate(result, X_test)
@@ -5568,7 +5525,7 @@ def _run_workflow_for_split(
 
     _audit_shared_hpo_selection(local_artifacts, analysis_label, write_csv=primary)
 
-    # Every selected model/calibrator is frozen before any test matrix is created.
+    # Every selected model/calibrator is fixed after selection before any test matrix is created.
     y_test = container.y[test_idx]
     for scenario, artifacts in local_artifacts.items():
         selected_name = artifacts["selected_model"]
@@ -8567,8 +8524,7 @@ def write_pipeline_manifest(container: DataContainer, all_results: Dict, pub_out
         "scenario_scope_exclusions": {
             "S1_Gene_Level": {
                 "organ_criticality_columns_removed": (
-                    [] if Config.USE_ORGAN_CRITICALITY_FEATURES
-                    else list(Config.ORGAN_CRITICALITY_COLUMNS)
+                    list(Config.ORGAN_CRITICALITY_COLUMNS)
                 ),
                 "inheritance_count_proxy_columns_removed": list(
                     getattr(container, "inheritance_proxy_drops_S1", [])

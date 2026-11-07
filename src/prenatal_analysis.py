@@ -1,33 +1,5 @@
 #!/usr/bin/env python3
-"""
-prenatal_analysis.py
-===============================================
-Use the complete cohort, combine repeated rows belonging to the same family,
-and test a selected v3 severity channel against two ordered prenatal outcomes:
-
-1) Live birth (0) < TOP (1) < Death (2)
-2) Live birth without NICU (0) < NICU/special care (1) < TOP (2) < Death (3)
-
-No study-level statistics are performed. Study restrictions remain optional
-command-line filters and are disabled by default.
-
-Works with the v3 multichannel phenotype severity scorer while retaining
-backward compatibility with supported v2 phenotype-only artifacts. Only the
-cohort CSV, saved model, ultrasound HPO terms, and pregnancy outcome are
-required. A family_id
-column is used when available; otherwise each row is treated as one family.
-The revised scorer can abstain on low-information profiles. All families,
-including missing outcomes, empty-HPO profiles, and model abstentions, remain in
-the main family output with explicit analysis-inclusion flags.
-
-USAGE
-  python3 prenatal_analysis.py \
-      --cohort prenatal_cohort_merged.csv \
-      --model PHENOTYPE_SEVERITY_MODEL_V3/model.pkl \
-      --scorer-code phenotype_scorer.py\
-      --score-channel combined \
-      --output PRENATAL_ANALYSIS_V3
-"""
+"""Apply the disease-level phenotype scorer to prenatal profiles and analyse outcomes."""
 
 from __future__ import annotations
 
@@ -428,7 +400,7 @@ def load_cohort(path: str, exclude_studies: Sequence[str],
     family_df["has_hpo"] = family_df["n_hpo"] > 0
 
     audit["n_family_profiles"] = int(len(family_df))
-    audit["n_final"] = int(len(family_df))  # backwards-compatible audit field
+    audit["n_final"] = int(len(family_df))  # backwards-compatible check field
     audit["n_outcome_conflict_families"] = int(family_df["outcome_conflict"].sum())
     audit["n_with_hpo"] = int(family_df["has_hpo"].sum())
     audit["n_without_hpo"] = int((~family_df["has_hpo"]).sum())
@@ -447,7 +419,7 @@ def load_cohort(path: str, exclude_studies: Sequence[str],
     }
     return family_df.reset_index(drop=True), audit
 
-# scoring (v2 phenotype-only and v3 multichannel models)
+
 def _load_scorer_module(scorer_code: Optional[str]):
     """Load scorer code and register current and legacy pickle module aliases.
 
@@ -457,6 +429,7 @@ def _load_scorer_module(scorer_code: Optional[str]):
     any fitted coefficients or feature layouts.
     """
     known_module_names = (
+        "phenotype_scorer",
         "phenotype_severity_scorer_v3_3_monotone_ontology",
         "phenotype_severity_scorer_v3_1_visual_dashboard",
         "phenotype_severity_scorer_v3",
@@ -527,6 +500,7 @@ class _ScorerCompatUnpickler(pickle.Unpickler):
     def find_class(self, module_name, class_name):
         is_scorer_module = (
             module_name == "__main__"
+            or module_name == "phenotype_scorer"
             or module_name == "phenotype_severity_scorer_v3_3_monotone_ontology"
             or module_name.startswith("phenotype_severity_scorer")
         )
@@ -550,7 +524,7 @@ def _upgrade_loaded_scorer_state(scorer, scorer_module) -> List[str]:
     builder = getattr(scorer, "builder", None)
     vectorizer = getattr(scorer, "vectorizer", None)
 
-    # v3 stores the phenotype vectorizer inside builder and exposes vectorizer as
+    
     # a compatibility alias. Recreate only the alias if it is absent.
     if vectorizer is None and builder is not None and hasattr(builder, "phenotype"):
         scorer.vectorizer = builder.phenotype
@@ -604,8 +578,8 @@ def _upgrade_loaded_scorer_state(scorer, scorer_module) -> List[str]:
                     getattr(vectorizer, "ic_weighting", False)
                 ),
             }
-            # ModelConfig grew additional v3 fields. Supplying only fields
-            # accepted by the active scorer keeps this compatible with v2.
+            
+            
             try:
                 scorer.config = config_class(**kwargs)
                 repairs.append("scorer.config")
@@ -625,7 +599,7 @@ def _upgrade_loaded_scorer_state(scorer, scorer_module) -> List[str]:
             "dimension_model_calibrated": {},
         })
     else:
-        # Harmless v2 deployment fields.
+        
         scorer_defaults.update({
             "use_augmented_headline": False,
             "use_mechanistic": False,
@@ -834,8 +808,8 @@ def score_families(
             else np.nan
         )
 
-        # v2 artifacts do not expose separate combined/phenotype values. Their
-        # headline score is phenotype-only, so it is a safe compatibility fallback.
+        
+        
         if not np.isfinite(phenotype_score) and model_generation == "v2_phenotype_only":
             phenotype_score = float(headline_score) if np.isfinite(headline_score) else np.nan
             phenotype_expected = (

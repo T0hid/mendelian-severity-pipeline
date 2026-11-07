@@ -1,8 +1,4 @@
-"""Generate a report from current configuration and completed result tables.
-
-The original report module was absent from the supplied project. This reporting-only
-replacement writes existing values without fitting, selecting or evaluating models.
-"""
+"""Write a report from completed analysis tables."""
 from __future__ import annotations
 
 import csv

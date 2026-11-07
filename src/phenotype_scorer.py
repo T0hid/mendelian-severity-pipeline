@@ -1,69 +1,5 @@
 #!/usr/bin/env python3
-"""
-phenotype_scorer.py
-
-Multi-channel disease-level HPO severity scorer.
-
-Primary outputs
----------------
-1. Phenotype-derived severity: inferred from all eligible phenotype terms, including
-   HPO terms whose names contain mild, moderate, severe or profound by default.
-2. Combined severity: phenotype evidence plus ontology-branch organ-system burden,
-   selected phenotype interactions, and learned absent-term effects when negative
-   annotations exist in the training CSV. The previous separate monotone
-   explicit-severity channel remains available as an optional legacy policy.
-3. Separate dimensions: phenotype-derived, explicit-annotation signal,
-   organ-system burden, overall combined severity, and optional learned clinical
-   dimensions when suitable target columns are present.
-4. Unified visualisation dashboards: held-out model evaluation with an ordinal
-   SHAP beeswarm and patient-level score visualisation.
-5. Low-end safeguards: the Mild boundary has independently tuned regularisation,
-   optional unbalanced fitting, out-of-fold isotonic calibration, and explicit
-   Mild-class diagnostics. Under the optional legacy severity-term policy, explicit
-   severity words are pooled by ordinal level and their threshold coefficients are
-   sign-constrained after every fold fit.
-6. Ontology-safe organ mapping: new models use HPO ancestor branches. Boundary-aware
-   text patterns are used only when a branch cannot be resolved. Legacy pickles keep
-   their original keyword behaviour so feature values are not silently changed.
-
-Severity classes are ordinal: Mild=0, Moderate=1, Severe=2, Profound=3.
-The training and evaluation unit is one MONDO disease. The model uses three
-calibrated logistic thresholds: P(Y>0), P(Y>1), P(Y>2).
-
-Expected input columns
-----------------------
-Required aliases:
-  gene_symbol / Gene Name / Gene
-  mondo_id / MONDO_ID / MONDO ID
-  severity / Severity / target_severity
-  hpo_id / HPO_ID / Phenotypes_HPO / HPO_Term
-
-Optional negative-annotation columns:
-  is_present, present, negated, is_absent, excluded, status
-or a separate absent_hpo_id / absent_hpo_terms / excluded_hpo_id column.
-
-Optional dimension targets (labels 0..3 or Mild..Profound):
-  functional_severity
-  life_threatening_severity / mortality_severity
-  developmental_severity
-  treatment_burden_severity
-
-Examples
---------
-Train:
-  python3 phenotype_scorer.py \
-      --severity-csv final_output_with_severity.csv \
-      --hpo-obo hp.obo \
-      --output PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL
-
-Score:
-  python3 phenotype_scorer.py \
-      --load PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL/model.pkl \
-      --score HP:0001250 HP:0001252 HP:0000252 \
-      --absent-score HP:0001260
-
-Dependencies: numpy, pandas, scipy, scikit-learn, matplotlib, shap.
-"""
+"""Train and apply the disease-level phenotype scorer."""
 
 from __future__ import annotations
 
@@ -1313,7 +1249,7 @@ class ThresholdCalibrator:
         calibrated = []
         for threshold, entry in enumerate(self.models):
             probability = np.clip(raw_cumulative[:, threshold], eps, 1.0 - eps)
-            # Backward compatibility for v3.0/v3.1 pickles that stored only models.
+            
             if isinstance(entry, tuple) and len(entry) == 2:
                 method, model = entry
             else:

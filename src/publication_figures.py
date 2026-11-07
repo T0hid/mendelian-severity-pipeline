@@ -43,7 +43,7 @@ except ImportError:
     HAS_SKLEARN = False
 
 # 1. CONFIGURATION (single source of truth for the whole file)
-# Locked headline pair. Change here to relock on a different (scenario, model).
+
 HEADLINE_SCENARIO = "S2_Combined"
 HEADLINE_MODEL    = "LightGBM"
 CLASS_NAMES   = ["Mild", "Moderate", "Severe", "Profound"]
@@ -51,7 +51,7 @@ CLASS_INDICES = {n: i for i, n in enumerate(CLASS_NAMES)}
 # Scenario human labels, expanded once. Drives every figure legend / axis.
 # The dict KEYS are the pipeline scenario identifiers and must not be renamed:
 # they index results, fold artefacts and on-disk output files. Only the VALUES
-# are reader-facing. Manuscript naming: S1 = gene-level, S1b = disease-context,
+
 # S2 = combined, S3 = phenotype-only. The mechanistic_core family is displayed
 # as Gene-level core.
 SCENARIO_LABELS = {
@@ -76,7 +76,7 @@ SCENARIO_ORDER = [
     "S3_Phenotype",
    # "S2_blind_diagnostic",
 ]
-# ----- Color palette (color-vision-safe, no red/green primary contrast) -----
+
 # Per-class palette: distinct hues, blue/green/orange/purple
 PAL_CLASS = {
     "Mild":     "#0072B2",  # blue
@@ -173,7 +173,7 @@ NEUTRAL_MID        = "#777777"
 # --- Figure 5 panel e (S3 phenotype PCA) controls -------------------------------
 # S3_PCA_STANDARDISE: whether to z-score the binary HPO indicators before PCA.
 #   False (default) reproduces the explained-variance ratios in the delivered
-#   figure_5e_s3_true_predicted_pca.csv and quoted in the manuscript
+
 #   (PC1 7.3%, PC2 4.9%). Setting it True standardises first, which up-weights
 #   rare terms and yields materially larger ratios (about PC1 21.2%, PC2 15.8%);
 #   if you change it you must also change the value quoted in the Results.
@@ -185,33 +185,33 @@ S3_PCA_STANDARDISE = False
 # and otherwise compress the central cloud to a few pixels.
 S3_PCA_DUPLICATE_CLUSTER_MIN = 25
 # Figure 1 panel d content.
-#   "disease_clustering" (default) — complementary cumulative distribution of
+#   "disease_clustering" (default) - complementary cumulative distribution of
 #       gene-disease pairs per MONDO disease, mirroring panel b at the disease
 #       level. This is the quantity that motivates the disease-disjoint and
 #       joint gene-and-disease-disjoint evaluations.
-#   "mondo_classes" — the previous bar chart of the most represented specific
+#   "mondo_classes" - the previous bar chart of the most represented specific
 #       MONDO disease classes. Retained for reproducibility; uninformative in
 #       this corpus, where the largest class covers 4.3% of pairs.
 PANEL_D_MODE = "disease_clustering"
 # Figure 5/6 panel e, right-hand subplot.
-#   "predicted_class"  — colour by predicted severity, misclassified pairs
+#   "predicted_class"  - colour by predicted severity, misclassified pairs
 #       outlined in black. The two subplots then differ only in colouring, so
 #       an error is seen as a point that changes colour between them.
-#   "error_magnitude"  — colour by ordinal distance between predicted and
+#   "error_magnitude"  - colour by ordinal distance between predicted and
 #       observed class (0 correct, 1 adjacent, >=2 non-adjacent). This states
 #       the two claims the panel is cited for, that errors sit inside the
 #       cloud and are almost all adjacent, without asking the reader to
 #       compare two near-identical scatter plots.
 S3_PCA_RIGHT_PANEL = "predicted_class"
 # How panel e chooses which pairs to draw.
-#   "proportional" (default) — one common sampling fraction applied within each
+#   "proportional" (default) - one common sampling fraction applied within each
 #       observed class, without separating correct from misclassified pairs. The
 #       displayed error rate then matches the true error rate, so the reader
 #       cannot mistake the panel for a statement about how often the model errs.
-#   "error_enriched" — the previous rule: keep every misclassified pair, then add
+#   "error_enriched" - the previous rule: keep every misclassified pair, then add
 #       a 20% sample of correct pairs. This shows error *location* well but
 #       over-represents error *frequency* about threefold (274 of 571 displayed
-#       points, 48%, against a true locked-test rate of 274 of 1,750, 15.7%),
+#       points, 48%, against a true held-out-test rate of 274 of 1,750, 15.7%),
 #       which combined with the larger error marker makes the dense central
 #       region read as though most pairs were misclassified.
 S3_PCA_SAMPLING = "proportional"
@@ -233,7 +233,7 @@ S3_PCA_FS = {
     "legend": 8.2,
 }
 NEUTRAL_LIGHT      = "#D9D9D9"
-# ----- Typography -----
+
 
 # 2. FEATURE LABEL PRETTIFICATION
 # Heuristic mapping for non-HPO features. Editable extras (loaded at runtime)
@@ -593,7 +593,7 @@ def _selected_publication_models(
             selected[scenario] = str(model_name)
     if selected:
         return selected
-    # Compatibility fallback: select only among models that have locked-test outputs.
+    # Compatibility fallback: select only among models that have held-out-test outputs.
     for scenario, strata in all_results.items():
         candidates = []
         for model_name, result in strata.get("all", {}).items():
@@ -708,7 +708,7 @@ def _read_scenario_shap_observations(output_dir: str, scenario: str):
     """
     import json
     expl_dir = os.path.join(output_dir, "per_disease_explanations")
-    # v4.7: prefer the full-matrix SHAP on the expected severity class written by
+    
     # save_severity_shap (every test pair, every feature, missing flags merged
     # into their parent feature, positive = towards more severe).
     severity_path = os.path.join(expl_dir, f"severity_shap_{scenario}.npz")
@@ -775,7 +775,7 @@ def _read_scenario_shap_observations(output_dir: str, scenario: str):
 
 # 7. FIGURE 5 - COMPREHENSIVE MODEL ANALYSIS
 
-# 8. TABLE 1 - HEADLINE METRICS (CSV + Markdown)
+
 def table_2_gene_level_companion(
     pub_outputs: Dict,
     out_dir: str,
@@ -857,7 +857,7 @@ def figure_5_family_summed_shap(
     family removes that artefact. Panels a-d stay per-feature, since reviewers
     expect named features; this table is the check against misreading them.
     """
-    # v4.7: when the pipeline wrote group SHAP on the expected severity class
+    
     # (pair-level sums within biologically defined groups), report that instead.
     groups_path = os.path.join(output_dir, "results", "severity_shap_groups.csv")
     if os.path.exists(groups_path):
@@ -952,7 +952,7 @@ def table_1_headline_metrics(
             model_names = [selected_model]
         else:
             # Fallback: consider available models, but only include models
-            # that actually have locked test metrics.
+            # that actually have held-out test metrics.
             model_names = _stable_models(all_models.keys())
         for model_name in model_names:
             result = all_models.get(model_name)
@@ -1013,7 +1013,7 @@ def table_1_headline_metrics(
                 )
             else:
                 permutation_p = np.nan
-            # Number of locked test observations.
+            # Number of held-out test observations.
             if "y_true" in result and result["y_true"] is not None:
                 n_test = int(len(result["y_true"]))
             else:
@@ -1401,7 +1401,7 @@ def _family_display(family: str) -> str:
         "mouse_phenotype": "Mouse phenotype",
         "variant": "Variants",
         "external": "External",
-        # Published gene-level constraint and expression sources added in v4.5:
+        
         # s_het, Human Protein Atlas, BrainSpan, DOMINO, GDI.
         "gene_constraint_v2": "Constraint and expression",
         "missingness_indicator": "Availability",
@@ -1450,7 +1450,7 @@ def _scenario_feature_family_frame(container, selected_only: bool = False,
 
 # 17. FIGURE 1 - STUDY DESIGN AND COHORT OVERVIEW
 
-# 18. FIGURE 2 - MODEL COMPARISON AND HEADLINE PERFORMANCE
+
 
 # 19. FIGURE 3 - CLASS BEHAVIOUR AND CALIBRATION
 def _calibration_tables(pub_outputs: Dict, output_dir: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -1505,11 +1505,11 @@ def generate_publication_figures(all_results: Dict, container, pub_outputs: Dict
     the historical ``<output_dir>/figures/publication`` destination is used.
     """
     if output_dir is None:
-        from pipeline import Config
+        from severity_pipeline import Config
         output_dir = Config.OUTPUT_DIR
     if fold_artifacts is None:
         try:
-            from pipeline import _fold_artifacts as _fa
+            from severity_pipeline import _fold_artifacts as _fa
             fold_artifacts = _fa
         except Exception:
             fold_artifacts = {}
@@ -1534,9 +1534,9 @@ def generate_publication_figures(all_results: Dict, container, pub_outputs: Dict
     _setup_rcparams()
     labeler = FeatureLabeler(output_dir=output_dir)
     resolved_scenario, resolved_model = _resolve_headline(all_results, pub_outputs)
-    print(f"[publication_figures_v2] source pipeline run: {source_output_dir}")
-    print(f"[publication_figures_v2] publication output: {publication_root}")
-    print(f"[publication_figures_v2] writing five composite main figures to {main_dir}")
+    print(f"[publication_figures] source pipeline run: {source_output_dir}")
+    print(f"[publication_figures] publication output: {publication_root}")
+    print(f"[publication_figures] writing five composite main figures to {main_dir}")
     print(f"  Headline pair: {resolved_scenario} / {resolved_model}")
     print(f"  Loaded {len(labeler.hpo_dict)} HPO labels, {len(labeler.extra_dict)} extras")
     print("[main] Figure 1 - Study design and cohort overview")
@@ -1565,7 +1565,7 @@ def generate_publication_figures(all_results: Dict, container, pub_outputs: Dict
     table_2_gene_level_companion(pub_outputs, main_dir, fig_data_dir,
                                  output_dir=output_dir)
     _write_main_figure_manifest(main_dir, fig_data_dir)
-    print("[publication_figures_v2] done; no supplementary figures were generated.")
+    print("[publication_figures] done; no supplementary figures were generated.")
 # Backward-compatible alias retained for external scripts that imported it.
 
 # 23. FIGURE RENDERING
@@ -1577,12 +1577,12 @@ import textwrap
 from matplotlib.colors import TwoSlopeNorm
 NATURE_SHOW_MISSING_PANELS = False
 NATURE_MIN_FONT_PT = 6.2
-# Internal figure numbering is offset by one from the manuscript, because
-# manuscript Figure 1 is a hand-built schematic that this script does not
+
+
 # generate. Saving under the internal names forced a manual renaming step on
 # every rebuild, and that step is what allowed superseded figures from an older
 # output folder to reach the submission set. Files are therefore written under
-# the manuscript numbers directly, so the generated folder can be used as-is.
+
 # Updated for the Nature Medicine Article format: the six-display-item limit
 # moved the cohort-overview and robustness figures to Extended Data.
 MANUSCRIPT_FIGURE_NAMES = {
@@ -1654,7 +1654,7 @@ def _clean_mondo_columns(columns) -> List[str]:
 # Figure 1
 # Figure 2
 # Figure 3
-# Figure 4 - dynamic manuscript composite (no blank debug tiles)
+
 # Figure 5
 def _plot_interpretation_nature(ax, output_dir: str, scenario: str,
                                 model_name: Optional[str], results_collector,
@@ -1728,7 +1728,7 @@ def _plot_interpretation_nature(ax, output_dir: str, scenario: str,
     _empty_panel(ax, "Interpretation unavailable")
     return pd.DataFrame(), None
 
-# 24. FINAL LAYOUT OVERRIDES FOR LONG-LABEL MANUSCRIPT PANELS
+
 # These definitions provide the final layout. They retain the public API
 # and the strict
 # validation/test separation of the pipeline.
@@ -1824,7 +1824,7 @@ def _small_colorbar(ax, mappable, label: str, size: str = "4.5%", pad: float = 0
 
 def _scenario_short_list(values) -> List[str]:
     return [SCENARIO_SHORT.get(v, str(v)) for v in values]
-# Figure 1 — study design and cohort overview
+# Figure 1 - study design and cohort overview
 def _plot_mondo_class_panel_d(ax, full_df, labeler, fig_data_dir):
     """Former panel d: most represented specific MONDO disease classes.
 
@@ -1934,7 +1934,7 @@ def figure_1_study_design(
     bottom = outer[1].subgridspec(
         1, 2, width_ratios=[1.12, 1.0], wspace=0.68
     )
-    # a — within-partition composition (former panel b)
+    # a - within-partition composition (former panel b)
     ax = fig.add_subplot(top[0, 0])
     active = [
         ("Train", np.asarray(train_idx, dtype=int)),
@@ -2007,7 +2007,7 @@ def figure_1_study_design(
         "figure_1a_partition_composition.csv",
         fig_data_dir,
     )
-    # b — clustering CCDF (former panel c)
+    # b - clustering CCDF (former panel c)
     ax = fig.add_subplot(top[0, 1])
     pairs_per_gene = pd.Series(container.groups).value_counts().to_numpy(dtype=int)
     x_values = np.arange(1, int(np.max(pairs_per_gene)) + 1)
@@ -2050,7 +2050,7 @@ def figure_1_study_design(
         "figure_1b_gene_pair_ccdf.csv",
         fig_data_dir,
     )
-    # c — inheritance prevalence heatmap (former panel d)
+    # c - inheritance prevalence heatmap (former panel d)
     ax = fig.add_subplot(top[0, 2])
     inheritance_columns = [
         "feat_is_dominant",
@@ -2122,7 +2122,7 @@ def figure_1_study_design(
         _empty_panel(ax, "Inheritance indicators unavailable")
     _soft_title(ax, "Inheritance prevalence by severity")
     _panel_label(ax, "c", x=-0.18)
-    # d — disease-level clustering CCDF.
+    # d - disease-level clustering CCDF.
     #
     # Replaces the former "most represented specific MONDO disease classes" bar
     # chart. That panel was uninformative: the largest class covered 4.3% of
@@ -2202,7 +2202,7 @@ def figure_1_study_design(
             fig_data_dir,
         )
         # Per-disease detail for the largest groups, so the tail of the CCDF is
-        # auditable against the disease-overlap audit.
+        # auditable against the disease-overlap check.
         _disease_sizes = (
             full_df[_disease_column].astype(str).value_counts()
         )
@@ -2247,7 +2247,7 @@ def figure_1_study_design(
         _plot_mondo_class_panel_d(
             ax, full_df, labeler, fig_data_dir
         )
-    # e — representation matrix (former panel f), widened and relabelled
+    # e - representation matrix (former panel f), widened and relabelled
     ax = fig.add_subplot(bottom[0, 1])
     family_frame = _scenario_feature_family_frame(
         container, selected_only=False
@@ -2324,7 +2324,7 @@ def figure_1_study_design(
     _panel_label(ax, "e", x=-0.13)
     _save(fig, "figure_1_study_design", out_dir)
     logger("[figure_1] saved as five-panel layout (a–e)")
-# Figure 2 — model comparison and headline performance
+
 def _plot_candidate_model_lines(ax, frame: pd.DataFrame, metric: str, title: str):
     scenarios = _present_scenarios(frame["Scenario"].unique())
     models = _stable_models(frame["Model"].unique())
@@ -2397,7 +2397,7 @@ def figure_2_model_comparison(
     fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.52, 0.985),
                frameon=False, ncol=len(handles), title="Candidate models; black outline = selected",
                handlelength=1.4, columnspacing=1.2)
-    # d — selected models only on locked test; hero forest plot
+    # d - selected models only on held-out test; hero forest plot
     ax = fig.add_subplot(gs[1:3, 0:2])
     scenarios = _present_scenarios(test.get("Scenario", pd.Series(dtype=str)).unique())
     metrics = [("mcc", "MCC", "o"), ("qwk", "QWK", "s"),
@@ -2442,7 +2442,7 @@ def figure_2_model_comparison(
                 transform=ax.transAxes, ha="right", va="bottom", fontsize=5.6, color="#555555")
     _panel_label(ax, "d", x=-0.20)
     _save_csv(pd.DataFrame(export_rows), "figure_2d_locked_test_forest.csv", fig_data_dir)
-    # e — selection margin
+    # e - selection margin
     ax = fig.add_subplot(gs[1, 2])
     margins = _selection_margin_frame(validation)
     if not margins.empty:
@@ -2464,7 +2464,7 @@ def figure_2_model_comparison(
     else:
         _empty_panel(ax, "Selection margins unavailable")
     _soft_title(ax, "Model-selection margin"); _panel_label(ax, "e", x=-0.18)
-    # f — information-source contrasts
+    # f - information-source contrasts
     ax = fig.add_subplot(gs[2, 2])
     contrasts = [
         ("Disease context", "S1_Gene_Level", "S1b_Disease_Context"),
@@ -2523,7 +2523,7 @@ def figure_2_model_comparison(
     _save_csv(test, "figure_2_selected_test_metrics.csv", fig_data_dir)
     _save(fig, "figure_2_model_comparison", out_dir)
     logger("[figure_2] saved aesthetic v3")
-# Figure 3 — prediction behaviour and calibration
+# Figure 3 - prediction behaviour and calibration
 def figure_3_prediction_calibration(
     all_results: Dict,
     pub_outputs: Dict,
@@ -2552,7 +2552,7 @@ def figure_3_prediction_calibration(
     bot_gs = outer[2].subgridspec(1, 3, width_ratios=[2.30, 1.0, 0.95], wspace=0.62)
     confusion_axes = []
     confusion_export = []; calibration_export = []
-    # a–d confusion matrices
+    # a-d confusion matrices
     last_im = None
     for i in range(4):
         ax = fig.add_subplot(top_gs[0, i]); confusion_axes.append(ax)
@@ -2589,7 +2589,7 @@ def figure_3_prediction_calibration(
         cax = fig.add_axes([0.952, 0.695, 0.012, 0.20])
         cb = fig.colorbar(last_im, cax=cax); cb.set_label("Within-observed-class proportion")
         cb.outline.set_linewidth(0.4); cb.ax.tick_params(labelsize=6.2)
-    # e–h reliability curves
+    # e-h reliability curves
     for i in range(4):
         ax = fig.add_subplot(mid_gs[0, i])
         if i >= len(scenarios): ax.set_axis_off(); continue
@@ -2680,7 +2680,7 @@ def figure_3_prediction_calibration(
     if calibration_export: _save_csv(pd.concat(calibration_export,ignore_index=True),"figure_3_calibration_curves.csv",fig_data_dir)
     _save(fig,"figure_3_prediction_and_calibration",out_dir)
     logger("[figure_3] saved aesthetic v3")
-# Figure 4 — robustness and audits
+# Figure 4 - robustness and audits
 def _humanize_drop_reason(reason: str) -> str:
     """Return short, manuscript-facing labels for provenance exclusions."""
     key = str(reason).strip().lower()
@@ -2699,7 +2699,7 @@ def _humanize_drop_reason(reason: str) -> str:
     cleaned = cleaned.replace("high_", "").replace("_", " ").strip()
     cleaned = cleaned[:1].upper() + cleaned[1:] if cleaned else "Other"
     return _wrap_label(cleaned, 18)
-# Figure 5 — interpretation and phenotype biology
+# Figure 5 - interpretation and phenotype biology
 # Keep the manifest synchronized with the final layouts.
 # Compact per-class ordinal error panel.
 def _per_class_ordinal_error_frame(
@@ -2943,7 +2943,7 @@ def figure_4_robustness_composite(
     )
     top = outer[0].subgridspec(1, 3, wspace=0.50)
     mid = outer[1].subgridspec(1, 3, width_ratios=[0.96, 0.96, 1.34], wspace=0.56)
-    # a — split sensitivity
+    # a - split sensitivity
     ax = fig.add_subplot(top[0, 0])
     if not seed_df.empty and {"Scenario", "mcc"}.issubset(seed_df.columns):
         scenarios = _present_scenarios(seed_df["Scenario"].unique())
@@ -2969,7 +2969,7 @@ def figure_4_robustness_composite(
         _empty_panel(ax, "Split sensitivity unavailable")
     _soft_title(ax, "Split sensitivity")
     _panel_label(ax, "a", x=-0.19)
-    # b — MI threshold
+    # b - MI threshold
     ax = fig.add_subplot(top[0, 1])
     if not mi.empty and "Scenario" in mi.columns and "mcc" in mi.columns:
         threshold_col = "minimum_mi_threshold" if "minimum_mi_threshold" in mi.columns else "mi_threshold"
@@ -2990,7 +2990,7 @@ def figure_4_robustness_composite(
         _empty_panel(ax, "MI threshold unavailable")
     _soft_title(ax, "Feature-selection threshold")
     _panel_label(ax, "b", x=-0.19)
-    # c — permutation null
+    # c - permutation null
     ax = fig.add_subplot(top[0, 2])
     if not perm.empty and "Scenario" in perm.columns:
         rows = perm[perm["Scenario"].isin(SCENARIO_ORDER)].copy()
@@ -3025,7 +3025,7 @@ def figure_4_robustness_composite(
         _empty_panel(ax, "Permutation analysis unavailable")
     _soft_title(ax, "Observed versus gene-block null")
     _panel_label(ax, "c", x=-0.19)
-    # d — HPO capacity
+    # d - HPO capacity
     ax = fig.add_subplot(mid[0, 0])
     if not budget.empty and {"Scenario", "hpo_binary_budget", "qwk"}.issubset(budget.columns):
         plotted = []
@@ -3069,7 +3069,7 @@ def figure_4_robustness_composite(
         _empty_panel(ax, "HPO capacity unavailable")
     _soft_title(ax, "Shared HPO capacity")
     _panel_label(ax, "d", x=-0.19)
-    # e — imbalance strategies
+    # e - imbalance strategies
     ax = fig.add_subplot(mid[0, 1])
     if not imbalance.empty and {"Scenario", "imbalance_strategy", "mcc"}.issubset(imbalance.columns):
         scenarios = _present_scenarios(imbalance["Scenario"].unique())
@@ -3103,7 +3103,7 @@ def figure_4_robustness_composite(
         _empty_panel(ax, "Imbalance analysis unavailable")
     _soft_title(ax, "Imbalance handling")
     _panel_label(ax, "e", x=-0.19)
-    # f — provenance heatmap
+    # f - provenance heatmap
     ax = fig.add_subplot(mid[0, 2])
     if not leakage.empty:
         totals = leakage.groupby("drop_reason")["n"].sum().sort_values(ascending=False)
@@ -3787,7 +3787,7 @@ def _plot_s3_two_part_pca_panel(
         borderaxespad=0.0,
     )
     # Returned so the caller can write these to disk. The figure legend in the
-    # manuscript quotes the display sample, the number of identical-projection
+    
     # clusters excluded from the axis limits and the off-axis count; those
     # values change whenever the sampling or clustering rule changes, so they
     # must be read from the run rather than carried over between versions.
