@@ -1,32 +1,11 @@
-"""
-publication_figures_v2.py
-==========================
-Compact Nature-style figure pack for the v4.5 genetic-disease severity
-prediction pipeline.
-The public entry point is ``generate_publication_figures(...)``.
-The orchestrator produces five composite main figures and one main table.
-This cleaned edition retains only code reachable from the public entry point;
-legacy overrides and unused supplementary builders were removed.
-No supplementary directory or supplementary figure is generated.
-  Figure 1 - Study design and cohort overview
-  Figure 2 - Candidate-model comparison and locked-test performance
-  Figure 3 - Class-level behaviour and calibration
-  Figure 4 - Robustness, sensitivity, auditing, and generalisation
-  Figure 5 - Interpretation, phenotype biology, embedding, and case studies
-  Table 1  - Headline locked-test metrics (CSV + Markdown)
-Statistical separation is preserved throughout:
-  * all candidate families are compared only on the outer validation partition;
-  * only the validation-selected frozen/calibrated model is reported on the
-  
-    locked test partition and receives bootstrap CIs, calibration, and test SHAP;
-  * robustness sweeps remain validation-only unless explicitly labelled as a
-    locked-test analysis.
-Design constraints follow Nature Portfolio conventions:
-  * double-column width: 7.1 in (180 mm)
-  * sans-serif fonts at 5-8 pt final size
-  * 300 dpi RGB PNG plus editable vector PDF
-  * colour-vision-safe palettes and no rainbow colour maps
-  * shared legends, shared axes, and dense small-multiple layouts
+"""Generate publication figures and Table 1 from completed analyses.
+
+Fig. 2: model comparison and test performance.
+Fig. 3: errors and calibration.
+Fig. 4: feature interpretation and phenotype map.
+Extended Data Fig. 1: cohort and candidate features.
+Extended Data Fig. 2: robustness and sensitivity.
+Table 1: test metrics. Fig. 5 comes from the prenatal analysis.
 """
 from __future__ import annotations
 import os
@@ -2506,11 +2485,7 @@ def figure_2_model_comparison(
                    edgecolor="#222222", linewidth=0.8, zorder=3)
         ax.scatter(dmcc, ci - 0.11, s=28, marker="s", facecolor="white",
                    edgecolor="#222222", linewidth=0.8, zorder=3)
-        # Sign-aware label placement. A fixed positive offset puts the label of a
-        # negative contrast on top of its own marker, which hides the leading
-        # minus sign; the S3-to-S2 contrast is the paper's headline null result,
-        # so its sign has to be unambiguous. Negative values are therefore set to
-        # the left of the marker and right-aligned.
+        # Place negative labels to the left so markers do not hide the minus sign.
         _label_gap = 0.012
         for _value, _yoff in ((dqwk, +0.11), (dmcc, -0.11)):
             if not np.isfinite(_value):
