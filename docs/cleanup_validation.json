@@ -25,5 +25,19 @@
   "prenatal_reference_input_rows": 614,
   "prenatal_reference_analysed_profiles": 531,
   "full_reference_training_rerun": false,
-  "python": "3.12.14"
+  "python": "3.12.14",
+  "task4_followup": {
+    "tests_passed": 37,
+    "wrapper_pairs_merged": 5,
+    "scorer_retraining_predictions_exact_match": true,
+    "scorer_retraining_selection_exact_match": true,
+    "prenatal_statistics_exact_match": true,
+    "saved_model_profile_predictions_exact_match": true,
+    "compatibility_loader_retained": "Required for saved __main__ class references",
+    "hash_seed_comparison": "Both versions use PYTHONHASHSEED=0 for the controlled check; pipeline defaults unchanged",
+    "controlled_benchmark_comparison": {
+      "model_selection_validation.csv": "exact match",
+      "publication_table.csv": "all fields match except Multiclass_Brier; maximum difference 1.6653345369377348e-16"
+    }
+  }
 }

@@ -45,7 +45,6 @@ from sklearn.metrics import (
     cohen_kappa_score,
     make_scorer,
 )
-from sklearn.decomposition import PCA
 from sklearn.feature_selection import mutual_info_classif
 try:
     import lightgbm as lgb
@@ -78,9 +77,6 @@ from gene_disease_mapping_filter import (
     apply_rebuilt_mapping as _apply_rebuilt_gene_disease_mapping,
     resolve_mapping_path as _resolve_gene_disease_mapping_path,
 )
-
-
-# 1. Configuration, containers and shared state
 
 
 class Config:
@@ -122,7 +118,7 @@ class Config:
     # Listed per source file, because the CORE and EXTERNAL files share some column
     # names (the CORE paralogue columns hold real values; the EXTERNAL ones are empty).
     REMOVED_INPUT_COLUMNS_CORE = {
-        
+
         # copies of gnomad_regional_*. The standard gene-level gnomad_* values are kept.
         "pLI": "gnomad_min_across_transcripts",
         "oe_lof": "gnomad_min_across_transcripts",
@@ -264,9 +260,7 @@ class Config:
     }
     MODEL_SELECTION_RULE = "lexicographic_qwk_then_mcc_then_balanced_accuracy"
 
-    # HPO representation.
-    # Ancestor expansion is explicitly disabled; only directly annotated HPO terms
-    # are used in the primary analysis.
+
     HPO_ANCESTOR_EXPANSION_ENABLED = False
     HPO_ANCESTOR_MAX_HOPS = 0
     HPO_ANCESTOR_EXCLUDED_IDS = ("HP:0000001", "HP:0000118")
@@ -290,7 +284,6 @@ class Config:
         "reg_lambda": 0.5,
     }
     DROP_SEVERITY_HPO_TERMS = True
-    DROP_HPO_PCA = True
     DROP_HPO_DERIVED_IC = True
     RUN_SEVERITY_HPO_SENSITIVITY = True
 
@@ -317,7 +310,6 @@ class Config:
     # MONDO disease-class features are the direct subclasses of this term in the pinned
     # mondo.obo, so no class IDs are written by hand (). MONDO:0700096 = human disease.
     MONDO_CLASS_ROOT = "MONDO:0700096"
-    HPO_PCA_N_COMPONENTS = 30
     FEATURE_BUDGET = {
         "hpo_binary": 200,
         "hpo_derived": 10,
@@ -355,7 +347,7 @@ class Config:
     ORDINAL_BOUNDARY_MULT = [2.5, 1.5, 1.0, 1.0]
 
     # (2 Nov 2026). Features that record how well a gene or disease is
-    
+
     DROP_RECORD_KEEPING_FEATURES = True
     RECORD_KEEPING_COLUMNS = (
         "feat_mondo_depth",                      # level of the disease in the MONDO tree
@@ -372,9 +364,9 @@ class Config:
     # Per-category annotation counts and "annotation present" flags measure how well
     # a gene is studied. Term indicators (top 20 per category) are kept.
     TEXT_ADD_COUNT_AND_AVAILABILITY = False
-    # Pairs without a recorded mode of inheritance: 0 on every inheritance flag plus
-    # one explicit "inheritance not recorded" flag, instead of three identical
-    # missing-value indicators.
+
+
+
     INHERITANCE_UNKNOWN_AS_FLAG = True
     # no separate "inheritance not recorded" feature. Unrecorded pairs stay 0 on
     # every inheritance flag, so no mode is invented, but the gap is not a feature.
@@ -463,7 +455,7 @@ class Config:
     ALLOW_OUTPUT_REUSE = False
 
     # This string is written verbatim into pipeline_manifest.json and the summary
-    
+
     # The labels come from an evidence-grounded artificial-intelligence
     # agent operationalising the Lazarin and ACMG framework, validated against
     # expert-curated cohorts rather than produced by case-by-case expert review.
@@ -493,23 +485,17 @@ class Logger:
             print(full)
 
     def section(self, title: str):
-        sep = "=" * 70
-        self.log(sep)
         self.log(title)
-        self.log(sep)
 
     def subsection(self, title: str):
-        self.log("-" * 50)
         self.log(title)
 
     def save(self):
         elapsed = datetime.now() - self.start_time
         self.log(f"Total runtime: {elapsed}")
         with open(self.log_file, "w", encoding="utf-8") as f:
-            f.write("=" * 80 + "\n")
             f.write(f"SEVERITY PREDICTION PIPELINE v{PIPELINE_VERSION} LOG (GENE-DISEASE PAIR)\n")
             f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-            f.write("=" * 80 + "\n\n")
             for entry in self.logs:
                 f.write(entry + "\n")
 
@@ -644,7 +630,7 @@ _fold_artifacts: Dict[str, Dict[str, Any]] = {}
 
 
 FEATURE_DISPLAY_LABELS: Dict[str, str] = {
-    
+
     "shet_log10": "LoF selection, log10 s_het",
     "shet_post_mean": "LoF selection (s_het)",
     "shet_percentile": "s_het percentile rank",
@@ -678,7 +664,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "gdi_raw": "Gene damage index (GDI)",
     "gdi_log": "Gene damage index, log10 (GDI)",
     "gdi_mendelian_damage_high": "High background damage in Mendelian genes (GDI)",
-    
+
     "gnomad_pLI": "Loss-of-function intolerance (pLI)",
     "pLI": "Loss-of-function intolerance (pLI)",
     "gnomad_regional_pLI": "Regional loss-of-function intolerance (pLI)",
@@ -702,7 +688,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "feat_missz_minus_synz": "Missense minus synonymous constraint",
     "feat_missz_x_pli": "Missense constraint x pLI",
     "feat_triple_constraint": "Constrained by LoF, missense and dosage",
-    
+
     "pHaplo": "Haploinsufficiency probability (pHaplo)",
     "pTriplo": "Triplosensitivity probability (pTriplo)",
     "collins_pHI": "Haploinsufficiency probability (Collins)",
@@ -720,7 +706,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "dosage_sensitive_any": "ClinGen HI or TS flag set",
     "ordered_dosage_sensitive": "Dosage sensitivity, graded",
     "hi_no_backup": "Haploinsufficient with no paralogue backup",
-    
+
     "depmap_mean_score": "Cell-line essentiality (DepMap mean)",
     "depmap_mean_effect": "Mean gene-effect score (DepMap)",
     "depmap_min_effect": "Strongest gene-effect score (DepMap)",
@@ -731,10 +717,10 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "depmap_is_context_essential": "Essential in 10-90% of cell lines (DepMap)",
     "feat_essential_constrained": "Essential and constrained",
     "feat_central_essential": "Network-central and essential",
-    
+
     "gtex_tau": "Tissue specificity of expression (GTEx tau)",
     "gtex_max_exp": "Peak tissue expression (GTEx)",
-    
+
     "feat_is_dominant": "Dominant inheritance",
     "feat_is_recessive": "Recessive inheritance",
     "feat_is_xlinked": "X-linked inheritance",
@@ -749,7 +735,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "feat_pli_x_recessive": "pLI in recessive genes",
     "feat_dominant_low_constraint": "Dominant gene under weak constraint",
     "feat_recessive_high_constraint": "Recessive gene under strong constraint",
-    
+
     "paralog_count": "Number of paralogues",
     "n_paralogs": "Number of paralogues",
     "max_paralog_identity_x": "Closest paralogue sequence identity",
@@ -769,7 +755,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "paralog_expression_corr": "Expression correlation with closest paralogue",
     "feat_constrained_no_paralog": "Constrained with no paralogue",
     "rigid_no_backup": "Structurally rigid with no paralogue backup",
-    
+
     "af_mean_plddt": "AlphaFold confidence, mean pLDDT",
     "af_median_plddt": "AlphaFold confidence, median pLDDT",
     "af_plddt_std": "AlphaFold confidence variability",
@@ -790,7 +776,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "is_nuclear": "Nuclear-localised protein",
     "is_mitochondrial": "Mitochondrial protein",
     "is_secreted": "Secreted protein",
-    
+
     "ppi_degree": "Protein interaction partners",
     "ppi_betweenness": "Interaction network betweenness",
     "ppi_closeness": "Interaction network closeness",
@@ -815,7 +801,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "feat_hub_essential": "Network hub and essential",
     "complex_corum_complex_count": "Protein complexes joined (CORUM)",
     "complex_corum_avg_complex_size": "Mean protein complex size (CORUM)",
-    
+
     "var_n_pathogenic_clinvar": "Pathogenic ClinVar variants",
     "var_n_lof": "Reported LoF variants",
     "var_n_missense": "Reported missense variants",
@@ -828,7 +814,7 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "feat_density_lof": "LoF variants per coding base",
     "feat_density_missense": "Missense variants per coding base",
     "feat_ratio_lof_missense": "LoF-to-missense variant ratio",
-    
+
     "conservation_score": "Cross-species conservation",
     "gene_age": "Evolutionary age of the gene",
     "is_ancient": "Ancient gene family",
@@ -838,13 +824,13 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
     "has_fly_ortholog": "Fly orthologue present",
     "has_worm_ortholog": "Worm orthologue present",
     "has_yeast_ortholog": "Yeast orthologue present",
-    
+
     "n_transcripts": "Annotated transcripts",
     "n_transcripts_log": "Annotated transcripts, log",
     "has_multiple_isoforms": "Has multiple isoforms",
     "gene_length": "Gene length",
     "gene_length_log": "Gene length, log",
-    
+
     "mouse_lethal_pheno_max": "Strongest mouse-lethal phenotype match",
     "mouse_lethal_pheno_mean": "Mean mouse-lethal phenotype match",
     "mouse_lethal_pheno_n_hpos_with_data": "Phenotype terms with mouse-lethal data",
@@ -930,7 +916,6 @@ results_collector = None
 
 
 def _initialise_runtime() -> None:
-    """Create outputs and collectors after the fresh-directory check."""
     global logger, results_collector
     for subdirectory in (
         "", "figures", "figures/diagnostics", "figures/publication",
@@ -939,9 +924,6 @@ def _initialise_runtime() -> None:
         os.makedirs(os.path.join(Config.OUTPUT_DIR, subdirectory), exist_ok=True)
     logger = Logger(os.path.join(Config.OUTPUT_DIR, "pipeline_log.txt"))
     results_collector = ResultsCollector()
-
-
-# 2. Input tables, ontology parsing and pair-level targets
 
 
 def find_col(patterns, cols):
@@ -978,11 +960,6 @@ def safe_feature_name(prefix: str, raw_value: str, max_len: int = 40) -> str:
 
 
 def get_git_commit_hash() -> str:
-    """Resolve the commit hash, or return an explicit machine-readable reason.
-
-    made "not under version control" indistinguishable from "git is missing" or
-    40-character hex commit (optionally suffixed ``-dirty``) or a
-    ``not_available:<reason>`` marker."""
     search_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
     try:
         completed = subprocess.run(
@@ -1066,7 +1043,7 @@ def filter_leaky_columns_for_phenotype_scenarios(
         ):
             dropped.append((column, "severity_hpo_blocklist"))
             continue
-        if Config.DROP_HPO_PCA and column.startswith("feat_hpo_pca_"):
+        if column.startswith("feat_hpo_pca_"):
             dropped.append((column, "hpo_pca_blocklist"))
             continue
         kept.append(column)
@@ -1092,7 +1069,6 @@ def load_mechanistic_features() -> pd.DataFrame:
 
 
 def _drop_removed_input_columns(df: pd.DataFrame, source_name: str) -> pd.DataFrame:
-    """Drop the v4.6 broken or duplicate input columns listed for this source file."""
     listed = getattr(Config, f"REMOVED_INPUT_COLUMNS_{source_name}", {})
     removed = {
         column: reason
@@ -1169,16 +1145,7 @@ def load_external_features() -> Tuple[pd.DataFrame, List[str]]:
 
 
 def load_new_gene_features() -> Tuple[pd.DataFrame, List[str]]:
-    """Load the published gene-level constraint/expression block.
-
-    Source file is produced by build_new_gene_features.py and contains s_het
-    (GeneBayes posterior selection coefficients), Human Protein Atlas tissue and
-    single-cell-type specificity, BrainSpan prenatal/postnatal brain expression,
-    DOMINO and GDI. Every column is gene-intrinsic and derived from a public
-    database, so the block is admissible in S1.
-
-    The file is optional. If it is missing the pipeline proceeds unchanged.
-    """
+    """Load the published gene-level constraint/expression block."""
     if not os.path.exists(Config.NEW_GENE_FEATURES):
         logger.log(
             "  New gene-level features file not found, continuing without it",
@@ -1204,77 +1171,6 @@ def load_new_gene_features() -> Tuple[pd.DataFrame, List[str]]:
     new_cols = [c for c in new_df.columns if c != "gene_symbol"]
     logger.log(f"  New gene-level features: {len(new_cols)} columns for {len(new_df)} genes")
     return (new_df, new_cols)
-
-
-def _read_hpo_ontology(obo_path: str) -> Tuple[Dict[str, Dict], Dict[str, str], Dict[str, str]]:
-    logger.log(f"  Parsing HPO ontology from {obo_path}...")
-    if not os.path.exists(obo_path):
-        logger.log("  HPO OBO not found, attempting download...", level="WARNING")
-        try:
-            import urllib.request
-
-            urllib.request.urlretrieve(Config.HPO_OBO_URL, obo_path)
-        except Exception as e:
-            logger.log(f"  Could not download HPO ontology: {e}", level="WARNING")
-            return ({}, {}, {})
-    records: List[Dict[str, Any]] = []
-    current: Optional[Dict[str, Any]] = None
-
-    def commit() -> None:
-        nonlocal current
-        if current and current.get("id"):
-            records.append(current)
-        current = None
-
-    with open(obo_path, "r", encoding="utf-8") as handle:
-        for raw in handle:
-            line = raw.rstrip("\n")
-            if line == "[Term]":
-                commit()
-                current = {
-                    "id": None,
-                    "name": "",
-                    "parents": [],
-                    "alt_ids": [],
-                    "obsolete": False,
-                    "replaced_by": None,
-                }
-            elif line.startswith("["):
-                commit()
-            elif current is not None:
-                if line.startswith("id: HP:"):
-                    current["id"] = line[4:].strip()
-                elif line.startswith("name: "):
-                    current["name"] = line[6:].strip()
-                elif line.startswith("is_a: HP:"):
-                    current["parents"].append(line[6:].split("!")[0].strip())
-                elif line.startswith("alt_id: HP:"):
-                    current["alt_ids"].append(line[8:].strip())
-                elif line.startswith("is_obsolete: true"):
-                    current["obsolete"] = True
-                elif line.startswith("replaced_by: HP:"):
-                    current["replaced_by"] = line[13:].strip()
-        commit()
-    terms: Dict[str, Dict] = {}
-    alt_to_id: Dict[str, str] = {}
-    name_candidates: Dict[str, set] = defaultdict(set)
-    for rec in records:
-        tid = rec["id"]
-        replacement = rec.get("replaced_by")
-        if rec.get("obsolete"):
-            if replacement:
-                alt_to_id[tid] = replacement
-                for alt in rec.get("alt_ids", []):
-                    alt_to_id[alt] = replacement
-            continue
-        terms[tid] = {"name": rec.get("name", ""), "parents": list(rec.get("parents", []))}
-        for alt in rec.get("alt_ids", []):
-            alt_to_id[alt] = tid
-        if rec.get("name"):
-            name_candidates[str(rec["name"]).strip().lower()].add(tid)
-    name_to_id = {name: next(iter(ids)) for name, ids in name_candidates.items() if len(ids) == 1}
-    logger.log(f"  Parsed {len(terms)} current HPO terms, {len(alt_to_id)} alternate/replaced IDs")
-    return (terms, alt_to_id, name_to_id)
 
 
 def canonicalize_hpo_token(
@@ -1331,125 +1227,6 @@ def expand_hpo_profile(
                 break
     ancestors.difference_update(direct_ids)
     return (direct_ids, ancestors, unresolved)
-
-
-def _read_mondo_ontology(obo_path: str) -> Dict[str, Dict]:
-    logger.log(f"  Parsing MONDO ontology from {obo_path}...")
-    if not os.path.exists(obo_path):
-        logger.log(f"  MONDO OBO not found, attempting download...", level="WARNING")
-        try:
-            import urllib.request
-
-            urllib.request.urlretrieve("http://purl.obolibrary.org/obo/mondo.obo", obo_path)
-        except Exception as e:
-            logger.log(f"  Could not download: {e}", level="WARNING")
-            return {}
-    terms: Dict[str, Dict] = {}
-    current_id = None
-    current_name = None
-    current_parents: List[str] = []
-    current_is_obsolete = False
-    in_term = False
-    with open(obo_path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line == "[Term]":
-                if current_id and (not current_is_obsolete):
-                    terms[current_id] = {"name": current_name or "", "parents": current_parents}
-                current_id = None
-                current_name = None
-                current_parents = []
-                current_is_obsolete = False
-                in_term = True
-            elif line == "" or line.startswith("["):
-                if current_id and (not current_is_obsolete) and in_term:
-                    terms[current_id] = {"name": current_name or "", "parents": current_parents}
-                current_id = None
-                current_name = None
-                current_parents = []
-                current_is_obsolete = False
-                in_term = line.startswith("[Term]")
-            elif in_term:
-                if line.startswith("id: "):
-                    current_id = line[4:].strip()
-                elif line.startswith("name: "):
-                    current_name = line[6:].strip()
-                elif line.startswith("is_a: "):
-                    # Strip the trailing "! name" comment and any axiom annotation
-                    # ("{source=...}") so only the parent ID remains ().
-                    parent_id = line[6:].split("!")[0].split("{")[0].strip()
-                    current_parents.append(parent_id)
-                elif line.startswith("is_obsolete: true"):
-                    current_is_obsolete = True
-        if current_id and (not current_is_obsolete):
-            terms[current_id] = {"name": current_name or "", "parents": current_parents}
-    logger.log(f"  Parsed {len(terms)} MONDO terms")
-    depth_cache: Dict[str, int] = {}
-
-    def get_depth(tid: str, visiting: Optional[set] = None) -> int:
-        if tid in depth_cache:
-            return depth_cache[tid]
-        if visiting is None:
-            visiting = set()
-        if tid in visiting:
-            depth_cache[tid] = 0
-            return 0
-        if tid not in terms or not terms[tid]["parents"]:
-            depth_cache[tid] = 0
-            return 0
-        visiting = visiting | {tid}
-        valid_parents = [p for p in terms[tid]["parents"] if p in terms]
-        if not valid_parents:
-            depth_cache[tid] = 0
-            return 0
-        d = 1 + max((get_depth(p, visiting) for p in valid_parents))
-        depth_cache[tid] = d
-        return d
-
-    for tid in terms:
-        terms[tid]["depth"] = get_depth(tid)
-    # disease classes are the direct subclasses of MONDO_CLASS_ROOT in the pinned
-    # release, named from their MONDO labels. Nothing is chosen by hand.
-    class_root = getattr(Config, "MONDO_CLASS_ROOT", "MONDO:0700096")
-    if class_root not in terms:
-        raise ValueError(f"MONDO class root {class_root} not found (or obsolete) in {obo_path}.")
-    disease_class_roots: Dict[str, str] = {}
-    used_labels: set = set()
-    for tid in sorted(terms):
-        if not tid.startswith("MONDO:") or class_root not in terms[tid]["parents"]:
-            continue
-        label = re.sub(r"[^a-z0-9]+", "_", terms[tid]["name"].lower()).strip("_")[:40]
-        label = label or tid.replace(":", "_")
-        if label in used_labels:
-            label = f"{label[:31]}_{tid.split(':')[1]}"
-        used_labels.add(label)
-        disease_class_roots[tid] = label
-    if not disease_class_roots:
-        raise ValueError(f"No direct subclasses of {class_root} found in {obo_path}.")
-    logger.log(
-        f"  MONDO disease classes: {len(disease_class_roots)} direct subclasses of "
-        f"{class_root} ({terms[class_root]['name']})"
-    )
-
-    def get_ancestors(tid: str, visited: Optional[set] = None) -> set:
-        if visited is None:
-            visited = set()
-        if tid in visited or tid not in terms:
-            return set()
-        visited.add(tid)
-        ancestors = {tid}
-        for p in terms[tid]["parents"]:
-            ancestors.update(get_ancestors(p, visited))
-        return ancestors
-
-    for tid in terms:
-        ancestors = get_ancestors(tid)
-        classes = []
-        for class_id, class_name in disease_class_roots.items():
-            if class_id in ancestors and class_id != tid:
-                classes.append(class_name)
-        terms[tid]["disease_classes"] = classes
-    return terms
 
 
 def build_mondo_features(
@@ -1560,12 +1337,6 @@ def build_pipe_text_features(
     source_label: str,
     n_top_items: int = 20,
 ) -> Tuple[pd.DataFrame, List[str]]:
-    """Legacy global text construction with missingness preserved.
-
-    The active v4.4 workflow removes all globally learned text columns and rebuilds
-    counts, availability flags, and token indicators inside each training fold.
-    This function remains for backward-compatible dataset assembly only.
-    """
     struct_cols = [
         "Pathways",
         "Biological_Processes",
@@ -1628,11 +1399,6 @@ def build_pipe_text_features(
 
 
 def _add_pair_level_inheritance(disease_df: pd.DataFrame, moi_column: str) -> pd.DataFrame:
-    """Derive inheritance flags for each gene-disease pair from its own mode(s) of inheritance.
-
-    Pairs with only unknown or blank modes get NaN flags. A known mode outside the
-    dominant / recessive / X-linked groups (e.g. Mitochondrial) gives all three flags 0.
-    """
     dominant = set(Config.MOI_DOMINANT)
     recessive = set(Config.MOI_RECESSIVE)
     xlinked = set(Config.MOI_XLINKED)
@@ -1747,7 +1513,7 @@ def build_gene_disease_target(primary_data_path: str) -> pd.DataFrame:
     conflict_audit.to_csv(conflict_path, index=False)
     n_conflict = int(conflict_audit["has_numeric_conflict"].sum())
     logger.log(
-        f"  Severity-label conflict audit: {n_conflict} conflicting gene-disease pairs; wrote {conflict_path}"
+        f'  Severity-label conflict check: {n_conflict} conflicting gene-disease pairs; wrote {conflict_path}'
     )
     if n_conflict:
         conflict_keys = set(
@@ -1977,7 +1743,7 @@ def engineer_features(df: pd.DataFrame, feature_cols: List[str]) -> Tuple[pd.Dat
     missense_col = find_col(["var_n_missense", ("n_", "missense")], eng_df.columns)
     # Density features depend only on protein length; proportion features depend only
     # on the total-variant count. Each is gated on the input it actually uses, so a
-    
+
     if len_col:
         len_safe = eng_df[len_col].clip(lower=1.0)
         if clinvar_col:
@@ -2140,7 +1906,6 @@ def _merge_gene_level_features(
     how: str = "left",
     add_availability: bool = True,
 ) -> Tuple[pd.DataFrame, Optional[str]]:
-    """Merge a one-row-per-gene table and preserve missing source values as NaN."""
     _validate_gene_level_source(source_df, source_name)
     merged_base = base_df.copy()
     availability_column: Optional[str] = None
@@ -2166,7 +1931,381 @@ def _missing_value_semantics_for_family(family: str) -> str:
     return "unknown_preserved_as_nan_then_training_fold_median_imputation"
 
 
-def _assemble_source_dataframe() -> DataContainer:
+def parse_hpo_obo(obo_path: str):
+    if not os.path.exists(obo_path) and not Config.ALLOW_ONTOLOGY_DOWNLOAD:
+        raise FileNotFoundError(
+            f"Pinned HPO ontology is required at {obo_path}. Automatic download is disabled "
+            "for manuscript reproducibility."
+        )
+    logger.log(f"  Parsing HPO ontology from {obo_path}...")
+    if not os.path.exists(obo_path):
+        logger.log("  HPO OBO not found, attempting download...", level="WARNING")
+        try:
+            import urllib.request
+
+            urllib.request.urlretrieve(Config.HPO_OBO_URL, obo_path)
+        except Exception as e:
+            logger.log(f"  Could not download HPO ontology: {e}", level="WARNING")
+            return ({}, {}, {})
+    records: List[Dict[str, Any]] = []
+    current: Optional[Dict[str, Any]] = None
+
+    def commit() -> None:
+        nonlocal current
+        if current and current.get("id"):
+            records.append(current)
+        current = None
+
+    with open(obo_path, "r", encoding="utf-8") as handle:
+        for raw in handle:
+            line = raw.rstrip("\n")
+            if line == "[Term]":
+                commit()
+                current = {
+                    "id": None,
+                    "name": "",
+                    "parents": [],
+                    "alt_ids": [],
+                    "obsolete": False,
+                    "replaced_by": None,
+                }
+            elif line.startswith("["):
+                commit()
+            elif current is not None:
+                if line.startswith("id: HP:"):
+                    current["id"] = line[4:].strip()
+                elif line.startswith("name: "):
+                    current["name"] = line[6:].strip()
+                elif line.startswith("is_a: HP:"):
+                    current["parents"].append(line[6:].split("!")[0].strip())
+                elif line.startswith("alt_id: HP:"):
+                    current["alt_ids"].append(line[8:].strip())
+                elif line.startswith("is_obsolete: true"):
+                    current["obsolete"] = True
+                elif line.startswith("replaced_by: HP:"):
+                    current["replaced_by"] = line[13:].strip()
+        commit()
+    terms: Dict[str, Dict] = {}
+    alt_to_id: Dict[str, str] = {}
+    name_candidates: Dict[str, set] = defaultdict(set)
+    for rec in records:
+        tid = rec["id"]
+        replacement = rec.get("replaced_by")
+        if rec.get("obsolete"):
+            if replacement:
+                alt_to_id[tid] = replacement
+                for alt in rec.get("alt_ids", []):
+                    alt_to_id[alt] = replacement
+            continue
+        terms[tid] = {"name": rec.get("name", ""), "parents": list(rec.get("parents", []))}
+        for alt in rec.get("alt_ids", []):
+            alt_to_id[alt] = tid
+        if rec.get("name"):
+            name_candidates[str(rec["name"]).strip().lower()].add(tid)
+    name_to_id = {name: next(iter(ids)) for name, ids in name_candidates.items() if len(ids) == 1}
+    logger.log(f"  Parsed {len(terms)} current HPO terms, {len(alt_to_id)} alternate/replaced IDs")
+    return (terms, alt_to_id, name_to_id)
+
+
+def parse_mondo_obo(obo_path: str):
+    if not os.path.exists(obo_path) and not Config.ALLOW_ONTOLOGY_DOWNLOAD:
+        raise FileNotFoundError(
+            f"Pinned MONDO ontology is required at {obo_path}. Automatic download is disabled "
+            "for manuscript reproducibility."
+        )
+    logger.log(f"  Parsing MONDO ontology from {obo_path}...")
+    if not os.path.exists(obo_path):
+        logger.log(f"  MONDO OBO not found, attempting download...", level="WARNING")
+        try:
+            import urllib.request
+
+            urllib.request.urlretrieve("http://purl.obolibrary.org/obo/mondo.obo", obo_path)
+        except Exception as e:
+            logger.log(f"  Could not download: {e}", level="WARNING")
+            return {}
+    terms: Dict[str, Dict] = {}
+    current_id = None
+    current_name = None
+    current_parents: List[str] = []
+    current_is_obsolete = False
+    in_term = False
+    with open(obo_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line == "[Term]":
+                if current_id and (not current_is_obsolete):
+                    terms[current_id] = {"name": current_name or "", "parents": current_parents}
+                current_id = None
+                current_name = None
+                current_parents = []
+                current_is_obsolete = False
+                in_term = True
+            elif line == "" or line.startswith("["):
+                if current_id and (not current_is_obsolete) and in_term:
+                    terms[current_id] = {"name": current_name or "", "parents": current_parents}
+                current_id = None
+                current_name = None
+                current_parents = []
+                current_is_obsolete = False
+                in_term = line.startswith("[Term]")
+            elif in_term:
+                if line.startswith("id: "):
+                    current_id = line[4:].strip()
+                elif line.startswith("name: "):
+                    current_name = line[6:].strip()
+                elif line.startswith("is_a: "):
+                    # Strip the trailing "! name" comment and any axiom annotation
+                    # ("{source=...}") so only the parent ID remains ().
+                    parent_id = line[6:].split("!")[0].split("{")[0].strip()
+                    current_parents.append(parent_id)
+                elif line.startswith("is_obsolete: true"):
+                    current_is_obsolete = True
+        if current_id and (not current_is_obsolete):
+            terms[current_id] = {"name": current_name or "", "parents": current_parents}
+    logger.log(f"  Parsed {len(terms)} MONDO terms")
+    depth_cache: Dict[str, int] = {}
+
+    def get_depth(tid: str, visiting: Optional[set] = None) -> int:
+        if tid in depth_cache:
+            return depth_cache[tid]
+        if visiting is None:
+            visiting = set()
+        if tid in visiting:
+            depth_cache[tid] = 0
+            return 0
+        if tid not in terms or not terms[tid]["parents"]:
+            depth_cache[tid] = 0
+            return 0
+        visiting = visiting | {tid}
+        valid_parents = [p for p in terms[tid]["parents"] if p in terms]
+        if not valid_parents:
+            depth_cache[tid] = 0
+            return 0
+        d = 1 + max((get_depth(p, visiting) for p in valid_parents))
+        depth_cache[tid] = d
+        return d
+
+    for tid in terms:
+        terms[tid]["depth"] = get_depth(tid)
+    # disease classes are the direct subclasses of MONDO_CLASS_ROOT in the pinned
+    # release, named from their MONDO labels. Nothing is chosen by hand.
+    class_root = getattr(Config, "MONDO_CLASS_ROOT", "MONDO:0700096")
+    if class_root not in terms:
+        raise ValueError(f"MONDO class root {class_root} not found (or obsolete) in {obo_path}.")
+    disease_class_roots: Dict[str, str] = {}
+    used_labels: set = set()
+    for tid in sorted(terms):
+        if not tid.startswith("MONDO:") or class_root not in terms[tid]["parents"]:
+            continue
+        label = re.sub(r"[^a-z0-9]+", "_", terms[tid]["name"].lower()).strip("_")[:40]
+        label = label or tid.replace(":", "_")
+        if label in used_labels:
+            label = f"{label[:31]}_{tid.split(':')[1]}"
+        used_labels.add(label)
+        disease_class_roots[tid] = label
+    if not disease_class_roots:
+        raise ValueError(f"No direct subclasses of {class_root} found in {obo_path}.")
+    logger.log(
+        f"  MONDO disease classes: {len(disease_class_roots)} direct subclasses of "
+        f"{class_root} ({terms[class_root]['name']})"
+    )
+
+    def get_ancestors(tid: str, visited: Optional[set] = None) -> set:
+        if visited is None:
+            visited = set()
+        if tid in visited or tid not in terms:
+            return set()
+        visited.add(tid)
+        ancestors = {tid}
+        for p in terms[tid]["parents"]:
+            ancestors.update(get_ancestors(p, visited))
+        return ancestors
+
+    for tid in terms:
+        ancestors = get_ancestors(tid)
+        classes = []
+        for class_id, class_name in disease_class_roots.items():
+            if class_id in ancestors and class_id != tid:
+                classes.append(class_name)
+        terms[tid]["disease_classes"] = classes
+    return terms
+
+
+def _collapse_annotation_to_gene_level(
+    source: pd.DataFrame,
+    write_audit: bool = False,
+) -> pd.DataFrame:
+    if "gene_symbol" not in source.columns:
+        raise ValueError("ANNOTATION data must contain a gene_symbol column.")
+    frame = source.copy()
+    frame["gene_symbol"] = frame["gene_symbol"].map(_normalise_gene_key)
+    text_columns = [column for column in _TEXT_STRUCT_COLS if column in frame.columns]
+    if not text_columns:
+        logger.log("  ANNOTATION data contains no configured functional text columns", level="WARNING")
+        return frame[["gene_symbol"]].drop_duplicates().reset_index(drop=True)
+
+    collapsed_rows: List[Dict[str, Any]] = []
+    audit_rows: List[Dict[str, Any]] = []
+    for gene, group in frame.groupby("gene_symbol", sort=True):
+        collapsed: Dict[str, Any] = {"gene_symbol": gene}
+        for column in text_columns:
+            token_sets = [
+                frozenset(_tokenise_pipe_value(value))
+                for value in group[column].dropna()
+            ]
+            union_tokens: set = set()
+            for token_set in token_sets:
+                union_tokens.update(token_set)
+            collapsed[column] = "|".join(sorted(union_tokens))
+            audit_rows.append({
+                "gene_symbol": gene,
+                "source_column": column,
+                "n_source_rows": int(len(group)),
+                "n_distinct_nonempty_profiles": int(len({tokens for tokens in token_sets if tokens})),
+                "n_union_tokens": int(len(union_tokens)),
+                "aggregation": "gene_level_union",
+            })
+        collapsed_rows.append(collapsed)
+
+    collapsed_frame = pd.DataFrame(collapsed_rows)
+    if collapsed_frame["gene_symbol"].duplicated().any():
+        raise RuntimeError("ANNOTATION gene-level collapse produced duplicate genes.")
+    if "mondo_id" in collapsed_frame.columns:
+        raise RuntimeError("Disease identifiers must not survive ANNOTATION gene-level collapse.")
+
+    if write_audit:
+        audit_path = os.path.join(
+            Config.OUTPUT_DIR, "results", "annotation_gene_level_invariance_audit.csv"
+        )
+        pd.DataFrame(audit_rows).to_csv(audit_path, index=False)
+        n_variable = sum(row["n_distinct_nonempty_profiles"] > 1 for row in audit_rows)
+        logger.log(
+            f"  Collapsed ANNOTATION annotations to {len(collapsed_frame)} gene-level profiles; "
+            f"{n_variable} gene/column groups required token union; wrote {audit_path}"
+        )
+    return collapsed_frame
+
+
+def _is_placeholder_token(item: str) -> bool:
+    return item.strip().lower() in set(getattr(Config, "TEXT_PLACEHOLDER_TOKENS", ()))
+
+
+def _tokenise_pipe_value(value: Any) -> set:
+    if value is None or (isinstance(value, float) and np.isnan(value)):
+        return set()
+    # placeholders such as "Unknown" mean no annotation, not a real token.
+    return {
+        item.strip()
+        for item in str(value).split("|")
+        if item.strip() and not _is_placeholder_token(item)
+    }
+
+
+def _normalise_gene_key(gene: Any) -> str:
+    return str(gene).strip().upper()
+
+
+def _normalise_mondo_key(mondo: Any) -> str:
+    value = str(mondo).strip().upper().replace("_", ":")
+    match = re.search(r"MONDO:?([0-9]+)", value)
+    if match:
+        return f"MONDO:{int(match.group(1)):07d}"
+    return value
+
+
+def _text_pair_key(gene: Any, mondo: Any) -> str:
+    return f"P|{_normalise_gene_key(gene)}|{_normalise_mondo_key(mondo)}"
+
+
+def _text_gene_key(gene: Any) -> str:
+    return f"G|{_normalise_gene_key(gene)}"
+
+
+def _load_text_token_maps() -> Dict[str, Dict[str, Dict[str, set]]]:
+    sources: Dict[str, Tuple[str, Dict[str, str]]] = {
+        "primary": (Config.PRIMARY_DATA, {"Gene Name": "gene_symbol", "MONDO_ID": "mondo_id"}),
+        "annotation": (Config.ANNOTATION_DATA, {"Gene Name": "gene_symbol", "MONDO_ID": "mondo_id"}),
+    }
+    output: Dict[str, Dict[str, Dict[str, set]]] = {}
+    for label, (path, rename_map) in sources.items():
+        output[label] = {}
+        if not os.path.exists(path):
+            continue
+        source = pd.read_csv(path, low_memory=False).rename(columns=rename_map)
+        if "gene_symbol" not in source.columns:
+            continue
+        if label == "annotation":
+            source = _collapse_annotation_to_gene_level(source, write_audit=False)
+        elif (
+            getattr(Config, "APPLY_REBUILT_GENE_DISEASE_MAPPING", False)
+            and "mondo_id" in source.columns
+        ):
+            # Without this the gene-level token fallback below would union tokens
+            # from panel-collapse rows, letting a disease the gene does not cause
+            # contribute annotation tokens to that gene's profile.
+            source = _apply_rebuilt_gene_disease_mapping(
+                source,
+                gene_col="gene_symbol",
+                mondo_col="mondo_id",
+                mapping_path=_resolve_gene_disease_mapping_path(
+                    getattr(Config, "REBUILT_GENE_DISEASE_MAPPING", None),
+                    os.path.dirname(os.path.abspath(path)),
+                    Config.BASE_DIR,
+                    os.path.dirname(os.path.abspath(__file__)),
+                ),
+                log=None,
+                audit_dir=None,
+                include_added=getattr(Config, "INCLUDE_HPO_ADDED_PAIRS", False),
+            )
+        source["gene_symbol"] = source["gene_symbol"].astype(str)
+        if "mondo_id" in source.columns:
+            source["mondo_id"] = source["mondo_id"].astype(str)
+        for column in _TEXT_STRUCT_COLS:
+            if column not in source.columns:
+                continue
+            mapping: Dict[str, set] = {}
+            # Primary-source text may be pair-specific. ANNOTATION data has already
+            # been collapsed and contains no disease identifier.
+            if label != "annotation" and "mondo_id" in source.columns:
+                for (gene, mondo), values in source.groupby(["gene_symbol", "mondo_id"])[column]:
+                    tokens: set = set()
+                    for value in values.dropna():
+                        tokens.update(_tokenise_pipe_value(value))
+                    mapping[_text_pair_key(gene, mondo)] = tokens
+            # Gene-level fallback is retained for sources that are genuinely
+            # gene annotations or lack a usable disease identifier.
+            for gene, values in source.groupby("gene_symbol")[column]:
+                tokens: set = set()
+                for value in values.dropna():
+                    tokens.update(_tokenise_pipe_value(value))
+                mapping[_text_gene_key(gene)] = tokens
+            output[label][column] = mapping
+    return output
+
+
+def _strip_global_text_vocabulary_features(container: DataContainer) -> None:
+    prefixes = ("feat_primary_", "feat_annot_", "has_primary_", "has_annot_")
+    global_text_columns = [
+        column for column in container.full_df.columns if column.startswith(prefixes)
+    ]
+    if global_text_columns:
+        container.full_df = container.full_df.drop(
+            columns=global_text_columns, errors="ignore"
+        )
+        for scenario, columns in container.scenario_cols.items():
+            container.scenario_cols[scenario] = [
+                column for column in columns if column not in global_text_columns
+            ]
+        for column in global_text_columns:
+            container.feature_family_lookup.pop(column, None)
+        logger.log(
+            f"  Removed {len(global_text_columns)} globally constructed text features; "
+            "vocabularies, counts, and availability indicators will be fitted inside "
+            "each training fold."
+        )
+
+
+def assemble_full_dataframe() -> DataContainer:
     """Join source tables and record feature families and provenance before any train/evaluation fitting."""
     logger.section("ASSEMBLING FULL DATAFRAME (no fitting)")
     container = DataContainer()
@@ -2180,8 +2319,8 @@ def _assemble_source_dataframe() -> DataContainer:
     non_mouse_availability: List[str] = []
     mouse_availability: List[str] = []
 
-    # Preserve every target gene-disease pair. Mechanistic absence is represented
-    # explicitly and the corresponding values remain NaN until fold-local imputation.
+
+
     mechanistic_df = load_mechanistic_features()
     n_pairs_before_mechanistic = int(len(disease_df))
     full_df, mechanistic_availability = _merge_gene_level_features(
@@ -2341,7 +2480,7 @@ def _assemble_source_dataframe() -> DataContainer:
     container.groups = full_df["gene_symbol"].to_numpy()
 
     pli_column = None
-    # use the standard gene-level gnomAD pLI explicitly when present.
+
     if "gnomad_pLI" in full_df.columns and "gnomad_pLI" not in exclude:
         pli_column = "gnomad_pLI"
     for column in ([] if pli_column else full_df.columns):
@@ -2491,7 +2630,7 @@ def _assemble_source_dataframe() -> DataContainer:
     if getattr(Config, "DROP_MONDO_AVAILABILITY_FLAG", True) and "has_mondo_record" in full_df.columns:
         # the MONDO availability flag (disease ID found in mondo.obo) is constant or
         # nearly so in this corpus and was always removed by the variance filter. Like the
-        
+
         _mondo_flag_counts = (
             pd.to_numeric(full_df["has_mondo_record"], errors="coerce").value_counts(dropna=False).to_dict()
         )
@@ -2649,14 +2788,13 @@ def _assemble_source_dataframe() -> DataContainer:
                 os.path.join(_audit_dir, "scenario_columns.csv"), index=False
             )
             logger.log(
-                f"  [audit] Dumped full feature matrix "
-                f"({full_df.shape[0]} rows x {full_df.shape[1]} cols) to {_audit_dir}"
+                f'  [check] Dumped full feature matrix ({full_df.shape[0]} rows x {full_df.shape[1]} cols) to {_audit_dir}'
             )
         except Exception as _audit_err:
             logger.log(
-                f"  [audit] feature matrix dump failed: {_audit_err}", level="WARNING"
+                f'  [check] feature matrix dump failed: {_audit_err}', level="WARNING"
             )
-    # --- END FEATURE check HOOK ------------------------------------------------
+
 
     for scenario, columns in container.scenario_cols.items():
         logger.log(f"  Scenario {scenario}: {len(columns)} candidate columns")
@@ -2759,211 +2897,9 @@ def _assemble_source_dataframe() -> DataContainer:
         subset=["feature", "used_in_scenarios", "included_in_main_clean_run"]
     ).to_csv(provenance_path, index=False)
     logger.log(f"  Wrote feature provenance table: {provenance_path}")
+    _strip_global_text_vocabulary_features(container)
+    container.text_token_maps = _load_text_token_maps()
     return container
-
-
-def parse_hpo_obo(obo_path: str):
-    if not os.path.exists(obo_path) and not Config.ALLOW_ONTOLOGY_DOWNLOAD:
-        raise FileNotFoundError(
-            f"Pinned HPO ontology is required at {obo_path}. Automatic download is disabled "
-            "for manuscript reproducibility."
-        )
-    return _read_hpo_ontology(obo_path)
-
-
-def parse_mondo_obo(obo_path: str):
-    if not os.path.exists(obo_path) and not Config.ALLOW_ONTOLOGY_DOWNLOAD:
-        raise FileNotFoundError(
-            f"Pinned MONDO ontology is required at {obo_path}. Automatic download is disabled "
-            "for manuscript reproducibility."
-        )
-    return _read_mondo_ontology(obo_path)
-
-
-def _collapse_annotation_to_gene_level(
-    source: pd.DataFrame,
-    write_audit: bool = False,
-) -> pd.DataFrame:
-    """Return one deterministic union-of-annotations profile per gene.
-
-    The input may repeat a gene across disease rows. Only gene identity and the
-    configured functional text columns survive this transformation. An check
-    records whether repeated source rows contained distinct token profiles.
-    """
-    if "gene_symbol" not in source.columns:
-        raise ValueError("ANNOTATION data must contain a gene_symbol column.")
-    frame = source.copy()
-    frame["gene_symbol"] = frame["gene_symbol"].map(_normalise_gene_key)
-    text_columns = [column for column in _TEXT_STRUCT_COLS if column in frame.columns]
-    if not text_columns:
-        logger.log("  ANNOTATION data contains no configured functional text columns", level="WARNING")
-        return frame[["gene_symbol"]].drop_duplicates().reset_index(drop=True)
-
-    collapsed_rows: List[Dict[str, Any]] = []
-    audit_rows: List[Dict[str, Any]] = []
-    for gene, group in frame.groupby("gene_symbol", sort=True):
-        collapsed: Dict[str, Any] = {"gene_symbol": gene}
-        for column in text_columns:
-            token_sets = [
-                frozenset(_tokenise_pipe_value(value))
-                for value in group[column].dropna()
-            ]
-            union_tokens: set = set()
-            for token_set in token_sets:
-                union_tokens.update(token_set)
-            collapsed[column] = "|".join(sorted(union_tokens))
-            audit_rows.append({
-                "gene_symbol": gene,
-                "source_column": column,
-                "n_source_rows": int(len(group)),
-                "n_distinct_nonempty_profiles": int(len({tokens for tokens in token_sets if tokens})),
-                "n_union_tokens": int(len(union_tokens)),
-                "aggregation": "gene_level_union",
-            })
-        collapsed_rows.append(collapsed)
-
-    collapsed_frame = pd.DataFrame(collapsed_rows)
-    if collapsed_frame["gene_symbol"].duplicated().any():
-        raise RuntimeError("ANNOTATION gene-level collapse produced duplicate genes.")
-    if "mondo_id" in collapsed_frame.columns:
-        raise RuntimeError("Disease identifiers must not survive ANNOTATION gene-level collapse.")
-
-    if write_audit:
-        audit_path = os.path.join(
-            Config.OUTPUT_DIR, "results", "annotation_gene_level_invariance_audit.csv"
-        )
-        pd.DataFrame(audit_rows).to_csv(audit_path, index=False)
-        n_variable = sum(row["n_distinct_nonempty_profiles"] > 1 for row in audit_rows)
-        logger.log(
-            f"  Collapsed ANNOTATION annotations to {len(collapsed_frame)} gene-level profiles; "
-            f"{n_variable} gene/column groups required token union; wrote {audit_path}"
-        )
-    return collapsed_frame
-
-
-def _is_placeholder_token(item: str) -> bool:
-    return item.strip().lower() in set(getattr(Config, "TEXT_PLACEHOLDER_TOKENS", ()))
-
-
-def _tokenise_pipe_value(value: Any) -> set:
-    if value is None or (isinstance(value, float) and np.isnan(value)):
-        return set()
-    # placeholders such as "Unknown" mean no annotation, not a real token.
-    return {
-        item.strip()
-        for item in str(value).split("|")
-        if item.strip() and not _is_placeholder_token(item)
-    }
-
-
-def _normalise_gene_key(gene: Any) -> str:
-    return str(gene).strip().upper()
-
-
-def _normalise_mondo_key(mondo: Any) -> str:
-    value = str(mondo).strip().upper().replace("_", ":")
-    match = re.search(r"MONDO:?([0-9]+)", value)
-    if match:
-        return f"MONDO:{int(match.group(1)):07d}"
-    return value
-
-
-def _text_pair_key(gene: Any, mondo: Any) -> str:
-    return f"P|{_normalise_gene_key(gene)}|{_normalise_mondo_key(mondo)}"
-
-
-def _text_gene_key(gene: Any) -> str:
-    return f"G|{_normalise_gene_key(gene)}"
-
-
-def _load_text_token_maps() -> Dict[str, Dict[str, Dict[str, set]]]:
-    sources: Dict[str, Tuple[str, Dict[str, str]]] = {
-        "primary": (Config.PRIMARY_DATA, {"Gene Name": "gene_symbol", "MONDO_ID": "mondo_id"}),
-        "annotation": (Config.ANNOTATION_DATA, {"Gene Name": "gene_symbol", "MONDO_ID": "mondo_id"}),
-    }
-    output: Dict[str, Dict[str, Dict[str, set]]] = {}
-    for label, (path, rename_map) in sources.items():
-        output[label] = {}
-        if not os.path.exists(path):
-            continue
-        source = pd.read_csv(path, low_memory=False).rename(columns=rename_map)
-        if "gene_symbol" not in source.columns:
-            continue
-        if label == "annotation":
-            source = _collapse_annotation_to_gene_level(source, write_audit=False)
-        elif (
-            getattr(Config, "APPLY_REBUILT_GENE_DISEASE_MAPPING", False)
-            and "mondo_id" in source.columns
-        ):
-            # Without this the gene-level token fallback below would union tokens
-            # from panel-collapse rows, letting a disease the gene does not cause
-            # contribute annotation tokens to that gene's profile.
-            source = _apply_rebuilt_gene_disease_mapping(
-                source,
-                gene_col="gene_symbol",
-                mondo_col="mondo_id",
-                mapping_path=_resolve_gene_disease_mapping_path(
-                    getattr(Config, "REBUILT_GENE_DISEASE_MAPPING", None),
-                    os.path.dirname(os.path.abspath(path)),
-                    Config.BASE_DIR,
-                    os.path.dirname(os.path.abspath(__file__)),
-                ),
-                log=None,
-                audit_dir=None,
-                include_added=getattr(Config, "INCLUDE_HPO_ADDED_PAIRS", False),
-            )
-        source["gene_symbol"] = source["gene_symbol"].astype(str)
-        if "mondo_id" in source.columns:
-            source["mondo_id"] = source["mondo_id"].astype(str)
-        for column in _TEXT_STRUCT_COLS:
-            if column not in source.columns:
-                continue
-            mapping: Dict[str, set] = {}
-            # Primary-source text may be pair-specific. ANNOTATION data has already
-            # been collapsed and contains no disease identifier.
-            if label != "annotation" and "mondo_id" in source.columns:
-                for (gene, mondo), values in source.groupby(["gene_symbol", "mondo_id"])[column]:
-                    tokens: set = set()
-                    for value in values.dropna():
-                        tokens.update(_tokenise_pipe_value(value))
-                    mapping[_text_pair_key(gene, mondo)] = tokens
-            # Gene-level fallback is retained for sources that are genuinely
-            # gene annotations or lack a usable disease identifier.
-            for gene, values in source.groupby("gene_symbol")[column]:
-                tokens: set = set()
-                for value in values.dropna():
-                    tokens.update(_tokenise_pipe_value(value))
-                mapping[_text_gene_key(gene)] = tokens
-            output[label][column] = mapping
-    return output
-
-
-def _strip_global_text_vocabulary_features(container: DataContainer) -> None:
-    """Remove every globally constructed text feature, including count columns."""
-    prefixes = ("feat_primary_", "feat_annot_", "has_primary_", "has_annot_")
-    global_text_columns = [
-        column for column in container.full_df.columns if column.startswith(prefixes)
-    ]
-    if global_text_columns:
-        container.full_df = container.full_df.drop(
-            columns=global_text_columns, errors="ignore"
-        )
-        for scenario, columns in container.scenario_cols.items():
-            container.scenario_cols[scenario] = [
-                column for column in columns if column not in global_text_columns
-            ]
-        for column in global_text_columns:
-            container.feature_family_lookup.pop(column, None)
-        logger.log(
-            f"  Removed {len(global_text_columns)} globally constructed text features; "
-            "vocabularies, counts, and availability indicators will be fitted inside "
-            "each training fold."
-        )
-
-
-def assemble_full_dataframe() -> DataContainer:
-    """Assemble source features, remove global text columns, and retain raw tokens for fold-specific vocabularies."""
-    container = _assemble_source_dataframe()
     _strip_global_text_vocabulary_features(container)
     container.text_token_maps = _load_text_token_maps()
     return container
@@ -3124,9 +3060,6 @@ def _add_training_text_features(
     return frame, generated, family_lookup
 
 
-# 3. Grouped partitions, preprocessing and training-only feature selection
-
-
 class FoldPreprocessor:
 
     def __init__(
@@ -3144,7 +3077,6 @@ class FoldPreprocessor:
         self.kept_hpo_cols: List[str] = []
         self.hpo_ic_scores: Optional[np.ndarray] = None
         self.hpo_ic_75th: Optional[float] = None
-        self.pca: Optional[PCA] = None
         self.imputer: Optional[SimpleImputer] = None
         self.scaler: Optional[RobustScaler] = None
         self.derived_feature_names: List[str] = []
@@ -3196,13 +3128,6 @@ class FoldPreprocessor:
             "feat_hpo_mean_ic", "feat_hpo_max_ic", "feat_hpo_median_ic",
             "feat_hpo_ic_range", "feat_hpo_ic_std", "feat_hpo_rare_term_ratio",
         ]
-        if self.pca is not None:
-            row_norms = np.linalg.norm(ic_weighted, axis=1, keepdims=True)
-            row_norms_safe = np.where(row_norms == 0, 1, row_norms)
-            pca_features = self.pca.transform(ic_weighted / row_norms_safe)
-            for component in range(pca_features.shape[1]):
-                derived_blocks.append(pca_features[:, component])
-                derived_names.append(f"feat_hpo_pca_{component}")
         if not self.derived_feature_names:
             self.derived_feature_names = derived_names
         return np.column_stack(derived_blocks) if derived_blocks else np.zeros((n_samples, 0))
@@ -3326,7 +3251,6 @@ class FoldPreprocessor:
                 # information-content scores, rarity thresholds, or HPO PCA.
                 self.hpo_ic_scores = None
                 self.hpo_ic_75th = None
-                self.pca = None
                 self.derived_feature_names = []
                 hpo_derived = np.zeros((len(training_base), 0))
             else:
@@ -3341,19 +3265,12 @@ class FoldPreprocessor:
                 self.hpo_ic_75th = float(
                     np.percentile(self.hpo_ic_scores, 75)
                 )
-                n_components = min(
-                    Config.HPO_PCA_N_COMPONENTS,
-                    hpo_training_matrix.shape[1],
-                    max(n_train - 1, 1),
-                )
-                self.pca = None
                 hpo_derived = self._add_hpo_derived_features(
                     hpo_training_matrix
                 )
         else:
             self.hpo_ic_scores = None
             self.hpo_ic_75th = None
-            self.pca = None
             self.derived_feature_names = []
             hpo_derived = np.zeros((len(training_base), 0))
 
@@ -3443,8 +3360,7 @@ class FoldPreprocessor:
         action_counts = dataframe["audit_action"].value_counts().to_dict()
         reason_counts = dataframe["drop_reason"].value_counts().to_dict()
         logger.log(
-            f"    Feature audit ({scenario_name}): {len(dataframe)} entries; "
-            f"actions={action_counts}; reasons={reason_counts}"
+            f'    Feature check ({scenario_name}): {len(dataframe)} entries; actions={action_counts}; reasons={reason_counts}'
         )
 
 
@@ -3605,11 +3521,6 @@ def write_high_mi_provenance_report() -> pd.DataFrame:
 def _infer_discrete_feature_mask(
     X: np.ndarray, feature_names: List[str]
 ) -> np.ndarray:
-    """Identify categorical/binary variables for MI estimation.
-
-    Explicit feature semantics take priority. Low-cardinality detection is a
-    conservative fallback for integer-like indicators after scaling.
-    """
     mask = np.zeros(len(feature_names), dtype=bool)
     explicit_prefixes = (
         "hpo_", "feat_hpo_sys_", "feat_is_", "has_", "feat_mondo_",
@@ -3639,8 +3550,8 @@ def _compute_mutual_information_with_audit(
 ) -> Tuple[np.ndarray, pd.DataFrame, List[Dict[str, Any]]]:
     discrete_mask = _infer_discrete_feature_mask(X, feature_names)
     mi_matrix = np.asarray(X, dtype=float).copy()
-    # Encode each discrete column as non-negative integer category labels. This
-    # avoids passing robust-scaled category values directly to the discrete MI estimator.
+
+
     for index in np.flatnonzero(discrete_mask):
         _, inverse = np.unique(mi_matrix[:, index], return_inverse=True)
         mi_matrix[:, index] = inverse.astype(float)
@@ -3697,8 +3608,7 @@ def _compute_mutual_information_with_audit(
         })
     if audit_entries:
         logger.log(
-            f"  MI audit for {scenario_name}: {len(audit_entries)} high-value features "
-            "flagged for provenance review; none were removed because of MI magnitude.",
+            f'  MI check for {scenario_name}: {len(audit_entries)} high-value features flagged for provenance review; none were removed because of MI magnitude.',
             level="WARNING",
         )
         # Detailed names are logged outside the very large permutation sweep; all
@@ -3787,11 +3697,7 @@ def select_features_mi_grouped(
     scenario_name: str = "default",
     mi_threshold: float = 0.0,
 ) -> Tuple[np.ndarray, List[str], np.ndarray, np.ndarray, List[Dict], Dict[str, int]]:
-    """Family-budgeted MI selection using positive MI only.
-
-    ``mi_leakage_threshold`` is retained only for API compatibility and is ignored.
-    Leakage decisions are made from feature provenance, never from MI magnitude.
-    """
+    """Family-budgeted MI selection using positive MI only."""
     if X.shape[1] != len(feature_names):
         if X.shape[1] > len(feature_names):
             feature_names = feature_names + [
@@ -4010,7 +3916,6 @@ def _fit_scenario_representation(
     tag: str,
     drop_severity_hpo_terms: Optional[bool] = None,
 ) -> Dict[str, Any]:
-    """Fit preprocessing and feature selection on training rows and transform held-out rows."""
     allowed_text_sources = tuple(
         SCENARIO_TEXT_SOURCES.get(scenario, ())
     )
@@ -4086,8 +3991,8 @@ def _fit_scenario_representation(
     combined_static_drops.extend(dynamic_static_drops)
     combined_static_drops = list(dict.fromkeys(combined_static_drops))
 
-    # Fail immediately if a text feature enters a scenario without
-    # explicit permission.
+
+
     text_prefix_to_source = {
         "feat_primary_": "primary",
         "has_primary_": "primary",
@@ -4224,7 +4129,6 @@ def _choose_shared_hpo_budget_training_cv(
     seed: int,
     analysis_label: str,
 ) -> Tuple[Dict[str, int], pd.DataFrame]:
-    """Select a direct-HPO budget from S3 training folds and freeze it for both S2 and S3."""
     rows: List[Dict[str, Any]] = []
     best_budget: Optional[Dict[str, int]] = None
     best_key = (-np.inf, -np.inf, -np.inf)
@@ -4341,7 +4245,6 @@ def _audit_shared_hpo_selection(
     analysis_label: str,
     write_csv: bool,
 ) -> None:
-    """Require S2 and S3 to use an identical direct-HPO representation."""
     scenario_a, scenario_b = Config.SHARED_HPO_BUDGET_SCENARIOS
     if scenario_a not in artifacts or scenario_b not in artifacts:
         raise RuntimeError(
@@ -4391,110 +4294,8 @@ def _audit_shared_hpo_selection(
             f"only_S2={only_a}, only_S3={only_b}."
         )
     logger.log(
-        f"  Shared HPO fairness audit passed: S2 and S3 both use "
-        f"{len(selected_a)} direct HPO features at budget {budget_a}; "
-        f"all {len(nested_a)} nested folds also match."
+        f'  Shared HPO fairness check passed: S2 and S3 both use {len(selected_a)} direct HPO features at budget {budget_a}; all {len(nested_a)} nested folds also match.'
     )
-
-
-# 4. Candidate models, nested tuning, validation selection and the held-out test
-
-
-def _compute_discrimination_metrics(y_true, y_pred, y_prob) -> Dict[str, float]:
-    m: Dict[str, Any] = {}
-    y_true = np.asarray(y_true)
-    y_pred = np.asarray(y_pred)
-    y_prob = np.asarray(y_prob)
-    labels = np.arange(Config.NUM_CLASSES)
-    m["accuracy"] = float((y_true == y_pred).mean())
-    m["balanced_accuracy"] = float(balanced_accuracy_score(y_true, y_pred))
-    m["mcc"] = float(matthews_corrcoef(y_true, y_pred))
-    m["f1"] = float(f1_score(y_true, y_pred, labels=labels, average="weighted", zero_division=0))
-    m["f1_macro"] = float(f1_score(y_true, y_pred, labels=labels, average="macro", zero_division=0))
-    m["precision"] = float(
-        precision_score(y_true, y_pred, labels=labels, average="weighted", zero_division=0)
-    )
-    m["recall"] = float(
-        recall_score(y_true, y_pred, labels=labels, average="weighted", zero_division=0)
-    )
-    per_f1 = f1_score(y_true, y_pred, labels=labels, average=None, zero_division=0)
-    for i, name in enumerate(["Mild", "Moderate", "Severe", "Profound"]):
-        m[f"f1_{name}"] = float(per_f1[i])
-
-    if y_prob.ndim == 2 and y_prob.shape[1] == Config.NUM_CLASSES:
-        try:
-            m["auc_roc"] = float(
-                roc_auc_score(y_true, y_prob, multi_class="ovr", average="weighted")
-            )
-            m["auc_roc_macro"] = float(
-                roc_auc_score(y_true, y_prob, multi_class="ovr", average="macro")
-            )
-        except Exception as exc:
-            logger.log(
-                f"  AUC-ROC undefined: {type(exc).__name__}: {exc}", level="WARNING"
-            )
-            m["auc_roc"] = np.nan
-            m["auc_roc_macro"] = np.nan
-    else:
-        logger.log(
-            "  AUC-ROC undefined: probability matrix does not contain all configured classes.",
-            level="WARNING",
-        )
-        m["auc_roc"] = np.nan
-        m["auc_roc_macro"] = np.nan
-
-    m["mae"] = float(np.abs(y_true - y_pred).mean())
-    try:
-        qwk = float(cohen_kappa_score(y_true, y_pred, weights="quadratic"))
-        if not np.isfinite(qwk):
-            raise ValueError("quadratic weighted kappa returned a non-finite value")
-        m["qwk"] = qwk
-    except Exception as exc:
-        logger.log(f"  QWK undefined: {type(exc).__name__}: {exc}", level="WARNING")
-        m["qwk"] = np.nan
-    m["adjacent_accuracy"] = float((np.abs(y_true - y_pred) <= 1).mean())
-
-    # Ordinal ranking quality. On a four-class ordinal target with an irreducible
-    # within-gene noise floor, multiclass MCC understates a model that orders
-    # severity correctly but places the thresholds imperfectly. Spearman rho is
-    # reported on the expected-severity score when probabilities are available and
-    # falls back to the hard prediction otherwise. Per-threshold AUCs report the
-    # same signal at each ordinal cut.
-    try:
-        if y_prob.ndim == 2 and y_prob.shape[1] == Config.NUM_CLASSES:
-            ordinal_score = y_prob @ np.arange(Config.NUM_CLASSES, dtype=float)
-        else:
-            ordinal_score = y_pred.astype(float)
-        rho = spearmanr(ordinal_score, y_true).statistic
-        m["spearman_rho"] = float(rho) if np.isfinite(rho) else np.nan
-    except Exception as exc:
-        logger.log(
-            f"  Spearman rho undefined: {type(exc).__name__}: {exc}", level="WARNING"
-        )
-        m["spearman_rho"] = np.nan
-
-    for threshold in range(1, Config.NUM_CLASSES):
-        key = f"auc_threshold_ge{threshold}"
-        try:
-            binary_true = (y_true >= threshold).astype(int)
-            if binary_true.min() == binary_true.max():
-                m[key] = np.nan
-                continue
-            if y_prob.ndim == 2 and y_prob.shape[1] == Config.NUM_CLASSES:
-                binary_score = y_prob[:, threshold:].sum(axis=1)
-            else:
-                binary_score = y_pred.astype(float)
-            m[key] = float(roc_auc_score(binary_true, binary_score))
-        except Exception:
-            m[key] = np.nan
-
-    m["pred_distribution"] = str(
-        np.bincount(y_pred.astype(int), minlength=Config.NUM_CLASSES).tolist()
-    )
-    m["true_distribution"] = str(
-        np.bincount(y_true.astype(int), minlength=Config.NUM_CLASSES).tolist()
-    )
-    return m
 
 
 def ordinal_cumulative_to_class_probs(cumulative_probs: np.ndarray) -> np.ndarray:
@@ -4639,7 +4440,6 @@ def _hp_search_with_pipeline(
 
 
 def _activate_lgb_subsampling(parameters: Dict[str, Any]) -> Dict[str, Any]:
-    """Make LightGBM's subsample/bagging fraction operational and reproducible."""
     normalised = dict(parameters)
     try:
         fraction = float(normalised.get("subsample", normalised.get("bagging_fraction", 1.0)))
@@ -4675,14 +4475,6 @@ def _make_lgb_classifier(seed: int = RANDOM_SEED, **extra):
 
 
 def _make_multinomial_logistic_classifier(seed: int = RANDOM_SEED, **extra):
-    """Create a numerically stable multinomial linear baseline.
-
-    The scenario preprocessor already performs training-only imputation and
-    robust scaling. A second, model-specific StandardScaler is intentionally
-    fitted inside each logistic-regression training fold because optimisation
-    is sensitive to residual scale differences and extreme robust-scaled
-    values. Keeping this scaler inside the estimator prevents leakage.
-    """
     logistic_overrides: Dict[str, Any] = {}
     for key, value in extra.items():
         normalised_key = key.split("logistic__", 1)[1] if key.startswith("logistic__") else key
@@ -4710,7 +4502,6 @@ def _fit_multinomial_logistic_classifier(
     y: np.ndarray,
     sample_weight: Optional[np.ndarray] = None,
 ) -> SkPipeline:
-    """Fit the scaled logistic pipeline with correctly routed sample weights."""
     fit_kwargs: Dict[str, Any] = {}
     if sample_weight is not None:
         fit_kwargs["logistic__sample_weight"] = sample_weight
@@ -4719,7 +4510,6 @@ def _fit_multinomial_logistic_classifier(
 
 
 def _get_multinomial_logistic_estimator(model: Any) -> LogisticRegression:
-    """Return the fitted logistic step from the model-specific pipeline."""
     if isinstance(model, SkPipeline) and "logistic" in model.named_steps:
         estimator = model.named_steps["logistic"]
         if isinstance(estimator, LogisticRegression):
@@ -4730,14 +4520,12 @@ def _get_multinomial_logistic_estimator(model: Any) -> LogisticRegression:
 
 
 def _transform_for_multinomial_logistic(model: Any, X: np.ndarray) -> np.ndarray:
-    """Apply the fitted model-specific scaler for coefficient/SHAP analyses."""
     if isinstance(model, SkPipeline) and "standardize" in model.named_steps:
         return np.asarray(model.named_steps["standardize"].transform(X), dtype=float)
     return np.asarray(X, dtype=float)
 
 
 def _make_extra_trees_classifier(seed: int = RANDOM_SEED, **extra):
-    """Create the nonlinear, non-boosting tree-ensemble candidate."""
     base_kwargs = dict(
         n_estimators=500,
         criterion="gini",
@@ -4758,7 +4546,6 @@ def _resample_training_data(
     y_train: np.ndarray,
     scenario_name: str,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """Apply the configured resampling strategy to training data only."""
     smote_step = make_smote_step(scenario_name, y_train)
     if smote_step is None:
         return X_train, y_train
@@ -4779,7 +4566,6 @@ def _fit_ordinal_binary_models(
     seed: int = RANDOM_SEED,
     fixed_params: Optional[Dict] = None,
 ) -> Tuple[List[Any], Dict[str, Any]]:
-    """Fit ordinal threshold models using training data only."""
     X_fit, y_fit = _resample_training_data(X_train, y_train, scenario_name)
     bin_kwargs: Dict[str, Any] = {
         "objective": "binary",
@@ -4865,8 +4651,7 @@ def _register_final_test_evaluation(scenario_name: str, model_name: str) -> None
             f"The second request came from {model_name}."
         )
     logger.log(
-        f"  FINAL TEST GATE OPENED ONCE: {scenario_name}/{model_name}; "
-        "model and calibrator are frozen."
+        f'  FINAL TEST GATE OPENED ONCE: {scenario_name}/{model_name}; model and calibrator are fixed after selection.'
     )
 
 
@@ -4884,9 +4669,7 @@ def freeze_selected_model_and_calibrator(
     result["calibrator_frozen"] = True
     result["frozen_before_any_test_evaluation"] = True
     logger.log(
-        f"  Frozen selected model and calibration decision: "
-        f"{scenario_name}/{result['model_name']}; "
-        f"calibration_status={result.get('calibration_status', 'unknown')}"
+        f"  selected model and calibration decision: {scenario_name}/{result['model_name']}; calibration_status={result.get('calibration_status', 'unknown')}"
     )
     return result
 
@@ -5109,7 +4892,6 @@ def _tune_model_nested(
     scenario: str,
     seed: int,
 ) -> Tuple[Dict[str, Any], pd.DataFrame]:
-    """Compare parameter candidates using grouped training folds with independently fitted representations."""
     candidates = _parameter_candidates(model_name, seed)
     if not candidates:
         raise RuntimeError(f"No hyperparameter candidates generated for {scenario}/{model_name}.")
@@ -5209,7 +4991,100 @@ def _ranked_probability_score(y_true: np.ndarray, y_prob: np.ndarray) -> float:
 
 
 def compute_all_metrics(y_true, y_pred, y_prob) -> Dict[str, float]:
-    metrics = _compute_discrimination_metrics(y_true, y_pred, y_prob)
+    m: Dict[str, Any] = {}
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+    y_prob = np.asarray(y_prob)
+    labels = np.arange(Config.NUM_CLASSES)
+    m["accuracy"] = float((y_true == y_pred).mean())
+    m["balanced_accuracy"] = float(balanced_accuracy_score(y_true, y_pred))
+    m["mcc"] = float(matthews_corrcoef(y_true, y_pred))
+    m["f1"] = float(f1_score(y_true, y_pred, labels=labels, average="weighted", zero_division=0))
+    m["f1_macro"] = float(f1_score(y_true, y_pred, labels=labels, average="macro", zero_division=0))
+    m["precision"] = float(
+        precision_score(y_true, y_pred, labels=labels, average="weighted", zero_division=0)
+    )
+    m["recall"] = float(
+        recall_score(y_true, y_pred, labels=labels, average="weighted", zero_division=0)
+    )
+    per_f1 = f1_score(y_true, y_pred, labels=labels, average=None, zero_division=0)
+    for i, name in enumerate(["Mild", "Moderate", "Severe", "Profound"]):
+        m[f"f1_{name}"] = float(per_f1[i])
+
+    if y_prob.ndim == 2 and y_prob.shape[1] == Config.NUM_CLASSES:
+        try:
+            m["auc_roc"] = float(
+                roc_auc_score(y_true, y_prob, multi_class="ovr", average="weighted")
+            )
+            m["auc_roc_macro"] = float(
+                roc_auc_score(y_true, y_prob, multi_class="ovr", average="macro")
+            )
+        except Exception as exc:
+            logger.log(
+                f"  AUC-ROC undefined: {type(exc).__name__}: {exc}", level="WARNING"
+            )
+            m["auc_roc"] = np.nan
+            m["auc_roc_macro"] = np.nan
+    else:
+        logger.log(
+            "  AUC-ROC undefined: probability matrix does not contain all configured classes.",
+            level="WARNING",
+        )
+        m["auc_roc"] = np.nan
+        m["auc_roc_macro"] = np.nan
+
+    m["mae"] = float(np.abs(y_true - y_pred).mean())
+    try:
+        qwk = float(cohen_kappa_score(y_true, y_pred, weights="quadratic"))
+        if not np.isfinite(qwk):
+            raise ValueError("quadratic weighted kappa returned a non-finite value")
+        m["qwk"] = qwk
+    except Exception as exc:
+        logger.log(f"  QWK undefined: {type(exc).__name__}: {exc}", level="WARNING")
+        m["qwk"] = np.nan
+    m["adjacent_accuracy"] = float((np.abs(y_true - y_pred) <= 1).mean())
+
+    # Ordinal ranking quality. On a four-class ordinal target with an irreducible
+    # within-gene noise floor, multiclass MCC understates a model that orders
+    # severity correctly but places the thresholds imperfectly. Spearman rho is
+    # reported on the expected-severity score when probabilities are available and
+    # falls back to the hard prediction otherwise. Per-threshold AUCs report the
+    # same signal at each ordinal cut.
+    try:
+        if y_prob.ndim == 2 and y_prob.shape[1] == Config.NUM_CLASSES:
+            ordinal_score = y_prob @ np.arange(Config.NUM_CLASSES, dtype=float)
+        else:
+            ordinal_score = y_pred.astype(float)
+        rho = spearmanr(ordinal_score, y_true).statistic
+        m["spearman_rho"] = float(rho) if np.isfinite(rho) else np.nan
+    except Exception as exc:
+        logger.log(
+            f"  Spearman rho undefined: {type(exc).__name__}: {exc}", level="WARNING"
+        )
+        m["spearman_rho"] = np.nan
+
+    for threshold in range(1, Config.NUM_CLASSES):
+        key = f"auc_threshold_ge{threshold}"
+        try:
+            binary_true = (y_true >= threshold).astype(int)
+            if binary_true.min() == binary_true.max():
+                m[key] = np.nan
+                continue
+            if y_prob.ndim == 2 and y_prob.shape[1] == Config.NUM_CLASSES:
+                binary_score = y_prob[:, threshold:].sum(axis=1)
+            else:
+                binary_score = y_pred.astype(float)
+            m[key] = float(roc_auc_score(binary_true, binary_score))
+        except Exception:
+            m[key] = np.nan
+
+    m["pred_distribution"] = str(
+        np.bincount(y_pred.astype(int), minlength=Config.NUM_CLASSES).tolist()
+    )
+    m["true_distribution"] = str(
+        np.bincount(y_true.astype(int), minlength=Config.NUM_CLASSES).tolist()
+    )
+    metrics = m
     probability = np.asarray(y_prob, dtype=float)
     if probability.ndim == 2 and probability.shape[1] == Config.NUM_CLASSES:
         one_hot = np.eye(Config.NUM_CLASSES)[np.asarray(y_true, dtype=int)]
@@ -5320,7 +5195,6 @@ def _fit_selected_calibration(
 
 
 def _available_candidate_names() -> List[str]:
-    """Return the single authoritative, ordered set of selected candidates."""
     enabled = {
         "MultinomialLogisticRegression": bool(Config.MULTINOMIAL_LOGISTIC_ENABLED),
         "ExtraTrees": bool(Config.EXTRA_TREES_ENABLED),
@@ -5402,7 +5276,6 @@ def _run_workflow_for_split(
     seed: int,
     primary: bool,
 ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-    """Develop candidates on training data, select and calibrate on validation, then open the held-out evaluation gate."""
     train_idx, val_idx = _split_development_train_validation(
         container, development_idx, grouping, seed
     )
@@ -5606,7 +5479,7 @@ def run_additional_generalisation_evaluations(container: DataContainer) -> pd.Da
             _write_split_identifiers(
                 container, details["train_idx"], details["val_idx"], details["test_idx"], mode
             )
-            for scenario, model_name in _pick_best_model_per_scenario(results, exclude_stack=True).items():
+            for scenario, model_name in _pick_best_model_per_scenario(results).items():
                 result = results[scenario]["all"][model_name]
                 metrics = result.get("metrics", {})
                 summary_rows.append({
@@ -5628,7 +5501,7 @@ def run_additional_generalisation_evaluations(container: DataContainer) -> pd.Da
 
 def run_experiments(container: DataContainer):
     """Run the primary nested workflow, save its selected results, and perform configured generalisation checks."""
-    logger.section("RUNNING NESTED MANUSCRIPT-COMPLETE EXPERIMENTS")
+    logger.section('RUNNING NESTED complete EXPERIMENTS')
     _fold_artifacts.clear()
     _test_evaluation_registry.clear()
     _high_mi_audit_records.clear()
@@ -5653,9 +5526,6 @@ def run_experiments(container: DataContainer):
     return all_results
 
 
-# 5. Fixed-parameter training used by sensitivity analyses
-
-
 def _train_candidate_dispatch(
     model_name: str,
     X_train: np.ndarray,
@@ -5668,7 +5538,6 @@ def _train_candidate_dispatch(
     seed: int = RANDOM_SEED,
     fixed_params: Optional[Dict] = None,
 ) -> Optional[Dict[str, Any]]:
-    """Fit a candidate with fixed parameters for validation-only feature sensitivity analyses."""
     kwargs = dict(
         X_train=X_train,
         y_train=y_train,
@@ -5911,29 +5780,7 @@ def train_ordinal_decomposition(
     }
 
 
-# 6. Uncertainty, baselines, calibration and sensitivity analyses
-
-
 def evaluate_at_gene_level(all_results: Dict, container: DataContainer) -> pd.DataFrame:
-    """Companion evaluation with the gene, not the gene-disease pair, as the unit.
-
-    Motivation. Every feature available to S1 (and every non-phenotype feature in
-    S1b) is gene-level: one row per gene in the consolidated feature tables. The
-    label is per gene-disease pair. Where a gene causes several diseases of
-    differing severity the model sees an identical feature vector and must emit an
-    identical prediction, so that portion of the label variation is structurally
-    unreachable. Measured on the primary test partition, 29.2 per cent of genes
-    carry more than one distinct severity class and 55.6 per cent of pairs sit
-    inside such a gene; the best achievable pair-level score for any gene-level-only
-    model, obtained by assigning each gene its within-gene modal label, is
-    MCC 0.651 / QWK 0.747.
-
-    This function does not retrain. It aggregates the already-held-out test
-    predictions and the corresponding truths to one row per gene by taking the
-    rounded mean of each, then rescores. The result is reported alongside, never
-    instead of, the pair-level metrics, which remain the primary comparison across
-    scenarios.
-    """
     logger.subsection("Gene-level companion evaluation (no retraining)")
     if container.metadata is None:
         logger.log("  Container metadata unavailable; skipping.", level="WARNING")
@@ -6013,9 +5860,7 @@ def evaluate_at_gene_level(all_results: Dict, container: DataContainer) -> pd.Da
                     ),
                 })
 
-    # Explicit schema so the file is always readable, including the degenerate
-    # case where no scenario produced an aggregable result. required_output
-    # validation reads this CSV, and a headerless empty file would fail it.
+
     gene_level_columns = [
         "Scenario", "Stratum", "Model", "evaluation_unit", "aggregation",
         "retrained", "n_genes", "n_pairs", "accuracy", "balanced_accuracy",
@@ -6143,7 +5988,7 @@ def analyze_error_types(all_results: Dict) -> Tuple[pd.DataFrame, pd.DataFrame]:
     except Exception as e:
         logger.log(f"  Could not plot global error decomposition: {e}", level="WARNING")
     try:
-        best_models = _pick_best_model_per_scenario(all_results, exclude_stack=True)
+        best_models = _pick_best_model_per_scenario(all_results)
         scenarios_ordered = list(best_models.keys())
         fig, axes = plt.subplots(
             1, len(scenarios_ordered), figsize=(4 * max(len(scenarios_ordered), 1), 5), sharey=True
@@ -6281,7 +6126,7 @@ def run_mi_threshold_sensitivity(
     logger.section(
         f"Minimum-MI selection sensitivity on validation ({len(thresholds)} values)"
     )
-    best_models = _pick_best_model_per_scenario(all_results, exclude_stack=True)
+    best_models = _pick_best_model_per_scenario(all_results)
     rows: List[Dict[str, Any]] = []
     for scenario in [
         value for value in ["S2_Combined", "S3_Phenotype"] if value in best_models
@@ -6362,7 +6207,7 @@ def run_budget_sensitivity(
     logger.section(
         f"Shared HPO-budget sensitivity on validation ({len(hpo_budgets)} values)"
     )
-    best_models = _pick_best_model_per_scenario(all_results, exclude_stack=True)
+    best_models = _pick_best_model_per_scenario(all_results)
     rows: List[Dict[str, Any]] = []
 
     for scenario in [s for s in ["S2_Combined", "S3_Phenotype"] if s in best_models]:
@@ -6506,7 +6351,7 @@ def compute_bootstrap_ci(
 def run_bootstrap_all(all_results: Dict) -> pd.DataFrame:
     logger.subsection("Gene-cluster bootstrap confidence intervals")
     rows = []
-    for scenario, model_name in _pick_best_model_per_scenario(all_results, exclude_stack=True).items():
+    for scenario, model_name in _pick_best_model_per_scenario(all_results).items():
         result = all_results[scenario]["all"][model_name]
         if "predictions" not in result:
             continue
@@ -6531,7 +6376,6 @@ def run_bootstrap_all(all_results: Dict) -> pd.DataFrame:
 
 
 def _paired_contrast_metric(y_true: np.ndarray, y_pred: np.ndarray, metric: str) -> float:
-    """Metric definitions identical to those used by compute_all_metrics."""
     if metric == "mcc":
         return float(matthews_corrcoef(y_true, y_pred))
     if metric == "qwk":
@@ -6542,25 +6386,12 @@ def _paired_contrast_metric(y_true: np.ndarray, y_pred: np.ndarray, metric: str)
 def run_paired_scenario_contrasts(
     all_results: Dict, container: DataContainer
 ) -> pd.DataFrame:
-    """Paired gene-cluster bootstrap contrasts between adjacent scenarios.
-
-    Nothing is refit and no additional test evaluation occurs. The stored
-    held-out-test predictions in ``results_collector.predictions`` (keyed
-    ``"<scenario>_<model>"``) are resampled with the same severity-stratified
-    gene-cluster scheme used for the Table 2 confidence intervals
-    (``_cluster_bootstrap_indices``, Config.N_BOOTSTRAP replicates, RANDOM_SEED).
-    Each replicate draws one set of rows and scores *both* scenarios on it before
-    the difference is taken; the pairing is what makes the interval informative.
-
-    The reported fraction of replicates at or below zero is a bootstrap tail
-    fraction, not a P value: it is not calibrated against a null hypothesis and
-    must not be described as one.
-    """
+    """Paired gene-cluster bootstrap contrasts between adjacent scenarios."""
     logger.subsection("Paired between-scenario gene-cluster bootstrap contrasts")
     output_path = os.path.join(
         Config.OUTPUT_DIR, "results", "paired_scenario_contrasts.csv"
     )
-    selected = _pick_best_model_per_scenario(all_results, exclude_stack=True)
+    selected = _pick_best_model_per_scenario(all_results)
 
     predictions: Dict[str, Dict[str, np.ndarray]] = {}
     models: Dict[str, str] = {}
@@ -6569,8 +6400,7 @@ def run_paired_scenario_contrasts(
         payload = results_collector.predictions.get(f"{scenario}_{model_name}")
         if not payload:
             logger.log(
-                f"  No stored locked-test predictions for {scenario}_{model_name}; "
-                "that scenario is excluded from the paired contrasts.",
+                f'  No stored held-out test predictions for {scenario}_{model_name}; that scenario is excluded from the paired contrasts.',
                 level="WARNING",
             )
             continue
@@ -6593,8 +6423,7 @@ def run_paired_scenario_contrasts(
     rows: List[Dict[str, Any]] = []
     if len(predictions) < 2:
         logger.log(
-            "  Fewer than two scenarios have stored locked-test predictions; "
-            "paired contrasts cannot be computed.",
+            '  Fewer than two scenarios have stored held-out test predictions; paired contrasts cannot be computed.',
             level="WARNING",
         )
         pd.DataFrame(rows).to_csv(output_path, index=False)
@@ -6634,9 +6463,7 @@ def run_paired_scenario_contrasts(
             continue
         replicate_indices.append(idx)
     logger.log(
-        f"  Drew {len(replicate_indices)} of {Config.N_BOOTSTRAP} non-empty "
-        f"severity-stratified gene-cluster replicates (seed={RANDOM_SEED}); "
-        f"{len(np.unique(groups))} gene clusters over {len(y_true)} locked-test pairs."
+        f'  Drew {len(replicate_indices)} of {Config.N_BOOTSTRAP} non-empty severity-stratified gene-cluster replicates (seed={RANDOM_SEED}); {len(np.unique(groups))} gene clusters over {len(y_true)} held-out test pairs.'
     )
 
     replicate_values: Dict[Tuple[str, str], np.ndarray] = {}
@@ -6663,8 +6490,7 @@ def run_paired_scenario_contrasts(
     for scenario_a, scenario_b in PAIRED_SCENARIO_CONTRASTS:
         if scenario_a not in predictions or scenario_b not in predictions:
             logger.log(
-                f"  Skipping contrast {scenario_a} minus {scenario_b}: "
-                "one or both scenarios have no stored locked-test predictions.",
+                f'  Skipping contrast {scenario_a} minus {scenario_b}: one or both scenarios have no stored held-out test predictions.',
                 level="WARNING",
             )
             continue
@@ -6726,7 +6552,6 @@ def run_paired_scenario_contrasts(
 
 
 def _primary_partition_indices(container: DataContainer) -> Dict[str, np.ndarray]:
-    """Recover the primary train/validation/test row indices without refitting."""
     for artifact in _fold_artifacts.values():
         if all(key in artifact for key in ("train_idx", "val_idx", "test_idx")):
             return {
@@ -6752,14 +6577,7 @@ def _primary_partition_indices(container: DataContainer) -> Dict[str, np.ndarray
 
 
 def run_disease_overlap_audit(container: DataContainer) -> pd.DataFrame:
-    """Quantify MONDO-level overlap between the held-out test set and training.
-
-    The primary split is gene-disjoint but not disease-disjoint, so the same
-    MONDO identifier can appear on both sides. This check makes the extent of
-    that overlap explicit. It reads only the stored split indices and metadata;
-    nothing is refit and no model is evaluated.
-    """
-    logger.subsection("Disease-overlap audit across primary partitions")
+    logger.subsection('Disease-overlap check across primary partitions')
     output_path = os.path.join(
         Config.OUTPUT_DIR, "results", "disease_overlap_audit.csv"
     )
@@ -6899,10 +6717,7 @@ def run_disease_overlap_audit(container: DataContainer) -> pd.DataFrame:
     dataframe = pd.DataFrame(rows)
     dataframe.to_csv(output_path, index=False)
     logger.log(
-        f"  {test_pairs_in_train} of {n_test_pairs} locked-test pairs "
-        f"({percent_test_pairs_in_train:.1f}%) carry a MONDO identifier that also "
-        f"appears in training; distinct MONDO ids train={len(train_mondo)}, "
-        f"validation={len(validation_mondo)}, test={len(test_mondo)}."
+        f'  {test_pairs_in_train} of {n_test_pairs} held-out test pairs ({percent_test_pairs_in_train:.1f}%) carry a MONDO identifier that also appears in training; distinct MONDO ids train={len(train_mondo)}, validation={len(validation_mondo)}, test={len(test_mondo)}.'
     )
     logger.log(
         f"  Per-disease table covers {len(disease_rows)} diseases with at least "
@@ -6958,7 +6773,7 @@ def compute_ece_table(all_results: Dict) -> pd.DataFrame:
     rows: List[Dict[str, Any]] = []
     bin_rows: List[Dict[str, Any]] = []
     for scenario_index, (scenario, model_name) in enumerate(
-        _pick_best_model_per_scenario(all_results, exclude_stack=True).items()
+        _pick_best_model_per_scenario(all_results).items()
     ):
         result = all_results[scenario]["all"][model_name]
         y_true = np.asarray(result["y_true"])
@@ -7025,7 +6840,7 @@ def compute_ece_table(all_results: Dict) -> pd.DataFrame:
 
 def create_publication_table(all_results: Dict, bootstrap_df: pd.DataFrame) -> pd.DataFrame:
     rows: List[Dict[str, Any]] = []
-    for scenario, model_name in _pick_best_model_per_scenario(all_results, exclude_stack=True).items():
+    for scenario, model_name in _pick_best_model_per_scenario(all_results).items():
         result = all_results[scenario]["all"][model_name]
         calibrated = result.get("metrics", {})
         raw = result.get("test_metrics_uncalibrated", {})
@@ -7071,7 +6886,7 @@ def run_imbalance_sensitivity(container: DataContainer, all_results: Dict) -> pd
     if not Config.RUN_IMBALANCE_SENSITIVITY:
         return pd.DataFrame()
     rows: List[Dict[str, Any]] = []
-    for scenario, model_name in _pick_best_model_per_scenario(all_results, exclude_stack=True).items():
+    for scenario, model_name in _pick_best_model_per_scenario(all_results).items():
         artifacts = _fold_artifacts[scenario]
         params = all_results[scenario]["all"][model_name].get("best_params", {})
         for strategy in ("sample_weight", "resampling", "none"):
@@ -7169,12 +6984,7 @@ def run_permutation_test(
     all_results: Dict,
     n_permutations: Optional[int] = None,
 ) -> pd.DataFrame:
-    """Conditional validation permutation test using complete gene label blocks.
-
-    Feature selection and candidate-family selection are repeated for every
-    permutation. Hyperparameters remain fixed at their nested-CV-selected values,
-    so this remains a conditional rather than a fully re-tuned pipeline test.
-    """
+    """Conditional validation permutation test using complete gene label blocks."""
     if not Config.RUN_PERMUTATION_TEST:
         return pd.DataFrame()
     n_permutations = int(n_permutations or Config.N_PERMUTATIONS)
@@ -7182,7 +6992,7 @@ def run_permutation_test(
     candidate_names = _available_candidate_names()
 
     selected_by_scenario = _pick_best_model_per_scenario(
-        all_results, exclude_stack=True
+        all_results
     )
     for scenario, observed_name in selected_by_scenario.items():
         artifacts = _fold_artifacts[scenario]
@@ -7322,14 +7132,10 @@ def run_permutation_test(
 def run_split_sensitivity_fixed_configuration(
     container: DataContainer, all_results: Dict, n_seeds: Optional[int] = None
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Split sensitivity for the primary selected families/configurations.
-
-    This is deliberately not called a complete redevelopment analysis because
-    model family and hyperparameters are inherited from the primary workflow.
-    """
+    """Split sensitivity for the primary selected families/configurations."""
     n_seeds = int(n_seeds or Config.N_SEEDS_SENSITIVITY)
     rows: List[Dict[str, Any]] = []
-    selected = _pick_best_model_per_scenario(all_results, exclude_stack=True)
+    selected = _pick_best_model_per_scenario(all_results)
     all_idx = np.arange(len(container.y), dtype=int)
     first_seed = RANDOM_SEED + int(Config.SPLIT_SENSITIVITY_SEED_OFFSET)
     primary_test_idx = np.sort(np.asarray(container.test_idx, dtype=int))
@@ -7396,22 +7202,6 @@ def run_split_sensitivity_fixed_configuration(
 def run_severity_hpo_term_sensitivity(
     container: DataContainer, all_results: Dict
 ) -> pd.DataFrame:
-    """Validation-only ablation of the explicit severity-related HPO terms.
-
-    Two arms are refitted on the same training indices with the same selected
-    model family and the same nested-CV hyperparameters, differing only in
-    whether the severity-naming HPO terms are admitted to the feature space:
-
-        retained arm  drop_severity_hpo_terms=False  (terms available)
-        removed arm   drop_severity_hpo_terms=True   (terms blocked)
-
-    The reported delta is removed minus retained. The primary run already sets
-    Config.DROP_SEVERITY_HPO_TERMS = True, so its stored validation metrics are
-    identical to the removed arm by construction and are reported separately as
-    primary_run_validation_* rather than used as the ablation baseline.
-
-    No primary test labels or primary test predictions are accessed here.
-    """
     summary_path = os.path.join(
         Config.OUTPUT_DIR, "results", "severity_hpo_term_sensitivity.csv"
     )
@@ -7426,7 +7216,7 @@ def run_severity_hpo_term_sensitivity(
     logger.section("SEVERITY-RELATED HPO TERM ABLATION (VALIDATION ONLY)")
     rows: List[Dict[str, Any]] = []
     removed_rows: List[Dict[str, Any]] = []
-    selected = _pick_best_model_per_scenario(all_results, exclude_stack=True)
+    selected = _pick_best_model_per_scenario(all_results)
     for scenario in Config.SHARED_HPO_BUDGET_SCENARIOS:
         if scenario not in selected or scenario not in _fold_artifacts:
             continue
@@ -7436,11 +7226,8 @@ def run_severity_hpo_term_sensitivity(
         val_idx = np.asarray(artifact["val_idx"], dtype=int)
         budget = artifact.get("selection_budget", Config.FEATURE_BUDGET)
         params = all_results[scenario]["all"][model_name].get("best_params", {})
-        # Two arms fitted here, differing only in whether the severity-naming
-        # HPO terms are allowed into the feature space. The primary pipeline
-        # already drops them (Config.DROP_SEVERITY_HPO_TERMS = True), so the
-        # stored primary result cannot serve as the baseline for this ablation:
-        # the retained arm below is fitted explicitly for that purpose.
+
+
         representation_retained = _fit_scenario_representation(
             container,
             scenario,
@@ -7612,11 +7399,7 @@ def run_seed_sensitivity(container: DataContainer, all_results: Dict, n_seeds: i
     return run_split_sensitivity_fixed_configuration(container, all_results, n_seeds)
 
 
-# 7. Feature labels and diagnostic figures
-
-
 def _normalise_multiclass_shap_values(values: Any, n_features: int) -> List[np.ndarray]:
-    """Return SHAP values as one (samples x features) array per output class."""
     if isinstance(values, list):
         arrays = [np.asarray(item) for item in values]
         return [item for item in arrays if item.ndim == 2]
@@ -7635,8 +7418,7 @@ def uses_grouped_mi(scenario: str) -> bool:
     return any((s in scenario for s in ["S2", "S3"]))
 
 
-def _pick_best_model_per_scenario(all_results: Dict, exclude_stack: bool = False) -> Dict[str, str]:
-    """Return the model already selected on validation; never select by test metrics."""
+def _pick_best_model_per_scenario(all_results: Dict) -> Dict[str, str]:
     best: Dict[str, str] = {}
     for scenario, strata in all_results.items():
         models = strata.get("all", {})
@@ -7644,7 +7426,6 @@ def _pick_best_model_per_scenario(all_results: Dict, exclude_stack: bool = False
             name
             for name, result in models.items()
             if result.get("selected_on_validation", False)
-            and not (exclude_stack and name == "StackEnsemble")
         ]
         if explicitly_selected:
             best[scenario] = explicitly_selected[0]
@@ -7652,8 +7433,6 @@ def _pick_best_model_per_scenario(all_results: Dict, exclude_stack: bool = False
 
         eligible = []
         for name, result in models.items():
-            if exclude_stack and name == "StackEnsemble":
-                continue
             metrics = result.get("val_metrics")
             if not metrics:
                 continue
@@ -7788,9 +7567,6 @@ def _load_feature_label_map() -> Dict[str, str]:
 
 
 def _load_hpo_id_name_map() -> Dict[str, str]:
-    """Map 'HP:0002977' -> HPO term name so hpo_HP_xxxxxxx columns render as
-    readable phenotype names in diagnostic plots. Prefers hp.obo.pkl, falls back
-    to parsing hp.obo. Mirrors the publication FeatureLabeler resolution."""
     if _HPO_ID_NAME_LOADED["done"]:
         return _HPO_ID_NAME_CACHE
     _HPO_ID_NAME_LOADED["done"] = True
@@ -7920,13 +7696,7 @@ def readable_feature_label(name, max_len: int = 48) -> str:
 
 
 def write_feature_label_dictionaries(container: DataContainer) -> None:
-    """Export the resolved display labels so downstream figure code can read them.
-
-    The publication figure module resolves labels through its own FeatureLabeler
-    and looks for a dictionary file rather than importing from this script, so the
-    built-in map above is written out at run time in both schemas that resolution
-    order accepts. Written early, before any figure is drawn.
-    """
+    """Export the resolved display labels so downstream figure code can read them."""
     names: List[str] = []
     for columns in container.scenario_cols.values():
         names.extend(columns)
@@ -7997,7 +7767,7 @@ def create_calibration_plot(all_results: Dict):
     if not all_results:
         return
     try:
-        best_models = _pick_best_model_per_scenario(all_results, exclude_stack=True)
+        best_models = _pick_best_model_per_scenario(all_results)
         scenarios = ordered_scenarios_from_keys(best_models.keys())
         n = len(scenarios)
         if n == 0:
@@ -8142,9 +7912,6 @@ def create_diagnostic_figures(all_results: Dict):
     create_roc_curves(results_collector.predictions)
 
 
-# 8. Publication outputs, explanations, model bundles and provenance
-
-
 def _bundle_common_metadata(scenario: str, artifacts: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "pipeline_version": PIPELINE_VERSION,
@@ -8162,53 +7929,20 @@ def _bundle_common_metadata(scenario: str, artifacts: Dict[str, Any]) -> Dict[st
     }
 
 
-def _run_core_publication_analyses(all_results: Dict, container: DataContainer):
-    logger.section("PUBLICATION ANALYSES")
-    baselines = train_naive_baselines(container)
-    bootstrap_df = run_bootstrap_all(all_results)
-    global_err_df, per_class_err_df = analyze_error_types(all_results)
-    gene_level_df = evaluate_at_gene_level(all_results, container)
-    ece_df = compute_ece_table(all_results)
-    pub_table = create_publication_table(all_results, bootstrap_df)
-    seed_df, seed_summary_df = run_seed_sensitivity(container, all_results)
-    mi_df = run_mi_threshold_sensitivity(container, all_results)
-    budget_df = run_budget_sensitivity(container, all_results)
-    perm_df = run_permutation_test(container, all_results)
-    create_diagnostic_figures(all_results)
-    return {
-        "baselines": baselines,
-        "bootstrap": bootstrap_df,
-        "errors_global": global_err_df,
-        "errors_per_class": per_class_err_df,
-        "gene_level_evaluation": gene_level_df,
-        "ece": ece_df,
-        "publication_table": pub_table,
-        "seed_sensitivity": seed_df,
-        "seed_sensitivity_summary": seed_summary_df,
-        "mi_threshold_sensitivity": mi_df,
-        "budget_sensitivity": budget_df,
-        "permutation_test": perm_df,
-    }
-
-
 def generate_summary_report(all_results: Dict, pub_outputs: Dict):
     logger.subsection("Writing SUMMARY_REPORT.txt")
     lines = []
-    lines.append("=" * 80)
     lines.append(f"GENETIC DISEASE SEVERITY PREDICTION PIPELINE v{PIPELINE_VERSION}")
     lines.append(
         f"GENE-DISEASE PAIRS  -  Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     )
-    lines.append("=" * 80)
     lines.append("")
     lines.append("TARGET LABEL PROVENANCE")
-    lines.append("-" * 80)
     lines.append(f"  {Config.TARGET_LABEL_PROVENANCE}")
     lines.append("")
     lines.append("HEADLINE METRICS PER SCENARIO (validation-selected base model; one test evaluation)")
-    lines.append("-" * 80)
     pub_df = pub_outputs.get("publication_table", pd.DataFrame())
-    best_models = _pick_best_model_per_scenario(all_results, exclude_stack=True)
+    best_models = _pick_best_model_per_scenario(all_results)
     for scenario, best_name in best_models.items():
         if "metrics" not in all_results[scenario]["all"].get(best_name, {}):
             continue
@@ -8318,7 +8052,6 @@ def generate_summary_report(all_results: Dict, pub_outputs: Dict):
             lines.append(f"  {scenario:24s} {mn:14s}  {ece_str}")
         lines.append("")
     lines.append("KEY OUTPUT FILES")
-    lines.append("-" * 80)
     lines.append("  results/all_results.csv               selected-model test metrics only")
     lines.append("  results/model_selection_validation.csv validation-only candidate comparison")
     lines.append("  results/publication_table.csv         selected-model test metrics with bootstrap CIs")
@@ -8350,7 +8083,6 @@ def generate_summary_report(all_results: Dict, pub_outputs: Dict):
     lines.append("  pipeline_manifest.json                run provenance")
     lines.append("  RUN_COMPLETE.json                     successful required-artifact completion marker")
     lines.append("")
-    lines.append("=" * 80)
     out_path = os.path.join(Config.OUTPUT_DIR, "SUMMARY_REPORT.txt")
     with open(out_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
@@ -8358,8 +8090,32 @@ def generate_summary_report(all_results: Dict, pub_outputs: Dict):
 
 
 def run_publication_analyses(all_results: Dict, container: DataContainer):
-    """Collect inference, sensitivity and auditing outputs without changing primary model selection."""
-    outputs = _run_core_publication_analyses(all_results, container)
+    logger.section("PUBLICATION ANALYSES")
+    baselines = train_naive_baselines(container)
+    bootstrap_df = run_bootstrap_all(all_results)
+    global_err_df, per_class_err_df = analyze_error_types(all_results)
+    gene_level_df = evaluate_at_gene_level(all_results, container)
+    ece_df = compute_ece_table(all_results)
+    pub_table = create_publication_table(all_results, bootstrap_df)
+    seed_df, seed_summary_df = run_seed_sensitivity(container, all_results)
+    mi_df = run_mi_threshold_sensitivity(container, all_results)
+    budget_df = run_budget_sensitivity(container, all_results)
+    perm_df = run_permutation_test(container, all_results)
+    create_diagnostic_figures(all_results)
+    outputs = {
+        "baselines": baselines,
+        "bootstrap": bootstrap_df,
+        "errors_global": global_err_df,
+        "errors_per_class": per_class_err_df,
+        "gene_level_evaluation": gene_level_df,
+        "ece": ece_df,
+        "publication_table": pub_table,
+        "seed_sensitivity": seed_df,
+        "seed_sensitivity_summary": seed_summary_df,
+        "mi_threshold_sensitivity": mi_df,
+        "budget_sensitivity": budget_df,
+        "permutation_test": perm_df,
+    }
     # Both of the following reuse stored predictions/split indices only. Neither
     # refits a model nor touches the single-test-evaluation registry.
     outputs["paired_scenario_contrasts"] = run_paired_scenario_contrasts(
@@ -8488,7 +8244,7 @@ def write_pipeline_manifest(container: DataContainer, all_results: Dict, pub_out
             "n_genes_total": int(len(np.unique(container.groups))),
             "full_class_distribution": np.bincount(container.y, minlength=Config.NUM_CLASSES).tolist(),
         },
-        "selected_models": _pick_best_model_per_scenario(all_results, exclude_stack=True),
+        "selected_models": _pick_best_model_per_scenario(all_results),
         "selected_model_calibration": {
             scenario: {
                 "model": model_name,
@@ -8511,7 +8267,7 @@ def write_pipeline_manifest(container: DataContainer, all_results: Dict, pub_out
                 ),
             }
             for scenario, model_name in _pick_best_model_per_scenario(
-                all_results, exclude_stack=True
+                all_results
             ).items()
         },
         "selected_features": {
@@ -8592,7 +8348,7 @@ def save_per_disease_explanations(container: DataContainer, all_results: Dict):
     metadata = container.metadata.reset_index(drop=True)
     severity_names = ["Mild", "Moderate", "Severe", "Profound"]
 
-    for scenario, model_name in _pick_best_model_per_scenario(all_results, exclude_stack=True).items():
+    for scenario, model_name in _pick_best_model_per_scenario(all_results).items():
         artifact = _fold_artifacts.get(scenario)
         result = all_results[scenario]["all"].get(model_name, {})
         if artifact is None or "X_test" not in artifact or "predictions" not in result:
@@ -8681,7 +8437,7 @@ def save_per_disease_explanations(container: DataContainer, all_results: Dict):
                     raw_values, X_test.shape[1]
                 )
                 if model_name == "ExtraTrees":
-                    # Extra Trees SHAP is on the probability scale, so the 
+                    # Extra Trees SHAP is on the probability scale, so the
                     # severity-score SHAP (save_severity_shap) reuses it.
                     _CLASS_SHAP_CACHE[scenario] = {
                         "model_name": model_name,
@@ -8823,7 +8579,6 @@ def _merge_missing_indicator_columns(
     value_matrix: np.ndarray,
     feature_names: Sequence[str],
 ) -> Tuple[np.ndarray, np.ndarray, List[str], Dict[str, List[str]]]:
-    """Add each X__missing column's SHAP to X. Feature values (for colour) stay X's."""
     names = [str(name) for name in feature_names]
     out_names: List[str] = []
     out_index: Dict[str, int] = {}
@@ -8868,7 +8623,6 @@ def _severity_shap_matrix(
     X_test: np.ndarray,
     X_train: Optional[np.ndarray],
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, str, Dict[str, Any]]:
-    """Return (SHAP n x p, base value per pair, explained quantity, method, extras)."""
     weights = np.arange(Config.NUM_CLASSES, dtype=float)
     rng = np.random.RandomState(RANDOM_SEED)
 
@@ -8976,7 +8730,6 @@ def _severity_feature_summary(
     names: Sequence[str],
     merged_from: Dict[str, List[str]],
 ) -> pd.DataFrame:
-    """Per-feature mean |SHAP| and direction on the expected-severity scale."""
     rows: List[Dict[str, Any]] = []
     for j, name in enumerate(names):
         s = np.asarray(shap_matrix[:, j], dtype=float)
@@ -9023,7 +8776,6 @@ def _severity_group_summary(
     names: Sequence[str],
     feature_frame: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Group SHAP = sum of a pair's signed SHAP over the group's features."""
     groups = np.asarray([severity_shap_group(name) for name in names])
     rows: List[Dict[str, Any]] = []
     for group in pd.unique(groups):
@@ -9066,7 +8818,7 @@ def save_severity_shap(container: DataContainer, all_results: Dict) -> None:
     group_frames: List[pd.DataFrame] = []
     checks: List[Dict[str, Any]] = []
 
-    for scenario, model_name in _pick_best_model_per_scenario(all_results, exclude_stack=True).items():
+    for scenario, model_name in _pick_best_model_per_scenario(all_results).items():
         artifact = _fold_artifacts.get(scenario)
         result = all_results[scenario]["all"].get(model_name, {})
         if artifact is None or "X_test" not in artifact or result.get("model") is None:
@@ -9209,7 +8961,6 @@ def save_all_base_model_bundles(container: DataContainer, all_results: Dict) -> 
 
 
 def _require_fresh_output_directory() -> None:
-    """Prevent a new analysis from silently mixing with stale run artifacts."""
     if getattr(Config, "ALLOW_OUTPUT_REUSE", False):
         return
     existing_files: List[str] = []
@@ -9398,7 +9149,7 @@ def validate_required_outputs(
             failures.append(f"missing or empty required output: {relative}")
         file_checks.append({"path": relative, "exists": exists, "size_bytes": size, "valid": valid})
 
-    selected = _pick_best_model_per_scenario(all_results, exclude_stack=True)
+    selected = _pick_best_model_per_scenario(all_results)
     for scenario, model_name in selected.items():
         result = all_results[scenario]["all"][model_name]
         if not result.get("test_evaluated", False) or result.get("test_evaluation_count") != 1:
@@ -9611,7 +9362,6 @@ def validate_required_outputs(
 
 
 def _log_and_validate_runtime_identity() -> None:
-    """Log the exact executable/script/configuration and fail on a stale model constructor."""
     script_path = os.path.realpath(__file__)
     script_hash = _sha256_file(script_path)
     logistic_probe = _make_multinomial_logistic_classifier(seed=RANDOM_SEED)
@@ -9643,9 +9393,6 @@ def _log_and_validate_runtime_identity() -> None:
             "Stale logistic constructor detected: LogisticRegression.n_jobs must be None, "
             f"found {logistic_estimator.n_jobs}."
         )
-
-
-# 9. Complete analysis entry point
 
 
 def main(smoke_test=False):

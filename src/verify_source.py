@@ -77,6 +77,8 @@ def verify_source(package_dir: Path) -> dict:
     cleanup_path = reference_directory(package_dir).parent / 'cleanup_source_changes.json'
     cleanup = json.loads(cleanup_path.read_text()) if cleanup_path.is_file() else {}
     accepted = cleanup.get('benchmark_definitions', {})
+    removed = set(cleanup.get('removed_benchmark_definitions', []))
+    missing = [name for name in missing if name not in removed]
     for name in changed:
         if name in accepted and canonical_hash(current[name], baseline['renames']) == accepted[name]:
             allowed.add(name)
@@ -104,6 +106,7 @@ def verify_source(package_dir: Path) -> dict:
         'identical_definitions_after_documented_renaming': identical,
         'documented_changes': sorted(set(changed) & allowed),
         'missing_definitions': missing,
+        'merged_definitions': sorted(removed),
         'unexpected_changes': unexpected_changes,
         'preserved_global_assignments': len(approved['preserved_globals']),
         'unexpected_global_changes': changed_globals,

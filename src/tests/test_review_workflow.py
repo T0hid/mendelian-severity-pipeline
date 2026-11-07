@@ -31,10 +31,11 @@ class ReviewWorkflowTests(unittest.TestCase):
         cls.helpers = source_functions(['compute_all_metrics', '_select_candidate_lexicographically',
                                        '_validate_csv_schema'], cls.manifest['config'])
 
-    def test_all_original_functions_and_classes_are_retained(self):
+    def test_definitions_match_documented_merges(self):
         result = verify_source(PACKAGE_DIR)
         self.assertEqual(result['status'], 'passed')
-        self.assertEqual(result['original_functions'], 171)
+        self.assertEqual(result['original_functions'], 166)
+        self.assertEqual(len(result['merged_definitions']), 5)
         self.assertEqual(result['original_classes'], 5)
 
     def test_changed_scoring_is_detected(self):
@@ -49,7 +50,7 @@ class ReviewWorkflowTests(unittest.TestCase):
             (target / 'severity_pipeline.py').write_text(source.replace(original, 'm["accuracy"] = 0.0'), encoding='utf-8')
             result = verify_source(target)
             self.assertEqual(result['status'], 'failed')
-            self.assertIn('_compute_discrimination_metrics', result['unexpected_changes'])
+            self.assertIn('compute_all_metrics', result['unexpected_changes'])
 
     def test_modified_stored_metric_is_rejected(self):
         predictions, _ = load_predictions(REFERENCE_DIR)

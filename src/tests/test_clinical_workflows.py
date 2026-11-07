@@ -23,9 +23,9 @@ class ClinicalWorkflowTests(unittest.TestCase):
         cls.prenatal = load_module(ROOT / PRENATAL_FILE, 'prenatal_severity_analysis_v3_multichannel')
         cls.scorer = load_module(ROOT / SCORER_FILE, 'phenotype_severity_scorer_v3_3_monotone_ontology')
 
-    def test_all_original_clinical_definitions_and_globals_are_preserved(self):
+    def test_clinical_source_matches_recorded_cleanup(self):
         result = verify_clinical_source()
-        self.assertEqual(sum(item['functions_retained'] for item in result.values()), 90)
+        self.assertEqual(sum(item['functions_retained'] for item in result.values()), 86)
         self.assertEqual(sum(item['classes_retained'] for item in result.values()), 15)
 
     def test_mutated_scorer_computation_is_detected(self):

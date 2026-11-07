@@ -9,7 +9,7 @@ Work is on `paper-cleanup`. Nothing is merged into main. The existing `cleanup/r
 | 1 | Added input sources and reference checksums, linked Zenodo, pinned the full environment, and documented the run order and output directories. |
 | 2 | Corrected the publication layout docstring and the S3-to-S2 contrast comment. The permutation count was already 100 without the stale comment. |
 | 3 | Renamed the scripts, S1/S2 scenarios, annotation features and output paths. Input preparation creates a byte-identical `gene_annotations.csv` from the original archive member. Reference archives and saved result tables remain unchanged. |
-| 4 | Removed patch-history comments and inactive stacking/PCA branches; made organ-criticality exclusion unconditional, matching its previous disabled default. The five wrapper pairs were already single definitions in the starting repository. |
+| 4 | Removed patch-history comments and inactive stacking/PCA branches; made organ-criticality exclusion unconditional, matching its previous disabled default. The five wrapper/helper pairs are merged into single functions in the Task 4 follow-up. |
 | 5 | Added a reduced main workflow, exact result comparison, comparison tests, updated imports and saved-figure replay, and adapted source checks to the documented names and cleanup edits. |
 
 ## Validation
@@ -30,7 +30,7 @@ Tests ran under the available Python 3.12.14 runtime, rather than the reference 
 
 ## Retained or unresolved
 
-- Scorer compatibility loading, optional severity policies, clinical-dimension code and patient visualisation remain. Compatibility code is shared with the supplied serialized model; broader removal has been deferred rather than risk changing model behaviour.
+- The patient dashboard, optional dimension-model fitting/prediction and separate-severity routing have been removed. Empty model-state fields and existing output columns remain so file schemas stay unchanged. Compatibility loading remains: both supplied and newly trained models fail ordinary loading in a fresh prenatal process because their classes were saved under __main__.
 - The repository's reporting module describes itself, before this cleanup, as a replacement produced during earlier repository preparation. It has been retained and renamed, but has not been checked against the author's local original.
 - No code licence has been selected. MIT is suggested; a LICENSE file has not been added without that selection.
 - The Zenodo DOI is linked as supplied. Its downloadable contents could not be inspected in this session.
@@ -46,3 +46,15 @@ Tests ran under the available Python 3.12.14 runtime, rather than the reference 
 | `build_clingen_v46.py` | Referenced feature builder, absent from the repository; its generated table is included. The author previously asked to ignore the ClinGen build. |
 
 No replacement input files have been invented. The supplied prenatal records were used locally for checks and have not been added to GitHub.
+
+## Task 4 follow-up
+
+All five wrapper pairs are merged; their private base functions are removed. Remaining disabled stacking filters and HPO PCA transform/construction code are removed. Public scorer training accepts only the default phenotype severity-term policy. Severity-term detection remains because its annotations are part of the existing profile output.
+
+Comments and docstrings in the five analysis modules pass checks for patch-history wording, publishing references, the prohibited jargon and non-ASCII comments. Log messages use plain terms while output filenames, columns and serialized identities remain unchanged. Decorative log/report separators are removed.
+
+Reduced scorer retraining matches the previous held-out predictions and model-selection CSVs exactly. Prenatal statistics match the previous run exactly on the same available cohort. The demo and saved-result checks pass. Tests include checks that reject reintroduced wrapper layers and unused options.
+
+The existing token-vocabulary construction iterates Python sets. Separate processes with an unset PYTHONHASHSEED can therefore choose a different order among tied token counts, changing some tree-model results. This pre-existing behaviour is left unchanged under the instruction to preserve known bugs. Before/after numerical checks use the same explicit PYTHONHASHSEED=0 for both versions; this is a verification setting, not a new pipeline default.
+
+The controlled benchmark comparison matches model selection and classification metrics. Strict comparison detects a Multiclass_Brier difference of 1.6653345369377348e-16; exact bitwise reproduction is not claimed.

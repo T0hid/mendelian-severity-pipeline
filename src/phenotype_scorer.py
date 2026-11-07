@@ -40,10 +40,7 @@ CLASS_NAMES = ["Mild", "Moderate", "Severe", "Profound"]
 NUM_CLASSES = 4
 HPO_RE = re.compile(r"^HP:\d{7}$")
 
-# Only genuinely ordinal or lethal HPO concepts are routed to the explicit
-# severity channel. Earlier versions accidentally included ordinary phenotypes
-# such as breech presentation, anteriorly placed anus and delayed motor
-# development. Those terms now remain in the phenotype channel.
+
 EXPLICIT_SEVERITY_HPO_LEVELS: Dict[str, int] = {
     # Lethal / death endpoints.
     "HP:0003824": 3,  # Neonatal death
@@ -58,23 +55,8 @@ EXCLUDED_CLINICAL_MODIFIER_HPO_IDS = {
     "HP:0003828",  # Variable expressivity
 }
 
-DIMENSION_ALIASES: Dict[str, Tuple[str, ...]] = {
-    "functional": ("functional_severity", "function_severity", "functional_impact"),
-    "life_threatening": (
-        "life_threatening_severity", "mortality_severity", "medical_risk_severity",
-        "life_threatening", "mortality_risk",
-    ),
-    "developmental": (
-        "developmental_severity", "neurodevelopmental_severity", "development_severity",
-    ),
-    "treatment_burden": (
-        "treatment_burden_severity", "treatment_burden", "care_burden_severity",
-    ),
-}
 
-# Legacy keyword rules are retained only for scoring old pickles. New models use
-# ontology branches below. This prevents substring collisions such as "ear" in
-# "heart" and "genital" in "congenital".
+
 LEGACY_ORGAN_SYSTEM_KEYWORDS: Dict[str, Tuple[str, ...]] = {
     "nervous_system": ("nervous system", "neurolog", "brain", "spinal cord"),
     "cardiovascular": ("cardiovascular", "heart", "cardiac", "blood vessel", "vascular"),
@@ -164,11 +146,8 @@ ORGAN_SYSTEM_BRANCHES: Dict[str, Dict[str, Tuple[str, ...]]] = {
         ),
         "patterns": (r"genital", r"reproductive system", r"gonads?", r"uterus", r"test(?:is|es|icular)", r"ovar(?:y|ies|ian)"),
     },
-    # Branches added so that the scorer covers the same organ systems as the main
-    # pipeline. IDs are given only where already anchored elsewhere in this file;
-    # the rest resolve by exact name against the pinned HPO release, which is the
-    # fallback the loader already supports. Add each identifier explicitly once it
-    # has been confirmed in hp.obo.
+
+
     "growth": {
         "ids": (),
         "names": ("growth abnormality",),
@@ -268,17 +247,6 @@ def _parse_bool(value: Any) -> Optional[bool]:
     return None
 
 
-def _parse_ordinal(value: Any) -> float:
-    if value is None or (isinstance(value, float) and np.isnan(value)):
-        return np.nan
-    text = str(value).strip().title()
-    if text in SEVERITY_MAP:
-        return float(SEVERITY_MAP[text])
-    try:
-        numeric = float(value)
-    except (TypeError, ValueError):
-        return np.nan
-    return float(numeric) if 0.0 <= numeric <= 3.0 else np.nan
 
 
 def _is_severity_term(hpo_id: str, name: str = "") -> bool:
@@ -307,7 +275,6 @@ def _explicit_severity_level(hpo_id: str, name: str) -> Optional[float]:
 
 
 def _normalise_class_weight(value: Optional[str]) -> Optional[str]:
-    """Convert CLI/config names to scikit-learn class-weight values."""
     if value is None:
         return None
     text = str(value).strip().lower()
@@ -479,7 +446,6 @@ class OntologyExpander:
         terms: Sequence[Any],
         fallback_names: Optional[Dict[str, str]] = None,
     ) -> Tuple[List[str], Dict[str, List[str]]]:
-        """Validate and canonicalise without deleting severity-coded terms."""
         fallback_names = fallback_names or {}
         accepted: List[str] = []
         audit: Dict[str, List[str]] = {
@@ -509,32 +475,10 @@ class OntologyExpander:
             accepted.append(canonical)
         return sorted(accepted), audit
 
-    def split_severity_terms(
-        self,
-        terms: Sequence[str],
-        fallback_names: Optional[Dict[str, str]] = None,
-        severity_term_policy: str = "separate",
-    ) -> Tuple[List[str], List[str]]:
-        """Route severity-naming terms according to the selected model policy.
-
-        ``phenotype`` retains every term in the ordinary phenotype channel and
-        leaves the separate explicit channel empty. ``separate`` reproduces the
-        earlier behaviour by removing severity-naming terms from the phenotype
-        channel and routing them to the constrained explicit channel.
-        """
-        if severity_term_policy not in {"phenotype", "separate"}:
-            raise ValueError(
-                "severity_term_policy must be either 'phenotype' or 'separate'."
-            )
+    def detect_severity_terms(self, terms, fallback_names=None):
         fallback_names = fallback_names or {}
-        phenotype: List[str] = []
-        explicit: List[str] = []
-        for term in terms:
-            name = self.names.get(term, fallback_names.get(term, ""))
-            (explicit if _is_severity_term(term, name) else phenotype).append(term)
-        if severity_term_policy == "phenotype":
-            return sorted(set(phenotype) | set(explicit)), []
-        return sorted(phenotype), sorted(explicit)
+        return sorted(term for term in terms
+                      if _is_severity_term(term, self.names.get(term, fallback_names.get(term, ""))))
 
     def expand_with_distance(
         self, direct_terms: Sequence[str], max_hops: int, include_severity_ancestors: bool = False
@@ -566,7 +510,6 @@ class OntologyExpander:
         return distances
 
     def ids_for_exact_names(self, names: Sequence[str]) -> List[str]:
-        """Resolve exact ontology labels after case/whitespace normalisation."""
         found: List[str] = []
         seen = set()
         for name in names:
@@ -579,7 +522,6 @@ class OntologyExpander:
         return found
 
     def ancestor_ids(self, term: str, max_hops: int = 80) -> Tuple[str, ...]:
-        """Return the canonical term plus all ontology ancestors."""
         canonical = self.canonical(term)
         if canonical in self._ancestor_id_cache:
             return self._ancestor_id_cache[canonical]
@@ -698,7 +640,6 @@ class PhenotypeVectorizer:
 
 
 class DirectTermVectorizer:
-    """Direct-term channel for explicit severity or absent annotations."""
 
     def __init__(self, min_count: int, max_freq: float, scale: float, label: str):
         self.min_count = max(1, int(min_count))
@@ -740,13 +681,6 @@ class DirectTermVectorizer:
 
 
 class ExplicitSeverityVectorizer:
-    """Pool severity-coded HPO terms into one monotone ordinal-level channel.
-
-    The most severe explicit level observed in a profile activates exactly one
-    feature. This avoids learning annotation-specific directions for individual
-    terms such as "mild ventriculomegaly" versus "mild intellectual disability".
-    Coefficient signs are constrained separately after every model fit.
-    """
 
     def __init__(self, expander: OntologyExpander, scale: float = 0.35, enabled: bool = True):
         self.expander = expander
@@ -814,12 +748,6 @@ class ExplicitSeverityVectorizer:
 
 
 class OrganSystemVectorizer:
-    """Interpretable organ-system burden using HPO ancestor branches.
-
-    New instances use branch mapping. Objects loaded from pre-v3.3 pickles lack
-    ``mapping_version`` and intentionally retain the old substring behaviour so
-    an existing fitted model is never fed a silently changed feature layout.
-    """
 
     def __init__(self, expander: OntologyExpander, enabled: bool = True, scale: float = 1.0):
         self.expander = expander
@@ -837,7 +765,7 @@ class OrganSystemVectorizer:
         self._resolved_branch_roots: Optional[Dict[str, Tuple[str, ...]]] = None
         self._compiled_fallback_patterns: Dict[str, Tuple[Any, ...]] = {}
 
-    def _legacy_systems_for_terms(self, terms: Sequence[str]) -> List[str]:
+    def _systems_from_names(self, terms: Sequence[str]) -> List[str]:
         found = set()
         for term in terms:
             names = self.expander.ancestor_names(term)
@@ -883,7 +811,7 @@ class OrganSystemVectorizer:
 
     def systems_for_terms(self, terms: Sequence[str]) -> List[str]:
         if not hasattr(self, "mapping_version"):
-            return self._legacy_systems_for_terms(terms)
+            return self._systems_from_names(terms)
         roots_by_system = self._resolve_branch_roots()
         found = set()
         for term in terms:
@@ -932,11 +860,6 @@ class OrganSystemVectorizer:
 
 
 class ObservedLowBurdenVectorizer:
-    """Observed low-burden descriptors independent of severity words.
-
-    New models use only organ/profile evidence. Old pickles that contain four
-    legacy feature names retain their original transform for compatibility.
-    """
 
     def __init__(
         self,
@@ -1057,16 +980,16 @@ class ClinicalFeatureBuilder:
     def __init__(self, expander: OntologyExpander, config: ModelConfig):
         self.expander = expander
         self.config = config
-        self.severity_term_policy = getattr(config, "severity_term_policy", "separate")
+        self.severity_term_policy = config.severity_term_policy
         self.explicit_channel_enabled = bool(
-            config.use_explicit_channel and self.severity_term_policy == "separate"
+            False
         )
         self.phenotype = PhenotypeVectorizer(
             config.min_count,
             config.max_freq,
             config.ic_weighting,
             config.ancestor_decay,
-            exclude_severity_terms=self.severity_term_policy == "separate",
+            exclude_severity_terms=False,
         )
         direct_min = max(2, min(config.min_count, 5))
         self.explicit = ExplicitSeverityVectorizer(
@@ -1204,12 +1127,7 @@ def project_nonincreasing(matrix: np.ndarray) -> np.ndarray:
 
 
 class ThresholdCalibrator:
-    """Calibrate each ordinal boundary from out-of-fold predictions.
-
-    The first boundary can use isotonic regression to improve resolution near the
-    Mild end. Remaining boundaries default to Platt scaling. All transformations
-    are followed by the existing monotonic projection.
-    """
+    """Calibrate each ordinal boundary from out-of-fold predictions."""
 
     def __init__(self, methods: Optional[Sequence[str]] = None):
         supplied = list(methods or ["platt"] * (NUM_CLASSES - 1))
@@ -1249,7 +1167,7 @@ class ThresholdCalibrator:
         calibrated = []
         for threshold, entry in enumerate(self.models):
             probability = np.clip(raw_cumulative[:, threshold], eps, 1.0 - eps)
-            
+
             if isinstance(entry, tuple) and len(entry) == 2:
                 method, model = entry
             else:
@@ -1340,41 +1258,6 @@ class OrdinalThresholdModel:
         return np.vstack(rows)
 
 
-def enforce_monotone_explicit_coefficients(
-    model: OrdinalThresholdModel,
-    feature_names: Sequence[str],
-    config: ModelConfig,
-) -> OrdinalThresholdModel:
-    """Project explicit-level coefficients onto clinically ordered signs.
-
-    For threshold k, an explicit level s must increase P(Y>k) when s>k and
-    decrease it when s<=k. A minimum absolute logit contribution prevents an
-    observed explicit level from becoming numerically neutral.
-    """
-    if not config.use_explicit_channel or config.explicit_channel_scale <= 0:
-        return model
-    level_indices: Dict[int, int] = {}
-    for index, feature in enumerate(feature_names):
-        if not feature.startswith("explicit_level:"):
-            continue
-        label = feature.split(":", 1)[1]
-        if label in SEVERITY_MAP:
-            level_indices[SEVERITY_MAP[label]] = index
-    if not level_indices:
-        return model
-    minimum_coefficient = float(config.explicit_min_abs_logit) / max(
-        abs(float(config.explicit_channel_scale)), 1e-12
-    )
-    for threshold, threshold_model in enumerate(model.models):
-        if isinstance(threshold_model, _ConstantBinary):
-            continue
-        coefficients = np.asarray(threshold_model.coef_, dtype=float).copy()
-        row = coefficients[0]
-        for level, index in level_indices.items():
-            desired_sign = 1.0 if level > threshold else -1.0
-            row[index] = desired_sign * max(abs(float(row[index])), minimum_coefficient)
-        threshold_model.coef_ = coefficients
-    return model
 
 
 def _ordinal_model_from_config(config: ModelConfig, max_iter: int) -> OrdinalThresholdModel:
@@ -1392,15 +1275,6 @@ def _first_column(columns: Sequence[str], candidates: Sequence[str], required_na
         if candidate in columns:
             return candidate
     raise ValueError(f"severity CSV missing {required_name}; tried {list(candidates)}")
-
-
-def _detect_dimension_columns(source: pd.DataFrame) -> Dict[str, str]:
-    found: Dict[str, str] = {}
-    for dimension, aliases in DIMENSION_ALIASES.items():
-        column = next((alias for alias in aliases if alias in source.columns), None)
-        if column:
-            found[dimension] = column
-    return found
 
 
 def _row_is_present(source: pd.DataFrame) -> pd.Series:
@@ -1466,7 +1340,7 @@ def load_pairs(
     hpo_col = _first_column(source.columns, ("hpo_id", "HPO_ID", "Phenotypes_HPO", "HPO_Term"), "HPO identifiers")
     name_col = next((column for column in ("hpo_name", "HPO_Name", "HPO_Term_Name", "HPO_Term") if column in source.columns and column != hpo_col), None)
     absent_col = next((column for column in ("absent_hpo_id", "absent_hpo_terms", "excluded_hpo_id", "negated_hpo_id") if column in source.columns), None)
-    dimension_columns = _detect_dimension_columns(source)
+    dimension_columns = {}
 
     records: List[Dict[str, Any]] = []
     present_flags = _row_is_present(source)
@@ -1476,17 +1350,16 @@ def load_pairs(
             "mondo_id": _normalise_mondo(row[mondo_col]),
             "severity": str(row[severity_col]).strip().title(),
         }
-        dimensions = {f"dimension_{name}": _parse_ordinal(row[column]) for name, column in dimension_columns.items()}
         for term in _extract_hpo_ids(row[hpo_col]):
             records.append({
-                **base, **dimensions, "hpo_id": _normalise_hpo(term),
+                **base, "hpo_id": _normalise_hpo(term),
                 "hpo_name": str(row[name_col]).strip() if name_col else "",
                 "is_present": bool(present_flags.loc[row_index]),
             })
         if absent_col:
             for term in _extract_hpo_ids(row[absent_col]):
                 records.append({
-                    **base, **dimensions, "hpo_id": _normalise_hpo(term),
+                    **base, "hpo_id": _normalise_hpo(term),
                     "hpo_name": "", "is_present": False,
                 })
 
@@ -1534,9 +1407,6 @@ def load_pairs(
             "raw_present_terms": sorted(term for term in present if HPO_RE.fullmatch(term)),
             "raw_absent_terms": sorted(term for term in absent if HPO_RE.fullmatch(term)),
         }
-        for dimension in dimension_columns:
-            values = group[f"dimension_{dimension}"].dropna()
-            row[f"dimension_{dimension}"] = float(values.mode().iloc[0]) if len(values) else np.nan
         rows.append(row)
 
     pairs = pd.DataFrame(rows).reset_index(drop=True)
@@ -1581,12 +1451,8 @@ def prepare_terms(
             present = [term for term in present if term not in conflicts]
             absent = [term for term in absent if term not in conflicts]
             audit_counts["present_absent_conflicts_removed"] += len(conflicts)
-        _, detected_severity = expander.split_severity_terms(
-            present, id_to_name, severity_term_policy="separate"
-        )
-        phenotype, explicit = expander.split_severity_terms(
-            present, id_to_name, severity_term_policy=severity_term_policy
-        )
+        detected_severity = expander.detect_severity_terms(present, id_to_name)
+        phenotype, explicit = sorted(set(present)), []
         phenotype_sets.append(phenotype)
         explicit_sets.append(explicit)
         detected_severity_sets.append(detected_severity)
@@ -1749,8 +1615,6 @@ def _fit_fold(
     model = _ordinal_model_from_config(config, max_iter).fit(
         X_train, train_pairs["sev_num"].to_numpy(dtype=int)
     )
-    if channel == "combined":
-        enforce_monotone_explicit_coefficients(model, builder.feature_names, config)
     return model, builder, X_train, X_val
 
 
@@ -1783,7 +1647,7 @@ def generate_oof_raw(
 
 def _build_candidate_configs(args: argparse.Namespace) -> List[ModelConfig]:
     use_explicit_channel = bool(
-        not args.disable_explicit_channel and args.severity_term_policy == "separate"
+        False
     )
     baseline = ModelConfig(
         C=args.C,
@@ -1952,15 +1816,9 @@ class SeverityScorer:
         if conflicts:
             present = [term for term in present if term not in conflicts]
             absent = [term for term in absent if term not in conflicts]
-        severity_term_policy = getattr(self.config, "severity_term_policy", "separate")
-        _, detected_severity = self.expander.split_severity_terms(
-            present, self.vectorizer.id_to_name, severity_term_policy="separate"
-        )
-        phenotype, explicit = self.expander.split_severity_terms(
-            present,
-            self.vectorizer.id_to_name,
-            severity_term_policy=severity_term_policy,
-        )
+        severity_term_policy = self.config.severity_term_policy
+        detected_severity = self.expander.detect_severity_terms(present, self.vectorizer.id_to_name)
+        phenotype, explicit = sorted(set(present)), []
         include_severity_ancestors = severity_term_policy == "phenotype"
         profile = self.expander.expand_with_distance(
             phenotype,
@@ -2023,6 +1881,7 @@ class SeverityScorer:
         absent_hpo_terms: Optional[Sequence[str]] = None,
         allow_low_information: bool = False,
     ) -> Dict[str, Any]:
+        """Score HPO terms with the fitted disease-level phenotype model."""
         present_hpo_terms = list(present_hpo_terms)
         absent_hpo_terms = list(absent_hpo_terms or [])
         prepared = self._prepare_profile(present_hpo_terms, absent_hpo_terms)
@@ -2048,7 +1907,7 @@ class SeverityScorer:
         output: Dict[str, Any] = {
             "status": status,
             "warnings": warnings_list,
-            "severity_term_policy": getattr(self.config, "severity_term_policy", "separate"),
+            "severity_term_policy": self.config.severity_term_policy,
             "input_audit": prepared["audit"],
             "absent_input_audit": prepared["absent_audit"],
             "present_absent_conflicts": conflicts,
@@ -2089,17 +1948,6 @@ class SeverityScorer:
         affected_systems = self.builder.organ.systems_for_terms(prepared["phenotype_direct"])
         explicit_signal = self._explicit_signal(prepared["detected_severity_terms"])
         learned_dimensions: Dict[str, Any] = {}
-        for dimension, model in self.dimension_models.items():
-            calibrated = self.dimension_model_calibrated.get(dimension, False)
-            prediction = self._prediction_dict(model, X_combined, calibrated)
-            learned_dimensions[dimension] = {
-                "expected_severity_0_3": prediction["expected"],
-                "calibrated": calibrated,
-                "class_probabilities": (
-                    {name: float(value) for name, value in zip(CLASS_NAMES, prediction["probabilities"])}
-                    if prediction["probabilities"] is not None else None
-                ),
-            }
         output["severity_dimensions"] = {
             "phenotype_derived": {
                 "expected_severity_0_3": phenotype_prediction["expected"],
@@ -2212,7 +2060,6 @@ def fit_scorer(
     if X_combined.shape[1] == 0:
         raise ValueError("No combined features survived vectorisation.")
     combined_model = _ordinal_model_from_config(config, max_iter).fit(X_combined, y)
-    enforce_monotone_explicit_coefficients(combined_model, builder.feature_names, config)
     combined_raw = generate_oof_raw(pairs, profiles, expander, id_to_name, config, max_iter, cv_folds, "combined")
     combined_model.fit_calibrator(combined_raw, y)
     scorer.combined_model = combined_model
@@ -2222,20 +2069,7 @@ def fit_scorer(
         for index, feature in enumerate(builder.feature_names)
     }
 
-    # Optional separate clinical dimensions. These models are fitted only when
-    # labels exist and contain at least two ordinal levels. They remain explicitly
-    # marked as uncalibrated unless enough complete grouped data is available.
-    for column in [column for column in pairs.columns if column.startswith("dimension_")]:
-        dimension = column.replace("dimension_", "", 1)
-        mask = pairs[column].notna().to_numpy()
-        if mask.sum() < 30:
-            continue
-        target = np.clip(np.rint(pairs.loc[mask, column].to_numpy(dtype=float)), 0, 3).astype(int)
-        if np.unique(target).size < 2:
-            continue
-        model = _ordinal_model_from_config(config, max_iter).fit(X_combined[mask], target)
-        scorer.dimension_models[dimension] = model
-        scorer.dimension_model_calibrated[dimension] = False
+
     return scorer, X_pheno, X_combined
 
 
@@ -2253,7 +2087,6 @@ def write_feature_weights(output_dir: str, scorer: SeverityScorer) -> None:
 
 
 def _visualization_dependencies() -> Tuple[Any, Any]:
-    """Import plotting dependencies lazily so model loading remains lightweight."""
     try:
         import matplotlib
 
@@ -2350,13 +2183,6 @@ def compute_ordinal_shap_values(
     background_size: int = 200,
     seed: int = RANDOM_SEED,
 ) -> Dict[str, Any]:
-    """Compute exact linear SHAP values for the three raw ordinal logits.
-
-    The returned value for a feature is the sum of its SHAP contribution across
-    P(Y>0), P(Y>1), and P(Y>2) on the log-odds scale. Calibration and the
-    monotonic probability projection are intentionally not folded into this
-    explanation; the dashboard labels this distinction explicitly.
-    """
     if scorer.combined_model is None:
         raise ValueError("Combined model is unavailable.")
     _, shap = _visualization_dependencies()
@@ -2676,117 +2502,13 @@ def write_model_visualization_dashboard(
     return {"png": png_path, "pdf": pdf_path, "metrics": dashboard_metrics}
 
 
-def write_patient_visualization_dashboard(
-    scorer: SeverityScorer,
-    score: Dict[str, Any],
-    output_path: str,
-    dpi: int = 180,
-) -> str:
-    """Write one compact patient/profile score panel from score_profile output."""
-    plt, _ = _visualization_dependencies()
-    directory = os.path.dirname(os.path.abspath(output_path))
-    os.makedirs(directory, exist_ok=True)
-    figure, axes = plt.subplots(3, 2, figsize=(18, 18), constrained_layout=True)
-    axes = axes.ravel()
-
-    probabilities = score.get("class_probabilities") or {}
-    probability_values = [float(probabilities.get(name, 0.0)) for name in CLASS_NAMES]
-    axes[0].bar(CLASS_NAMES, probability_values)
-    axes[0].set_ylim(0, 1)
-    axes[0].set_ylabel("Probability")
-    axes[0].set_title("Calibrated severity-class probabilities")
-
-    dimensions = score.get("severity_dimensions", {})
-    dimension_labels = []
-    dimension_values = []
-    for key in ("phenotype_derived", "overall_combined"):
-        value = dimensions.get(key, {}).get("expected_severity_0_3")
-        if value is not None:
-            dimension_labels.append(key.replace("_", " "))
-            dimension_values.append(float(value))
-    explicit = dimensions.get("explicit_annotation_signal", {}).get("expected_severity_0_3")
-    if explicit is not None:
-        dimension_labels.append("explicit annotation")
-        dimension_values.append(float(explicit))
-    organ = dimensions.get("organ_system_burden", {}).get("score_0_3")
-    if organ is not None:
-        dimension_labels.append("organ burden")
-        dimension_values.append(float(organ))
-    for name, value in dimensions.get("learned_clinical_dimensions", {}).items():
-        expected = value.get("expected_severity_0_3")
-        if expected is not None:
-            dimension_labels.append(name.replace("_", " "))
-            dimension_values.append(float(expected))
-    axes[1].barh(np.arange(len(dimension_labels)), dimension_values)
-    axes[1].set_yticks(np.arange(len(dimension_labels)), dimension_labels)
-    axes[1].set_xlim(0, 3)
-    axes[1].set_xlabel("Severity 0–3")
-    axes[1].set_title("Severity dimensions")
-
-    systems = dimensions.get("organ_system_burden", {}).get("affected_systems", [])
-    if systems:
-        axes[2].barh(np.arange(len(systems)), np.ones(len(systems)))
-        axes[2].set_yticks(np.arange(len(systems)), [system.replace("_", " ") for system in systems])
-        axes[2].set_xlim(0, 1.1)
-        axes[2].set_xticks([])
-        axes[2].set_title("Affected organ systems")
-    else:
-        axes[2].text(0.5, 0.5, "No mapped organ systems", ha="center", va="center", transform=axes[2].transAxes)
-        axes[2].set_axis_off()
-
-    direct = score.get("direct_term_leave_one_out_effects", [])[:15]
-    _barh_top(
-        axes[3],
-        [f"{item.get('name') or item.get('hpo_id')} [{item.get('channel', '')}]" for item in direct],
-        [item.get("delta_expected_severity_when_present", 0.0) for item in direct],
-        "Direct-term leave-one-out effects", "Change in expected severity", maximum=15,
-    )
-
-    absent = score.get("absent_term_leave_one_out_effects", [])[:15]
-    _barh_top(
-        axes[4],
-        [item.get("name") or item.get("hpo_id") for item in absent],
-        [item.get("delta_expected_severity_when_absent", 0.0) for item in absent],
-        "Absent-term leave-one-out effects", "Change in expected severity", maximum=15,
-    )
-
-    feature_contributions = score.get("top_combined_feature_contributions", [])[:20]
-    contribution_labels = [
-        _pretty_feature_name(item.get("feature", ""), scorer, max_length=58)
-        for item in feature_contributions
-    ]
-    contribution_values = [
-        float(sum(item.get("ordinal_boundary_contributions", {}).values()))
-        for item in feature_contributions
-    ]
-    _barh_top(
-        axes[5], contribution_labels, contribution_values,
-        "Active-feature ordinal contributions", "Summed threshold log-odds contribution", maximum=15,
-    )
-
-    expected = score.get("expected_severity_0_3")
-    figure.suptitle(
-        "Phenotype Severity Profile Panel\n"
-        f"status={score.get('status')} | expected severity={expected if expected is not None else 'NA'} | "
-        f"score 0–1={score.get('severity_score_0_1') if score.get('severity_score_0_1') is not None else 'NA'}",
-        fontsize=17,
-    )
-    figure.savefig(output_path, dpi=int(dpi), bbox_inches="tight")
-    root, extension = os.path.splitext(output_path)
-    if extension.lower() != ".pdf":
-        figure.savefig(root + ".pdf", bbox_inches="tight")
-    plt.close(figure)
-    print(f"[visualization] wrote patient panel to {output_path}")
-    return output_path
-
-
 def evaluate_external_cohort(scorer: SeverityScorer, external_csv: str, output_dir: str) -> Dict[str, float]:
     external_pairs, names, _ = load_pairs(external_csv, None, "exclude")
     external_pairs, _ = prepare_terms(
         external_pairs,
         scorer.expander,
         names,
-        severity_term_policy=getattr(scorer.config, "severity_term_policy", "separate"),
+        severity_term_policy=scorer.config.severity_term_policy,
     )
     observed: List[int] = []
     expected: List[float] = []
@@ -2952,8 +2674,8 @@ def train(args: argparse.Namespace) -> SeverityScorer:
     y_test = test["sev_num"].to_numpy(dtype=int)
     held_out_pheno = evaluate_model(evaluation_scorer.pheno_model, X_test_pheno, y_test, True) if evaluation_scorer.pheno_model else {}
     held_out_combined = evaluate_model(evaluation_scorer.combined_model, X_test_combined, y_test, True)
-    print(f"[eval] phenotype-derived untouched test: {held_out_pheno}")
-    print(f"[eval] combined untouched test: {held_out_combined}")
+    print(f'[eval] phenotype-derived unchanged test: {held_out_pheno}')
+    print(f'[eval] combined unchanged test: {held_out_combined}')
 
     test_probabilities = evaluation_scorer.combined_model.class_proba(X_test_combined, True)
     test_expected = evaluation_scorer.combined_model.expected_severity(X_test_combined, True)
@@ -3040,8 +2762,6 @@ def train(args: argparse.Namespace) -> SeverityScorer:
             "policy": selected_config.severity_term_policy,
             "description": (
                 "Severity-naming HPO terms are retained in the ordinary phenotype channel."
-                if selected_config.severity_term_policy == "phenotype"
-                else "Severity-naming HPO terms are routed to the separate constrained ordinal channel."
             ),
             "separate_explicit_channel_enabled": bool(selected_config.use_explicit_channel),
         },
@@ -3090,7 +2810,6 @@ def train(args: argparse.Namespace) -> SeverityScorer:
         "caveats": [
             "The model learns associations from disease-level phenotype profiles unless patient-level rows are supplied.",
             "Severity-naming HPO terms are ordinary phenotype predictors under the default policy and can therefore strongly reflect annotation wording; this requires external validation.",
-            "Under the optional separate policy, severity terms are pooled by ordinal word level and coefficient signs are projected toward that level.",
             "New organ-system features use HPO branch ancestry; boundary-aware text fallback is used only for unresolved branches.",
             "Absent terms affect scores only when enough negative annotations survive training-frequency filtering.",
             "Organ-system branch roots and any unresolved fallback mappings should be validated for the local HPO release.",
@@ -3144,24 +2863,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--no-expand", action="store_true")
     parser.add_argument("--no-tune", action="store_true")
 
-    parser.add_argument("--explicit-channel-scale", type=float, default=0.35)
     parser.add_argument(
         "--severity-term-policy",
-        choices=["phenotype", "separate"],
+        choices=["phenotype"],
         default="phenotype",
         help=(
             "How to use HPO terms whose identifiers or names encode severity. "
             "The default 'phenotype' retains them as ordinary phenotype features "
             "and disables the separate explicit channel to prevent duplicate counting. "
-            "Use 'separate' to reproduce the earlier constrained-channel behaviour."
-        ),
-    )
-    parser.add_argument(
-        "--explicit-min-abs-logit", type=float, default=0.15,
-        help=(
-            "Minimum absolute threshold-logit contribution from an active explicit "
-            "severity level after sign projection. Set to 0 to constrain direction "
-            "without a non-neutrality floor."
         ),
     )
     parser.add_argument("--absent-channel-scale", type=float, default=0.50)
@@ -3172,7 +2881,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-interactions", type=int, default=250)
     parser.add_argument("--disable-organ-burden", action="store_true")
     parser.add_argument("--disable-interactions", action="store_true")
-    parser.add_argument("--disable-explicit-channel", action="store_true")
     parser.add_argument("--disable-absent-channel", action="store_true")
     parser.add_argument("--disable-low-burden-channel", action="store_true")
 
@@ -3206,13 +2914,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--score", nargs="*", default=None)
     parser.add_argument("--absent-score", nargs="*", default=None)
     parser.add_argument("--allow-low-information", action="store_true")
-    parser.add_argument(
-        "--score-dashboard",
-        nargs="?",
-        const="patient_score_panel.png",
-        default=None,
-        help="Write a patient/profile visualisation panel. Optionally provide a PNG or PDF path.",
-    )
+    parser.set_defaults(**{key: ModelConfig.__dataclass_fields__[key].default
+                           for key in ('explicit_channel_scale', 'explicit_min_abs_logit')})
     return parser.parse_args()
 
 
@@ -3228,10 +2931,6 @@ def main() -> None:
                 allow_low_information=args.allow_low_information,
             )
             print(json.dumps(score, indent=2, default=str))
-            if args.score_dashboard:
-                write_patient_visualization_dashboard(
-                    scorer, score, args.score_dashboard, dpi=args.dashboard_dpi
-                )
         else:
             print("Loaded model. Pass --score HP:.... HP:.... to score a profile.")
         return
@@ -3244,13 +2943,6 @@ def main() -> None:
             allow_low_information=args.allow_low_information,
         )
         print(json.dumps(score, indent=2, default=str))
-        if args.score_dashboard:
-            dashboard_path = args.score_dashboard
-            if not os.path.isabs(dashboard_path) and os.path.dirname(dashboard_path) == "":
-                dashboard_path = os.path.join(args.output, dashboard_path)
-            write_patient_visualization_dashboard(
-                scorer, score, dashboard_path, dpi=args.dashboard_dpi
-            )
 
 
 if __name__ == "__main__":

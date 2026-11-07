@@ -132,11 +132,7 @@ def _is_top_outcome(text: str) -> bool:
 
 
 def map_outcome_3level(value: Any) -> float:
-    """Map to Live birth (0), TOP (1), or Death (2).
-
-    Missing and unrecognised outcomes remain NaN. NICU/special-care live births
-    are included in the Live birth category for this original 3-level analysis.
-    """
+    """Map to Live birth (0), TOP (1), or Death (2)."""
     text = _normalise_text(value)
     if not text:
         return np.nan
@@ -165,8 +161,8 @@ def map_outcome_4level(value: Any) -> float:
     if _is_top_outcome(text):
         return 2.0
 
-    # Check the explicit no-care phrase before generic NICU/special-care tokens,
-    # because that phrase itself contains the words "NICU/special care".
+
+
     if text in LIVE_BIRTH_NO_NICU or "no nicu/special care required" in text:
         return 0.0
     if text in NICU_SET:
@@ -225,7 +221,6 @@ def _union_hpo(values: Sequence[Any]) -> List[str]:
 
 
 def _resolve_family_outcome(values: Sequence[Any]) -> Dict[str, Any]:
-    """Resolve all outcome labels observed for one family without hiding conflicts."""
     labels = _unique_nonempty(values)
     mapped3 = [map_outcome_3level(label) for label in labels]
     mapped4 = [map_outcome_4level(label) for label in labels]
@@ -258,12 +253,6 @@ def _aggregate_by_family(
     absent_hpo_col: Optional[str],
     study_col: str,
 ) -> pd.DataFrame:
-    """Create one analysis profile per family while using every source row.
-
-    Repeated family rows are combined rather than discarded. HPO terms are
-    unioned, study/outcome provenance is retained, and contradictory outcomes
-    are flagged instead of being assigned silently.
-    """
     records: List[Dict[str, Any]] = []
     special_cols = {family_col, outcome_col, hpo_col}
     if absent_hpo_col:
@@ -355,8 +344,8 @@ def load_cohort(path: str, exclude_studies: Sequence[str],
         df = df[~df[study_col].map(_normalise_text).isin(wanted)].copy()
     audit["n_after_exclude_studies_rows"] = int(len(df))
 
-    # Disabled by default in main(). It remains available only as an explicit
-    # user-requested cohort restriction.
+
+
     lb_only = {_normalise_text(v) for v in livebirth_only_studies} if has_study else set()
     if lb_only:
         is_lb_only = df[study_col].map(_normalise_text).isin(lb_only)
@@ -421,13 +410,6 @@ def load_cohort(path: str, exclude_studies: Sequence[str],
 
 
 def _load_scorer_module(scorer_code: Optional[str]):
-    """Load scorer code and register current and legacy pickle module aliases.
-
-    The v3 scorer may have been executed directly, imported by filename, or
-    imported under an older scorer module name. Registering aliases allows the
-    compatibility unpickler to resolve those class references without changing
-    any fitted coefficients or feature layouts.
-    """
     known_module_names = (
         "phenotype_scorer",
         "phenotype_severity_scorer_v3_3_monotone_ontology",
@@ -487,7 +469,6 @@ def _load_scorer_module(scorer_code: Optional[str]):
 
 
 class _ScorerCompatUnpickler(pickle.Unpickler):
-    """Resolve scorer classes saved under legacy or v3 module names."""
 
     def __init__(self, file_obj, scorer_module):
         super().__init__(file_obj)
@@ -514,17 +495,12 @@ class _ScorerCompatUnpickler(pickle.Unpickler):
 
 
 def _upgrade_loaded_scorer_state(scorer, scorer_module) -> List[str]:
-    """Restore only benign fields omitted by older scorer artifacts.
-
-    Fitted matrices, model coefficients, vocabularies, feature scales, and
-    calibrators are never replaced. Compatibility is validated separately.
-    """
     repairs: List[str] = []
     expander = getattr(scorer, "expander", None)
     builder = getattr(scorer, "builder", None)
     vectorizer = getattr(scorer, "vectorizer", None)
 
-    
+
     # a compatibility alias. Recreate only the alias if it is absent.
     if vectorizer is None and builder is not None and hasattr(builder, "phenotype"):
         scorer.vectorizer = builder.phenotype
@@ -578,8 +554,8 @@ def _upgrade_loaded_scorer_state(scorer, scorer_module) -> List[str]:
                     getattr(vectorizer, "ic_weighting", False)
                 ),
             }
-            
-            
+
+
             try:
                 scorer.config = config_class(**kwargs)
                 repairs.append("scorer.config")
@@ -599,7 +575,7 @@ def _upgrade_loaded_scorer_state(scorer, scorer_module) -> List[str]:
             "dimension_model_calibrated": {},
         })
     else:
-        
+
         scorer_defaults.update({
             "use_augmented_headline": False,
             "use_mechanistic": False,
@@ -633,7 +609,6 @@ def _upgrade_loaded_scorer_state(scorer, scorer_module) -> List[str]:
 
 
 def _validate_model_compatibility(scorer) -> str:
-    """Validate v3 multichannel or supported v2 phenotype-only feature layouts."""
     if not hasattr(scorer, "score_profile"):
         raise RuntimeError(
             "The loaded scorer code does not provide score_profile(); use the "
@@ -808,8 +783,8 @@ def score_families(
             else np.nan
         )
 
-        
-        
+
+
         if not np.isfinite(phenotype_score) and model_generation == "v2_phenotype_only":
             phenotype_score = float(headline_score) if np.isfinite(headline_score) else np.nan
             phenotype_expected = (
@@ -976,7 +951,6 @@ def score_families(
 
 # correlation statistics  (single cohort, no clustering)
 def _pairwise_auc(pos: np.ndarray, neg: np.ndarray) -> float:
-    """P(pos ranks above neg), ties counted as 0.5 (Mann-Whitney U / n_pos n_neg)."""
     n_pos, n_neg = len(pos), len(neg)
     if n_pos == 0 or n_neg == 0:
         return float("nan")
@@ -987,12 +961,6 @@ def _pairwise_auc(pos: np.ndarray, neg: np.ndarray) -> float:
 
 
 def _concordance_fast(score: np.ndarray, outcome: np.ndarray) -> float:
-    """Vectorised equivalent of the O(n^2) pairwise loop below.
-
-    The index is a weighted mean of the pairwise AUCs over every ordered pair of
-    distinct outcome levels, weighted by the number of family pairs each level
-    pair contributes. Identical to the double loop, fast enough to bootstrap.
-    """
     s = np.asarray(score, float)
     y = np.asarray(outcome, float)
     levels = np.unique(y[np.isfinite(y)])
@@ -1010,14 +978,7 @@ def _concordance_fast(score: np.ndarray, outcome: np.ndarray) -> float:
 
 
 def format_permutation_p(perm_p: float, n_perm_used: int, unicode_times: bool = True) -> str:
-    """Render a permutation P value without collapsing the attainable floor to zero.
-    A permutation P computed as (r + 1) / (B + 1) cannot be smaller than
-    1 / (B + 1); at the 2,000 permutations used here that floor is 5.0e-4.
-    Printing it with three decimal places yields "0.000", which is not a
-    reportable value and contradicts the stated floor. This returns the floor in
-    scientific notation when it is attained, scientific notation for any other
-    value below 0.001, and three decimal places otherwise.
-    """
+    """Render a permutation P value without collapsing the attainable floor to zero."""
     if perm_p is None or not np.isfinite(perm_p):
         return "not available"
     floor = 1.0 / (int(n_perm_used) + 1) if int(n_perm_used) > 0 else 0.0
@@ -1238,12 +1199,6 @@ def _binary_roc_contrasts(
     specifications: Sequence[Tuple[str, Any, Any]],
     score_col: str = "severity_score",
 ) -> List[Dict]:
-    """Build pre-specified one-vs-one or threshold ROC contrasts.
-
-    Each specification contains a display name plus callables that receive the
-    integer outcome array and return the positive and negative masks. Families
-    outside both masks are omitted from that specific contrast.
-    """
     score = df[score_col].to_numpy(float)
     outcome = df[outcome_col].to_numpy(int)
     results: List[Dict] = []
@@ -1288,12 +1243,7 @@ def clinical_contrasts_3group(df: pd.DataFrame,
 
 def clinical_contrasts_4group(df: pd.DataFrame,
                               score_col: str = "severity_score") -> List[Dict]:
-    """Three clinically direct pairwise ROC contrasts for the 4-group outcome.
-
-    The clinically more severe group is always the positive class so that an AUC
-    above 0.5 consistently means that a higher severity score ranks that group
-    above its comparison group.
-    """
+    """Three clinically direct pairwise ROC contrasts for the 4-group outcome."""
     return _binary_roc_contrasts(
         df,
         score_col=score_col,
@@ -1342,18 +1292,7 @@ def source_sensitivity(
     score_col: str = "severity_score",
     study_col: str = "study",
 ) -> Dict[str, pd.DataFrame]:
-    """The three prespecified secondary analyses for contributing-source confounding.
-
-    The cohort pools four non-exchangeable sources with very different outcome
-    mixes, so a pooled rank association can in principle be produced by
-    between-source differences alone. Returns three tables:
-
-      composition  families per source by outcome level
-      rank         Spearman rho within each source, the pooled value with each
-                   source removed in turn, and the pooled value itself
-      odds         the proportional-odds model with and without contributing
-                   source as a covariate
-    """
+    """The three prespecified secondary analyses for contributing-source confounding."""
     work = df.copy()
     work["contributing_source"] = work[study_col].map(assign_contributing_source)
     score = work[score_col].to_numpy(float)
@@ -1477,19 +1416,7 @@ def term_count_baseline(
     termination_level: Optional[int] = 2,
 ) -> Dict[str, pd.DataFrame]:
     """Compare the severity score with a baseline that needs no training: the
-    number of distinct HPO terms recorded for each family (anomaly burden).
-
-    Rank table, for all outcomes and with terminations excluded (termination
-    reflects decisions as well as disease): Spearman rho with bootstrap 95% CI
-    and two-sided permutation P for the score and for the term count, the
-    score-count correlation, and the partial Spearman correlation between score
-    and outcome after removing the term count (rank residuals, bootstrap CI).
-
-    Odds table, all outcomes: proportional-odds models with the score only, the
-    term count only, and both (each standardised; OR per +1 SD), with
-    likelihood-ratio tests for adding the score to the count model and the count
-    to the score model.
-    """
+    number of distinct HPO terms recorded for each family (anomaly burden)."""
     work = df[[score_col, count_col, outcome_col]].dropna().reset_index(drop=True)
 
     def _partial_rho(ss: np.ndarray, cc: np.ndarray, yy: np.ndarray) -> float:
@@ -1614,15 +1541,7 @@ def adjacent_level_separation(
     seed: int = 7,
     score_col: str = "severity_score",
 ) -> pd.DataFrame:
-    """Does the score separate each neighbouring pair of outcome levels?
-
-    The selected rank statistics summarise the ordering as a whole, so a strong
-    pooled value can coexist with one boundary that the score does not resolve
-    at all. This reports, for every adjacent pair of levels, the probability
-    that the more severe level scores higher (ties 0.5) with a percentile
-    bootstrap interval. An interval covering 0.5 means that boundary is not
-    resolved by the score.
-    """
+    """Does the score separate each neighbouring pair of outcome levels?"""
     rng = np.random.RandomState(seed)
     score = df[score_col].to_numpy(float)
     outcome = df[outcome_col].to_numpy(float)
@@ -1864,7 +1783,6 @@ def _draw_class_probability_panel(
     df: pd.DataFrame,
     outcome_col: str = "outcome_4level",
 ) -> None:
-    """Plot mean calibrated Mild/Moderate/Severe/Profound probabilities by group."""
     prefix = "phenotype_probability_" if getattr(ax, "_score_channel", "phenotype") == "phenotype" else "class_probability_"
     probability_columns = [prefix + n for n in ("mild", "moderate", "severe", "profound")]
     class_labels = ["Mild", "Moderate", "Severe", "Profound"]
@@ -1987,7 +1905,6 @@ def load_scorer_heldout(path):
 
 
 def _draw_scorer_confusion(ax, heldout, score_channel="phenotype", title="a  Scorer held-out confusion matrix"):
-    """Confusion matrix with counts and within-observed-class proportions."""
     observed = heldout["observed"].astype(int).to_numpy()
     if score_channel == "phenotype" and "phenotype_expected" in heldout.columns:
         predicted = np.clip(np.round(heldout["phenotype_expected"].to_numpy()), 0, len(CLASS_NAMES) - 1).astype(int)
@@ -2027,7 +1944,6 @@ def _draw_scorer_confusion(ax, heldout, score_channel="phenotype", title="a  Sco
 def _draw_scorer_expected_severity(
     ax, heldout, title="b  Scorer held-out expected severity by observed class"
 ):
-    """Expected severity (0-3) by observed class, phenotype against combined."""
     rng = np.random.RandomState(0)
     channels = [
         ("phenotype_expected", "Phenotype channel", "#1f77b4", -0.16, "o"),
@@ -2074,13 +1990,7 @@ def build_4group_figure(
     scorer_heldout=None,
     score_channel="phenotype",
 ) -> None:
-    """Scorer held-out validation plus the live birth/NICU/TOP/death summary.
-
-    When ``scorer_heldout`` is supplied the figure gains two leading panels that
-    validate the deployed scorer on its own gene-disjoint held-out set, so the
-    prenatal application and the evidence for the tool it uses form one display
-    item. Without it the original four-panel prenatal figure is produced.
-    """
+    """Scorer held-out validation plus the live birth/NICU/TOP/death summary."""
     with_scorer = scorer_heldout is not None and len(scorer_heldout) > 0
     if with_scorer:
         fig, axes = plt.subplots(3, 2, figsize=(15.5, 17.0), constrained_layout=True)
@@ -2455,8 +2365,8 @@ def main() -> None:
             errors="ignore",
         )
 
-    # Main output now contains every aggregated family, including missing
-    # outcomes and model abstentions, with explicit inclusion flags.
+
+
     exportable(all_profiles).to_csv(
         os.path.join(args.output, "severity_by_family.csv"),
         index=False,

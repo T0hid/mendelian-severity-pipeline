@@ -68,8 +68,8 @@ def verify_clinical_source():
         name = names.get(historical_name, historical_name)
         source = (ROOT / name).read_text(encoding='utf-8-sig')
         require(semantic_hash(source) == cleanup.get('clinical_modules', {}).get(name, item['semantic_module_sha256']), f'Computational source changed: {name}')
-        report[name] = {'status': 'passed', 'functions_retained': item['functions'],
-                        'classes_retained': item['classes']}
+        report[name] = {'status': 'passed', 'functions_retained': cleanup.get('clinical_counts', {}).get(name, item)['functions'],
+                        'classes_retained': cleanup.get('clinical_counts', {}).get(name, item)['classes']}
     return report
 
 

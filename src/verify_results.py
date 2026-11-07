@@ -187,8 +187,8 @@ def check_config(manifest):
     for key, value in manifest['config'].items():
         if key in path_keys:
             continue
-        if key == 'USE_ORGAN_CRITICALITY_FEATURES' and key not in current:
-            require(value is False, 'Removed organ-criticality option was enabled in reference')
+        if key in {'USE_ORGAN_CRITICALITY_FEATURES', 'DROP_HPO_PCA', 'HPO_PCA_N_COMPONENTS'} and key not in current:
+            require(value == {'USE_ORGAN_CRITICALITY_FEATURES': False, 'DROP_HPO_PCA': True, 'HPO_PCA_N_COMPONENTS': 30}[key], 'Removed option differs from the reference configuration')
             continue
         require(key in current, f'Missing configuration: {key}')
         require(json.dumps(restore_names(current[key]), sort_keys=True) == json.dumps(value, sort_keys=True),
