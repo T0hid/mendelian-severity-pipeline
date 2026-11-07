@@ -43,10 +43,10 @@ class ReviewWorkflowTests(unittest.TestCase):
             (target / 'reference').mkdir()
             shutil.copy2(REFERENCE_DIR / 'function_fingerprints.json', target / 'reference/function_fingerprints.json')
             shutil.copy2(REFERENCE_DIR / 'approved_cleanup_fingerprints.json', target / 'reference/approved_cleanup_fingerprints.json')
-            source = (PACKAGE_DIR / 'pipeline.py').read_text(encoding='utf-8')
+            source = (PACKAGE_DIR / 'severity_pipeline.py').read_text(encoding='utf-8')
             original = 'm["accuracy"] = float((y_true == y_pred).mean())'
             self.assertIn(original, source)
-            (target / 'pipeline.py').write_text(source.replace(original, 'm["accuracy"] = 0.0'), encoding='utf-8')
+            (target / 'severity_pipeline.py').write_text(source.replace(original, 'm["accuracy"] = 0.0'), encoding='utf-8')
             result = verify_source(target)
             self.assertEqual(result['status'], 'failed')
             self.assertIn('_compute_discrimination_metrics', result['unexpected_changes'])

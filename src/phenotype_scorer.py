@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-phenotype_severity_scorer_v3_3_monotone_ontology.py
+phenotype_scorer.py
 
 Multi-channel disease-level HPO severity scorer.
 
@@ -51,13 +51,13 @@ Optional dimension targets (labels 0..3 or Mild..Profound):
 Examples
 --------
 Train:
-  python3 phenotype_severity_scorer_v3_3_monotone_ontology.py \
+  python3 phenotype_scorer.py \
       --severity-csv final_output_with_severity.csv \
       --hpo-obo hp.obo \
       --output PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL
 
 Score:
-  python3 phenotype_severity_scorer_v3_3_monotone_ontology.py \
+  python3 phenotype_scorer.py \
       --load PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL/model.pkl \
       --score HP:0001250 HP:0001252 HP:0000252 \
       --absent-score HP:0001260
@@ -3180,7 +3180,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--severity-csv", default="final_output_with_severity.csv")
     parser.add_argument("--hpo-obo", default="hp.obo")
-    parser.add_argument("--output", default="PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL_final")
+    parser.add_argument("--output", default="results/scorer")
     parser.add_argument("--external-severity-csv", default=None)
     parser.add_argument("--conflict-policy", choices=["exclude", "mode"], default="exclude")
     parser.add_argument("--test-fraction", type=float, default=0.20)

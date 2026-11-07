@@ -25,7 +25,7 @@ def check_inputs(data_dir: Path) -> dict:
     items = json.loads((reference_directory(PACKAGE_DIR) / 'input_manifest.json').read_text())
     checks = []
     for item in items:
-        path = data_dir / item['relative_path']
+        path = data_dir / ('gene_annotations.csv' if item['relative_path'] == 'final_gnn_dataset.csv' else item['relative_path'])
         row = dict(item, path=str(path), exists=path.is_file())
         row['actual_sha256'] = sha256_file(path) if path.is_file() else None
         expected = item['expected_sha256']
@@ -72,7 +72,7 @@ def main(argv=None) -> int:
         print(json.dumps(report, indent=2))
         return 2
     os.chdir(data_dir)
-    pipeline = importlib.import_module('pipeline')
+    pipeline = importlib.import_module('severity_pipeline')
     pipeline.Config.OUTPUT_DIR = str(output_dir)
     if args.permutations is not None:
         pipeline.Config.N_PERMUTATIONS = args.permutations

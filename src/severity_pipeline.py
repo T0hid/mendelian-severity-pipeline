@@ -1,13 +1,13 @@
 """Gene-disease severity prediction: reviewer-oriented submission source.
 
 Author: Tohid Ghasemnejad
-Reference analysis: 4.9.0-redundancy-pruned-20261103
+Reference analysis: 1.0.0
 
 Review order: configuration, source data, grouped partitions, training-only
 feature learning and nested tuning, validation selection/calibration, one
 locked test evaluation per scenario, uncertainty, sensitivity and reporting.
 
-Use run_pipeline.py to check inputs and run into a fresh output directory.
+Use run_severity_pipeline.py to check inputs and run into a fresh output directory.
 Use verify_results.py to check saved predictions without model training.
 All original scientific functions are retained; FUNCTION_INVENTORY.csv maps
 their original names and lines to this file.
@@ -173,7 +173,7 @@ class Config:
         **{f"CORE:{k}": v for k, v in REMOVED_INPUT_COLUMNS_CORE.items()},
         **{f"EXTERNAL:{k}": v for k, v in REMOVED_INPUT_COLUMNS_EXTERNAL.items()},
     }
-    # Annotation strings in the GNN file that mean "no annotation".
+    # Annotation strings in the ANNOTATION file that mean "no annotation".
     TEXT_PLACEHOLDER_TOKENS = ("unknown", "na", "n/a", "none", "nan", "null", "-")
     INHERITANCE_COUNT_PROXY_COLUMNS = [
         "n_inheritance_modes",
@@ -191,7 +191,7 @@ class Config:
     ]
 
     BASE_DIR = "."
-    OUTPUT_DIR = os.path.join(BASE_DIR, "SEVERITY_RESULTS_GENE_DISEASE_v4_9_1_reproduction")
+    OUTPUT_DIR = os.path.join(BASE_DIR, "results/main")
     CONSOLIDATED_DIR = os.path.join(BASE_DIR, "CONSOLIDATED_FEATURES_v2")
 
     # Inputs.
@@ -204,7 +204,7 @@ class Config:
     )
     APPLY_REBUILT_GENE_DISEASE_MAPPING = True
     INCLUDE_HPO_ADDED_PAIRS = False
-    GNN_DATA = "final_gnn_dataset.csv"
+    ANNOTATION_DATA = "gene_annotations.csv"
     CORE_FEATURES = os.path.join(CONSOLIDATED_DIR, "CORE_MECHANISTIC_FEATURES.csv")
     DOMAIN_FEATURES = os.path.join(
         BASE_DIR, "enhanced_variant_features", "DOMAIN_CARRIER_FEATURES.csv"
@@ -246,8 +246,8 @@ class Config:
 
     # Reporting dependencies are imported and checked before data assembly/training.
     REPORTING_MODULES = {
-        "publication_figures_v2": "generate_publication_figures",
-        "manuscript_report": "generate_manuscript_report",
+        "publication_figures": "generate_publication_figures",
+        "run_report": "generate_manuscript_report",
     }
 
     # Target and split policy.
@@ -291,7 +291,7 @@ class Config:
     HPO_BUDGET_CANDIDATES = [
         200, 300, 400, 600, 800, 1200, 1600, 2400, 3200, 5200, HPO_BUDGET_ALL_ELIGIBLE,
     ]
-    SHARED_HPO_BUDGET_SCENARIOS = ("S2_Mech_Pheno", "S3_Phenotype")
+    SHARED_HPO_BUDGET_SCENARIOS = ("S2_Combined", "S3_Phenotype")
     S3_BUDGET_SELECTION_LGB_PARAMS = {
         "n_estimators": 300,
         "learning_rate": 0.03,
@@ -338,7 +338,7 @@ class Config:
         "organ_system": 25,
         "mondo": 50,
         "inheritance": 8,
-        "gnn_text": 80,
+        "annotation_text": 80,
         "primary_text": 80,
         "engineered": 50,
         "mechanistic_core": 120,
@@ -377,7 +377,7 @@ class Config:
         "mouse_lethal_pheno_n_hpos_with_data",   # coverage of mouse data, not lethality
         "mouse_phenotype_count",                 # number of mouse phenotypes recorded
     )
-    # Expression sites in final_gnn_dataset.csv are capped at 10 per gene, so their
+    # Expression sites in gene_annotations.csv are capped at 10 per gene, so their
     # count and indicators mainly reflect annotation depth; HPA, GTEx and BrainSpan
     # already describe expression.
     # interaction partners are also excluded, so that no protein-protein
@@ -600,7 +600,7 @@ class DataContainer:
         return self.scenario_cols.get(scenario, [])
 
 
-PIPELINE_VERSION = "4.9.0-redundancy-pruned-20261103"
+PIPELINE_VERSION = "1.0.0"
 
 
 RANDOM_SEED = 42
@@ -877,11 +877,11 @@ FEATURE_DISPLAY_LABELS: Dict[str, str] = {
 
 
 _FEATURE_SOURCE_PREFIXES = (
-    ("feat_gnn_biological_processes_", "GO process: ", "GO biological processes annotated"),
-    ("feat_gnn_molecular_activities_", "GO function: ", "GO molecular functions annotated"),
-    ("feat_gnn_expression_sites_", "Expressed in: ", "Expression sites annotated"),
-    ("feat_gnn_interacting_genes_", "Interacts with: ", "Interaction partners annotated"),
-    ("feat_gnn_pathways_", "Pathway: ", "Pathways annotated"),
+    ("feat_annot_biological_processes_", "GO process: ", "GO biological processes annotated"),
+    ("feat_annot_molecular_activities_", "GO function: ", "GO molecular functions annotated"),
+    ("feat_annot_expression_sites_", "Expressed in: ", "Expression sites annotated"),
+    ("feat_annot_interacting_genes_", "Interacts with: ", "Interaction partners annotated"),
+    ("feat_annot_pathways_", "Pathway: ", "Pathways annotated"),
 )
 
 
@@ -910,13 +910,13 @@ _TEXT_STRUCT_COLS = [
 
 
 SCENARIO_TEXT_SOURCES: Dict[str, Tuple[str, ...]] = {
-    "S1_Mechanistic": ("gnn",),
-    "S1b_Disease_Context": ("gnn",),
-    "S2_Mech_Pheno": ("gnn",),
+    "S1_Gene_Level": ("annotation",),
+    "S1b_Disease_Context": ("annotation",),
+    "S2_Combined": ("annotation",),
     "S3_Phenotype": (),
 
     # A future, separately reported text scenario could use:
-    # "S4_Text_Augmented": ("gnn",),
+    # "S4_Text_Augmented": ("annotation",),
 }
 
 
@@ -924,9 +924,9 @@ _generalisation_results: Dict[str, Any] = {}
 
 
 PAIRED_SCENARIO_CONTRASTS: Tuple[Tuple[str, str], ...] = (
-    ("S3_Phenotype", "S2_Mech_Pheno"),
-    ("S2_Mech_Pheno", "S1b_Disease_Context"),
-    ("S1b_Disease_Context", "S1_Mechanistic"),
+    ("S3_Phenotype", "S2_Combined"),
+    ("S2_Combined", "S1b_Disease_Context"),
+    ("S1b_Disease_Context", "S1_Gene_Level"),
 )
 
 
@@ -1879,18 +1879,18 @@ def build_gene_disease_target(primary_data_path: str) -> pd.DataFrame:
     return disease_df
 
 
-def enrich_with_gnn_dataset(disease_df: pd.DataFrame) -> pd.DataFrame:
-    if not os.path.exists(Config.GNN_DATA):
-        logger.log(f"  GNN dataset not found", level="WARNING")
+def enrich_with_annotation_dataset(disease_df: pd.DataFrame) -> pd.DataFrame:
+    if not os.path.exists(Config.ANNOTATION_DATA):
+        logger.log(f"  ANNOTATION dataset not found", level="WARNING")
         return disease_df
-    logger.subsection("Enriching with GNN biological text features")
-    gnn_df = pd.read_csv(Config.GNN_DATA, low_memory=False)
-    gnn_df = gnn_df.rename(columns={"Gene Name": "gene_symbol", "MONDO_ID": "mondo_id"})
-    # GNN annotations are mechanistic gene annotations. Collapse repeated
+    logger.subsection("Enriching with ANNOTATION biological text features")
+    annotation_df = pd.read_csv(Config.ANNOTATION_DATA, low_memory=False)
+    annotation_df = annotation_df.rename(columns={"Gene Name": "gene_symbol", "MONDO_ID": "mondo_id"})
+    # ANNOTATION annotations are mechanistic gene annotations. Collapse repeated
     # gene-disease rows to a single union profile per gene before any feature
     # construction so disease identity cannot alter the S1 representation.
-    gnn_df = _collapse_gnn_to_gene_level(gnn_df, write_audit=True)
-    disease_df, _ = build_pipe_text_features(disease_df, gnn_df, source_label="gnn")
+    annotation_df = _collapse_annotation_to_gene_level(annotation_df, write_audit=True)
+    disease_df, _ = build_pipe_text_features(disease_df, annotation_df, source_label="annotation")
     return disease_df
 
 
@@ -2178,7 +2178,7 @@ def _missing_value_semantics_for_family(family: str) -> str:
         return "structural_zero_means_term_absent"
     if family == "missingness_indicator":
         return "explicit_source_or_column_availability_indicator"
-    if family in {"primary_text", "gnn_text"}:
+    if family in {"primary_text", "annotation_text"}:
         return "fold_built_tokens_with_explicit_source_availability"
     return "unknown_preserved_as_nan_then_training_fold_median_imputation"
 
@@ -2188,7 +2188,7 @@ def _assemble_source_dataframe() -> DataContainer:
     logger.section("ASSEMBLING FULL DATAFRAME (no fitting)")
     container = DataContainer()
     disease_df = build_gene_disease_target(Config.PRIMARY_DATA)
-    disease_df = enrich_with_gnn_dataset(disease_df)
+    disease_df = enrich_with_annotation_dataset(disease_df)
     mondo_terms = parse_mondo_obo(Config.MONDO_OBO_PATH)
     disease_df, mondo_cols = build_mondo_features(disease_df, mondo_terms)
     container.mondo_cols = mondo_cols
@@ -2404,8 +2404,8 @@ def _assemble_source_dataframe() -> DataContainer:
     primary_text_features = [
         column for column in full_df.columns if column.startswith("feat_primary_")
     ]
-    gnn_text_features = [
-        column for column in full_df.columns if column.startswith("feat_gnn_")
+    annotation_text_features = [
+        column for column in full_df.columns if column.startswith("feat_annot_")
     ]
     hpo_binary_cols = [
         column for column in full_df.columns
@@ -2453,9 +2453,9 @@ def _assemble_source_dataframe() -> DataContainer:
         and not column.startswith("feat_hpo_sys_")
     ]
     s2_cols, s2_dropped = filter_leaky_columns_for_phenotype_scenarios(
-        s2_raw, "S2_Mech_Pheno"
+        s2_raw, "S2_Combined"
     )
-    container.scenario_static_drops["S2_Mech_Pheno"] = s2_dropped
+    container.scenario_static_drops["S2_Combined"] = s2_dropped
     s3_raw = [
         column for column in hpo_binary_cols
         if column in full_df.columns
@@ -2465,9 +2465,9 @@ def _assemble_source_dataframe() -> DataContainer:
     )
     container.scenario_static_drops["S3_Phenotype"] = s3_dropped
 
-    container.scenario_cols["S1_Mechanistic"] = list(dict.fromkeys(s1_cols))
+    container.scenario_cols["S1_Gene_Level"] = list(dict.fromkeys(s1_cols))
     container.scenario_cols["S1b_Disease_Context"] = list(dict.fromkeys(s1b_cols))
-    container.scenario_cols["S2_Mech_Pheno"] = list(dict.fromkeys(s2_cols))
+    container.scenario_cols["S2_Combined"] = list(dict.fromkeys(s2_cols))
     container.scenario_cols["S3_Phenotype"] = list(dict.fromkeys(s3_cols))
 
     if not Config.USE_ORGAN_CRITICALITY_FEATURES:
@@ -2590,11 +2590,11 @@ def _assemble_source_dataframe() -> DataContainer:
         # removed from S1 and retained for S1b/S2/S3.
         _inheritance_proxy_drop = set(Config.INHERITANCE_COUNT_PROXY_COLUMNS)
         _inheritance_removed = [
-            column for column in container.scenario_cols["S1_Mechanistic"]
+            column for column in container.scenario_cols["S1_Gene_Level"]
             if column in _inheritance_proxy_drop
         ]
-        container.scenario_cols["S1_Mechanistic"] = [
-            column for column in container.scenario_cols["S1_Mechanistic"]
+        container.scenario_cols["S1_Gene_Level"] = [
+            column for column in container.scenario_cols["S1_Gene_Level"]
             if column not in _inheritance_proxy_drop
         ]
         # Deliberately NOT recorded in scenario_static_drops: that channel is
@@ -2626,8 +2626,8 @@ def _assemble_source_dataframe() -> DataContainer:
         family_lookup[column] = "engineered"
     for column in primary_text_features:
         family_lookup[column] = "primary_text"
-    for column in gnn_text_features:
-        family_lookup[column] = "gnn_text"
+    for column in annotation_text_features:
+        family_lookup[column] = "annotation_text"
     for column in organ_system_features:
         family_lookup[column] = "organ_system"
     for column in mondo_cols:
@@ -2650,7 +2650,7 @@ def _assemble_source_dataframe() -> DataContainer:
     # Set env var DUMP_FEATURE_MATRIX=1 to dump the assembled full feature matrix,
     # the per-column family map, and the per-scenario candidate columns, so that
     # feature_audit_toolkit.py can audit EVERY feature (mechanistic, engineered,
-    # HPO, MONDO, GNN, mouse, text). Off by default; normal runs are unchanged.
+    # HPO, MONDO, ANNOTATION, mouse, text). Off by default; normal runs are unchanged.
     if os.environ.get("DUMP_FEATURE_MATRIX"):
         try:
             _audit_dir = os.path.join(Config.OUTPUT_DIR, "FEATURE_MATRIX_DUMP")
@@ -2686,7 +2686,7 @@ def _assemble_source_dataframe() -> DataContainer:
         "inheritance": "moderate_clinical_annotation",
         "engineered": "derived_from_allowed_inputs",
         "primary_text": "moderate_text_annotation_same_source_review",
-        "gnn_text": "moderate_text_annotation",
+        "annotation_text": "moderate_text_annotation",
         "organ_system": "disease_context_annotation_same_source_review",
         "mondo": "disease_context_annotation",
         "hpo_binary": "phenotype_annotation_same_source_review",
@@ -2702,7 +2702,7 @@ def _assemble_source_dataframe() -> DataContainer:
         "inheritance": "primary_or_mechanistic_annotation",
         "engineered": "derived_from_allowed_inputs",
         "primary_text": "primary_label_source",
-        "gnn_text": "gnn_dataset",
+        "annotation_text": "annotation_dataset",
         "organ_system": "primary_label_source",
         "mondo": "MONDO_ontology",
         "hpo_binary": "primary_label_source_and_HPO",
@@ -2798,7 +2798,7 @@ def parse_mondo_obo(obo_path: str):
     return _read_mondo_ontology(obo_path)
 
 
-def _collapse_gnn_to_gene_level(
+def _collapse_annotation_to_gene_level(
     source: pd.DataFrame,
     write_audit: bool = False,
 ) -> pd.DataFrame:
@@ -2809,12 +2809,12 @@ def _collapse_gnn_to_gene_level(
     records whether repeated source rows contained distinct token profiles.
     """
     if "gene_symbol" not in source.columns:
-        raise ValueError("GNN data must contain a gene_symbol column.")
+        raise ValueError("ANNOTATION data must contain a gene_symbol column.")
     frame = source.copy()
     frame["gene_symbol"] = frame["gene_symbol"].map(_normalise_gene_key)
     text_columns = [column for column in _TEXT_STRUCT_COLS if column in frame.columns]
     if not text_columns:
-        logger.log("  GNN data contains no configured functional text columns", level="WARNING")
+        logger.log("  ANNOTATION data contains no configured functional text columns", level="WARNING")
         return frame[["gene_symbol"]].drop_duplicates().reset_index(drop=True)
 
     collapsed_rows: List[Dict[str, Any]] = []
@@ -2842,18 +2842,18 @@ def _collapse_gnn_to_gene_level(
 
     collapsed_frame = pd.DataFrame(collapsed_rows)
     if collapsed_frame["gene_symbol"].duplicated().any():
-        raise RuntimeError("GNN gene-level collapse produced duplicate genes.")
+        raise RuntimeError("ANNOTATION gene-level collapse produced duplicate genes.")
     if "mondo_id" in collapsed_frame.columns:
-        raise RuntimeError("Disease identifiers must not survive GNN gene-level collapse.")
+        raise RuntimeError("Disease identifiers must not survive ANNOTATION gene-level collapse.")
 
     if write_audit:
         audit_path = os.path.join(
-            Config.OUTPUT_DIR, "results", "gnn_gene_level_invariance_audit.csv"
+            Config.OUTPUT_DIR, "results", "annotation_gene_level_invariance_audit.csv"
         )
         pd.DataFrame(audit_rows).to_csv(audit_path, index=False)
         n_variable = sum(row["n_distinct_nonempty_profiles"] > 1 for row in audit_rows)
         logger.log(
-            f"  Collapsed GNN annotations to {len(collapsed_frame)} gene-level profiles; "
+            f"  Collapsed ANNOTATION annotations to {len(collapsed_frame)} gene-level profiles; "
             f"{n_variable} gene/column groups required token union; wrote {audit_path}"
         )
     return collapsed_frame
@@ -2897,7 +2897,7 @@ def _text_gene_key(gene: Any) -> str:
 def _load_text_token_maps() -> Dict[str, Dict[str, Dict[str, set]]]:
     sources: Dict[str, Tuple[str, Dict[str, str]]] = {
         "primary": (Config.PRIMARY_DATA, {"Gene Name": "gene_symbol", "MONDO_ID": "mondo_id"}),
-        "gnn": (Config.GNN_DATA, {"Gene Name": "gene_symbol", "MONDO_ID": "mondo_id"}),
+        "annotation": (Config.ANNOTATION_DATA, {"Gene Name": "gene_symbol", "MONDO_ID": "mondo_id"}),
     }
     output: Dict[str, Dict[str, Dict[str, set]]] = {}
     for label, (path, rename_map) in sources.items():
@@ -2907,8 +2907,8 @@ def _load_text_token_maps() -> Dict[str, Dict[str, Dict[str, set]]]:
         source = pd.read_csv(path, low_memory=False).rename(columns=rename_map)
         if "gene_symbol" not in source.columns:
             continue
-        if label == "gnn":
-            source = _collapse_gnn_to_gene_level(source, write_audit=False)
+        if label == "annotation":
+            source = _collapse_annotation_to_gene_level(source, write_audit=False)
         elif (
             getattr(Config, "APPLY_REBUILT_GENE_DISEASE_MAPPING", False)
             and "mondo_id" in source.columns
@@ -2937,9 +2937,9 @@ def _load_text_token_maps() -> Dict[str, Dict[str, Dict[str, set]]]:
             if column not in source.columns:
                 continue
             mapping: Dict[str, set] = {}
-            # Primary-source text may be pair-specific. GNN data has already
+            # Primary-source text may be pair-specific. ANNOTATION data has already
             # been collapsed and contains no disease identifier.
-            if label != "gnn" and "mondo_id" in source.columns:
+            if label != "annotation" and "mondo_id" in source.columns:
                 for (gene, mondo), values in source.groupby(["gene_symbol", "mondo_id"])[column]:
                     tokens: set = set()
                     for value in values.dropna():
@@ -2958,7 +2958,7 @@ def _load_text_token_maps() -> Dict[str, Dict[str, Dict[str, set]]]:
 
 def _strip_global_text_vocabulary_features(container: DataContainer) -> None:
     """Remove every globally constructed text feature, including count columns."""
-    prefixes = ("feat_primary_", "feat_gnn_", "has_primary_", "has_gnn_")
+    prefixes = ("feat_primary_", "feat_annot_", "has_primary_", "has_annot_")
     global_text_columns = [
         column for column in container.full_df.columns if column.startswith(prefixes)
     ]
@@ -3547,7 +3547,7 @@ def _classify_feature_family(name: str, family_lookup: Dict[str, str]) -> str:
     }
     if name in hpo_derived_exact or name.startswith("feat_hpo_pca_"):
         return "hpo_derived"
-    # only true availability flags (has_<source>_record, has_gnn_<column>_record)
+    # only true availability flags (has_<source>_record, has_annot_<column>_record)
     # are missingness indicators. Biological flags such as has_mouse_ortholog,
     # has_close_paralog or has_lethal_phenotype keep their own family.
     if name.endswith("__missing") or (name.startswith("has_") and name.endswith("_record")):
@@ -3584,8 +3584,8 @@ def _feature_provenance_for_mi(
             family = "organ_system"
         elif feature.startswith("feat_mondo_"):
             family = "mondo"
-        elif feature.startswith("feat_gnn_"):
-            family = "gnn_text"
+        elif feature.startswith("feat_annot_"):
+            family = "annotation_text"
         elif feature.startswith("feat_primary_"):
             family = "primary_text"
         elif feature.startswith("feat_is_") or feature.startswith("feat_pli_x_"):
@@ -3597,7 +3597,7 @@ def _feature_provenance_for_mi(
         "inheritance": "primary_or_mechanistic_annotation",
         "engineered": "derived_from_allowed_inputs",
         "primary_text": "primary_label_source",
-        "gnn_text": "gnn_dataset",
+        "annotation_text": "annotation_dataset",
         "organ_system": "primary_label_source",
         "mondo": "MONDO_ontology",
         "hpo_binary": "primary_label_source_and_HPO",
@@ -4054,7 +4054,7 @@ def _fit_scenario_representation(
         SCENARIO_TEXT_SOURCES.get(scenario, ())
     )
 
-    unknown_sources = set(allowed_text_sources) - {"primary", "gnn"}
+    unknown_sources = set(allowed_text_sources) - {"primary", "annotation"}
     if unknown_sources:
         raise ValueError(
             f"{scenario}: unknown text sources configured: "
@@ -4130,8 +4130,8 @@ def _fit_scenario_representation(
     text_prefix_to_source = {
         "feat_primary_": "primary",
         "has_primary_": "primary",
-        "feat_gnn_": "gnn",
-        "has_gnn_": "gnn",
+        "feat_annot_": "annotation",
+        "has_annot_": "annotation",
     }
 
     disallowed_text_cols = [
@@ -4320,7 +4320,7 @@ def _choose_shared_hpo_budget_training_cv(
                 "mean_training_cv_balanced_accuracy": means["balanced_accuracy"],
                 "selection_partition": "training_only_nested_cv",
                 "selection_scenario": "S3_Phenotype",
-                "applied_to_scenarios": "S2_Mech_Pheno|S3_Phenotype",
+                "applied_to_scenarios": "S2_Combined|S3_Phenotype",
             })
             if key > best_key:
                 best_key = key
@@ -4342,7 +4342,7 @@ def _choose_shared_hpo_budget_training_cv(
                 "mean_training_cv_balanced_accuracy": np.nan,
                 "selection_partition": "training_only_nested_cv",
                 "selection_scenario": "S3_Phenotype",
-                "applied_to_scenarios": "S2_Mech_Pheno|S3_Phenotype",
+                "applied_to_scenarios": "S2_Combined|S3_Phenotype",
             })
     table = pd.DataFrame(rows)
     if best_budget is None:
@@ -6330,7 +6330,7 @@ def run_mi_threshold_sensitivity(
     best_models = _pick_best_model_per_scenario(all_results, exclude_stack=True)
     rows: List[Dict[str, Any]] = []
     for scenario in [
-        value for value in ["S2_Mech_Pheno", "S3_Phenotype"] if value in best_models
+        value for value in ["S2_Combined", "S3_Phenotype"] if value in best_models
     ]:
         model_name = best_models[scenario]
         artifacts = _fold_artifacts.get(scenario)
@@ -6411,7 +6411,7 @@ def run_budget_sensitivity(
     best_models = _pick_best_model_per_scenario(all_results, exclude_stack=True)
     rows: List[Dict[str, Any]] = []
 
-    for scenario in [s for s in ["S2_Mech_Pheno", "S3_Phenotype"] if s in best_models]:
+    for scenario in [s for s in ["S2_Combined", "S3_Phenotype"] if s in best_models]:
         model_name = best_models[scenario]
         artifacts = _fold_artifacts.get(scenario)
         if artifacts is None:
@@ -7274,7 +7274,7 @@ def run_permutation_test(
                         scenario_name=f"{scenario}_perm{permutation_index}",
                     )
                 else:
-                    mechanistic = "S1_Mechanistic" in scenario
+                    mechanistic = "S1_Gene_Level" in scenario
                     X_train, _, _, mask, _ = select_features_mi(
                         artifacts["X_train_full"],
                         permuted_y,
@@ -8380,7 +8380,7 @@ def generate_summary_report(all_results: Dict, pub_outputs: Dict):
     lines.append("  results/mi_threshold_sensitivity.csv  validation-only S2/S3 MI sweep")
     lines.append("  results/shared_hpo_budget_training_cv_selection.csv  shared S2/S3 budget choice")
     lines.append("  results/shared_hpo_feature_audit.csv  exact S2/S3 HPO-set equality audit")
-    lines.append("  results/gnn_gene_level_invariance_audit.csv  gene-level GNN collapse audit")
+    lines.append("  results/annotation_gene_level_invariance_audit.csv  gene-level ANNOTATION collapse audit")
     lines.append("  results/permutation_test.csv          validation-only gene-block shuffled-label null")
     lines.append("  results/severity_hpo_term_sensitivity.csv  validation-only severity-HPO ablation")
     lines.append("  results/severity_hpo_terms_removed.csv exact severity-related HPO terms removed")
@@ -8479,7 +8479,7 @@ def write_pipeline_manifest(container: DataContainer, all_results: Dict, pub_out
     inputs = {
         "primary_data": Config.PRIMARY_DATA,
         "rebuilt_gene_disease_mapping": Config.REBUILT_GENE_DISEASE_MAPPING,
-        "gnn_data": Config.GNN_DATA,
+        "annotation_data": Config.ANNOTATION_DATA,
         "core_features": Config.CORE_FEATURES,
         "domain_features": Config.DOMAIN_FEATURES,
         "external_features": Config.EXTERNAL_FEATURES,
@@ -8492,15 +8492,15 @@ def write_pipeline_manifest(container: DataContainer, all_results: Dict, pub_out
         "source_release": "journal-cleanup-20261104",
         "source_files": {
             name: _sha256_file(os.path.join(os.path.dirname(__file__), name))
-            for name in ("pipeline.py", "gene_disease_mapping_filter.py",
-                         "publication_figures_v2.py", "manuscript_report.py")
+            for name in ("severity_pipeline.py", "gene_disease_mapping_filter.py",
+                         "publication_figures.py", "run_report.py")
         },
         "run_timestamp": datetime.now().isoformat(),
         "git_commit_hash": get_git_commit_hash(),
         "workflow": {
             "outer_split": "optimised group-disjoint 65/15/20 train/validation/test",
             "feature_vocabulary": "learned on each training fold only",
-            "gnn_representation": "gene-level union of functional annotations; disease identifiers excluded",
+            "annotation_representation": "gene-level union of functional annotations; disease identifiers excluded",
             "shared_hpo_budget": (
                 "selected on S3 training-only nested CV and frozen identically for S2 and S3"
             ),
@@ -8565,7 +8565,7 @@ def write_pipeline_manifest(container: DataContainer, all_results: Dict, pub_out
             for scenario, artifact in _fold_artifacts.items()
         },
         "scenario_scope_exclusions": {
-            "S1_Mechanistic": {
+            "S1_Gene_Level": {
                 "organ_criticality_columns_removed": (
                     [] if Config.USE_ORGAN_CRITICALITY_FEATURES
                     else list(Config.ORGAN_CRITICALITY_COLUMNS)
@@ -8860,7 +8860,7 @@ def severity_shap_group(name: str) -> str:
         return "Paralogues and redundancy"
     if low.startswith(("var_", "feat_density_", "feat_prop_")) or low == "feat_ratio_lof_missense":
         return "Reported variants"
-    if low.startswith(("feat_gnn_", "feat_primary_", "has_gnn_", "has_primary_")):
+    if low.startswith(("feat_annot_", "feat_primary_", "has_annot_", "has_primary_")):
         return "Functional annotations"
     return "Other"
 
@@ -9200,7 +9200,7 @@ def save_severity_shap(container: DataContainer, all_results: Dict) -> None:
 
 
 def ordered_scenarios_from_keys(keys) -> List[str]:
-    preferred = ["S1_Mechanistic", "S1b_Disease_Context", "S2_Mech_Pheno", "S3_Phenotype"]
+    preferred = ["S1_Gene_Level", "S1b_Disease_Context", "S2_Combined", "S3_Phenotype"]
     found: set = set()
     for raw_key in keys:
         key = str(raw_key)
@@ -9310,7 +9310,7 @@ def validate_preflight_inputs_and_reporting() -> None:
             Config.PRIMARY_DATA,
             [["Gene Name", "gene_symbol"], ["MONDO_ID", "mondo_id"], ["Severity", "target_severity"]],
         ),
-        "gnn_data": (Config.GNN_DATA, [["Gene Name", "gene_symbol"]]),
+        "annotation_data": (Config.ANNOTATION_DATA, [["Gene Name", "gene_symbol"]]),
         "core_features": (Config.CORE_FEATURES, [["gene_symbol"]]),
     }
     optional_csvs = {
@@ -9721,7 +9721,7 @@ def main():
             os.path.join(Config.OUTPUT_DIR, "results", "all_results.csv")
         )
 
-        figure_module = _REPORTING_MODULE_CACHE["publication_figures_v2"]
+        figure_module = _REPORTING_MODULE_CACHE["publication_figures"]
         figure_module.generate_publication_figures(
             all_results,
             container,
@@ -9731,7 +9731,7 @@ def main():
             output_dir=Config.OUTPUT_DIR,
             random_seed=RANDOM_SEED,
         )
-        report_module = _REPORTING_MODULE_CACHE["manuscript_report"]
+        report_module = _REPORTING_MODULE_CACHE["run_report"]
         report_module.generate_manuscript_report(
             all_results,
             container,

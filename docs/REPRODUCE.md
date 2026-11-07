@@ -30,7 +30,7 @@ This fits and evaluates the disease-level phenotype scorer and saves the refitte
 
 ## Run the prenatal analysis
 
-Supply a local copy of the cohort CSV. The input schema is defined by `load_cohort` in the [prenatal analysis script](../src/prenatal_severity_analysis_v3_multichannel.py).
+Supply a local copy of the cohort CSV. The input schema is defined by `load_cohort` in the [prenatal analysis script](../src/prenatal_analysis.py).
 
 ```shell
 python -m pip install -r src/requirements-full.txt

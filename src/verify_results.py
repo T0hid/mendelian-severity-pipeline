@@ -50,7 +50,7 @@ def source_functions(names, config, source_path=None):
     Only requested function definitions and their function dependencies are executed.
     Module-level imports, output creation and the analysis entry point are excluded.
     """
-    source_path = Path(source_path or PACKAGE_DIR / 'pipeline.py')
+    source_path = Path(source_path or PACKAGE_DIR / 'severity_pipeline.py')
     tree = ast.parse(source_path.read_text(encoding='utf-8-sig'))
     functions = {n.name: n for n in tree.body if isinstance(n, ast.FunctionDef)}
     needed, pending = set(), list(names)
@@ -162,7 +162,7 @@ def check_model_selection(selection, manifest, helpers):
 
 
 def check_config(manifest):
-    tree = ast.parse((PACKAGE_DIR / 'pipeline.py').read_text(encoding='utf-8'))
+    tree = ast.parse((PACKAGE_DIR / 'severity_pipeline.py').read_text(encoding='utf-8'))
     node = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == 'Config')
     namespace = {'os': os}
     exec(compile(ast.fix_missing_locations(ast.Module(body=[node], type_ignores=[])), '<Config>', 'exec'), namespace)

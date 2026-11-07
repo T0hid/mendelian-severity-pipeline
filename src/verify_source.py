@@ -40,7 +40,7 @@ def canonical_hash(node: ast.AST, renames: dict[str, str]) -> str:
 def verify_source(package_dir: Path) -> dict:
     package_dir = Path(package_dir)
     baseline = json.loads((reference_directory(package_dir) / 'function_fingerprints.json').read_text())
-    tree = ast.parse((package_dir / 'pipeline.py').read_text(encoding='utf-8'))
+    tree = ast.parse((package_dir / 'severity_pipeline.py').read_text(encoding='utf-8'))
     current = {n.name: n for n in tree.body if isinstance(n, (ast.FunctionDef, ast.ClassDef))}
     changed = []
     missing = []

@@ -51,6 +51,12 @@ def prepare_training_inputs(data_directory, destination=None):
                     shutil.copyfileobj(source, target)
                 if sha256(path) != metadata['files'][name]['sha256']:
                     raise ValueError(f'Extracted training input failed its checksum: {name}')
+    original_annotation = destination / 'final_gnn_dataset.csv'
+    annotation = destination / 'gene_annotations.csv'
+    if annotation.exists() and sha256(annotation) != sha256(original_annotation):
+        raise ValueError('gene_annotations.csv differs from the bundled annotation table')
+    if not annotation.exists():
+        shutil.copyfile(original_annotation, annotation)
     return destination.resolve(), {'status': 'passed', 'required_files_checked': len(metadata['files']),
         'all_required_hashes_matched': True, 'individual_prenatal_data_included': False,
         'historical_mapping_hash_recorded': False,

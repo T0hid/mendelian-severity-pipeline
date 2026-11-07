@@ -14,8 +14,8 @@ from runtime_paths import reference_directory
 
 ROOT = Path(__file__).resolve().parent
 REFERENCE_DIR = reference_directory(ROOT)
-SCORER = 'phenotype_severity_scorer_v3_3_monotone_ontology.py'
-PRENATAL = 'prenatal_severity_analysis_v3_multichannel.py'
+SCORER = 'phenotype_scorer.py'
+PRENATAL = 'prenatal_analysis.py'
 
 
 def check_scorer_inputs(data_dir, no_visualizations=False):
@@ -40,7 +40,7 @@ def run_command(command, output, cwd=None):
     if result.returncode:
         return result.returncode
     record = {'command': command, 'python': sys.version,
-              'source_files': {p.name: sha256_file(p) for p in [ROOT / SCORER, ROOT / PRENATAL, ROOT / 'pipeline.py']}}
+              'source_files': {p.name: sha256_file(p) for p in [ROOT / SCORER, ROOT / PRENATAL, ROOT / 'severity_pipeline.py']}}
     (output / 'workflow_execution.json').write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8')
     return 0
 
@@ -103,7 +103,7 @@ def main(argv=None):
                           'model_training_performed': False}, indent=2))
         return 0
     if args.command == 'benchmark':
-        command = [sys.executable, str(ROOT / 'run_pipeline.py'), '--data-dir', str(args.data_dir.resolve())]
+        command = [sys.executable, str(ROOT / 'run_severity_pipeline.py'), '--data-dir', str(args.data_dir.resolve())]
         if args.output_dir:
             command += ['--output-dir', str(args.output_dir.resolve())]
         if args.permutations is not None:

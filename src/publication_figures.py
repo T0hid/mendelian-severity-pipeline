@@ -44,7 +44,7 @@ except ImportError:
 
 # 1. CONFIGURATION (single source of truth for the whole file)
 # Locked headline pair. Change here to relock on a different (scenario, model).
-HEADLINE_SCENARIO = "S2_Mech_Pheno"
+HEADLINE_SCENARIO = "S2_Combined"
 HEADLINE_MODEL    = "LightGBM"
 CLASS_NAMES   = ["Mild", "Moderate", "Severe", "Profound"]
 CLASS_INDICES = {n: i for i, n in enumerate(CLASS_NAMES)}
@@ -55,24 +55,24 @@ CLASS_INDICES = {n: i for i, n in enumerate(CLASS_NAMES)}
 # S2 = combined, S3 = phenotype-only. The mechanistic_core family is displayed
 # as Gene-level core.
 SCENARIO_LABELS = {
-    "S1_Mechanistic":      "S1: Gene-level",
+    "S1_Gene_Level":      "S1: Gene-level",
     "S1b_Disease_Context": "S1b: Gene-level + disease context",
-    "S2_Mech_Pheno":       "S2: Combined",
+    "S2_Combined":       "S2: Combined",
     "S3_Phenotype":        "S3: Phenotype-only",
     "S2_blind_diagnostic": "S2-blind: S2 without tier features",
 }
 SCENARIO_SHORT = {
-    "S1_Mechanistic":      "S1",
+    "S1_Gene_Level":      "S1",
     "S1b_Disease_Context": "S1b",
-    "S2_Mech_Pheno":       "S2",
+    "S2_Combined":       "S2",
     "S3_Phenotype":        "S3",
     "S2_blind_diagnostic": "S2-blind",
 }
 # Stable ordering used everywhere
 SCENARIO_ORDER = [
-    "S1_Mechanistic",
+    "S1_Gene_Level",
     "S1b_Disease_Context",
-    "S2_Mech_Pheno",
+    "S2_Combined",
     "S3_Phenotype",
    # "S2_blind_diagnostic",
 ]
@@ -86,9 +86,9 @@ PAL_CLASS = {
 }
 # Per-scenario palette: muted, colour-vision-safe, and stable across figures.
 PAL_SCENARIO = {
-    "S1_Mechanistic":      "#5F7F9E",
+    "S1_Gene_Level":      "#5F7F9E",
     "S1b_Disease_Context": "#4C9A87",
-    "S2_Mech_Pheno":       "#D8892B",
+    "S2_Combined":       "#D8892B",
     "S3_Phenotype":        "#9473A9",
     "S2_blind_diagnostic": "#8A8A8A",
 }
@@ -137,12 +137,12 @@ _BROAD_MONDO_TERMS = {
 }
 
 # Display names for the functional-annotation feature families.
-_GNN_LABEL_PREFIXES = (
-    ("feat_gnn_biological_processes_", "GO process: ", "GO biological processes annotated"),
-    ("feat_gnn_molecular_activities_", "GO function: ", "GO molecular functions annotated"),
-    ("feat_gnn_expression_sites_", "Expressed in: ", "Expression sites annotated"),
-    ("feat_gnn_interacting_genes_", "Interacts with: ", "Interaction partners annotated"),
-    ("feat_gnn_pathways_", "Pathway: ", "Pathways annotated"),
+_ANNOTATION_LABEL_PREFIXES = (
+    ("feat_annot_biological_processes_", "GO process: ", "GO biological processes annotated"),
+    ("feat_annot_molecular_activities_", "GO function: ", "GO molecular functions annotated"),
+    ("feat_annot_expression_sites_", "Expressed in: ", "Expression sites annotated"),
+    ("feat_annot_interacting_genes_", "Interacts with: ", "Interaction partners annotated"),
+    ("feat_annot_pathways_", "Pathway: ", "Pathways annotated"),
 )
 
 # The pipeline's "all eligible HPO terms" grid step (Config.HPO_BUDGET_ALL_ELIGIBLE).
@@ -461,10 +461,10 @@ class FeatureLabeler:
         if low.startswith("feat_mondo_"):
             tail = name[len("feat_mondo_"):].replace("_", " ").strip()
             return f"MONDO: {tail}"
-        # Functional-annotation features (feat_gnn_<source>_<term> or _count).
+        # Functional-annotation features (feat_annot_<source>_<term> or _count).
         # Without this branch they fell through to the generic rule and were shown
         # as "Gnn expression sites count" (fixed 2026-11-01).
-        for prefix, human, count_label in _GNN_LABEL_PREFIXES:
+        for prefix, human, count_label in _ANNOTATION_LABEL_PREFIXES:
             if low.startswith(prefix):
                 tail = name[len(prefix):]
                 if tail.lower() == "count":
@@ -475,7 +475,7 @@ class FeatureLabeler:
         if low.startswith("feat_"):
             tail = name[len("feat_"):].replace("_", " ").strip()
             return tail[0].upper() + tail[1:] if tail else tail
-        # GNN/primary text: feat_gnn_pathways_count etc. handled above.
+        # ANNOTATION/primary text: feat_annot_pathways_count etc. handled above.
         # As last resort, strip underscores and Title Case
         return name.replace("_", " ").strip().capitalize()
     @staticmethod
@@ -1374,8 +1374,8 @@ def _coarse_feature_family(name: str, lookup: Optional[Dict[str, str]] = None) -
         return "mondo"
     if "inherit" in low or low.startswith("feat_is_"):
         return "inheritance"
-    if low.startswith(("feat_gnn_", "has_gnn_")):
-        return "gnn_text"
+    if low.startswith(("feat_annot_", "has_annot_")):
+        return "annotation_text"
     if low.startswith(("feat_primary_", "has_primary_")):
         return "primary_text"
     if "mouse" in low:
@@ -1393,7 +1393,7 @@ def _family_display(family: str) -> str:
         "organ_system": "Organ systems",
         "mondo": "Disease context",
         "inheritance": "Inheritance",
-        "gnn_text": "Functional annotations",
+        "annotation_text": "Functional annotations",
         "primary_text": "Primary text",
         "engineered": "Engineered",
         "mechanistic_core": "Gene-level core",
@@ -1413,7 +1413,7 @@ _FAMILY_COLORS = {
     "organ_system": "#D4C5DF",
     "mondo": "#4C9A87",
     "inheritance": "#72B89F",
-    "gnn_text": "#5F7F9E",
+    "annotation_text": "#5F7F9E",
     "primary_text": "#7A9CC6",
     "engineered": "#D8892B",
     "mechanistic_core": "#0072B2",
@@ -2017,11 +2017,11 @@ def figure_1_study_design(
     )
     ax.step(
         x_values, survival, where="post",
-        color=PAL_SCENARIO["S1_Mechanistic"], lw=1.25,
+        color=PAL_SCENARIO["S1_Gene_Level"], lw=1.25,
     )
     ax.scatter(
         x_values, survival, s=16,
-        color=PAL_SCENARIO["S1_Mechanistic"],
+        color=PAL_SCENARIO["S1_Gene_Level"],
         edgecolor="white", linewidth=0.35, zorder=3,
     )
     ax.set_xscale("log")
@@ -2467,9 +2467,9 @@ def figure_2_model_comparison(
     # f — information-source contrasts
     ax = fig.add_subplot(gs[2, 2])
     contrasts = [
-        ("Disease context", "S1_Mechanistic", "S1b_Disease_Context"),
-        ("Phenotype added", "S1b_Disease_Context", "S2_Mech_Pheno"),
-        ("Gene-level added", "S3_Phenotype", "S2_Mech_Pheno"),
+        ("Disease context", "S1_Gene_Level", "S1b_Disease_Context"),
+        ("Phenotype added", "S1b_Disease_Context", "S2_Combined"),
+        ("Gene-level added", "S3_Phenotype", "S2_Combined"),
     ]
     rows_f = []
     ylabels = []; yy = []

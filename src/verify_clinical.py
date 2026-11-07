@@ -23,8 +23,8 @@ from runtime_paths import reference_directory
 
 ROOT = Path(__file__).resolve().parent
 REFERENCE_DIR = reference_directory(ROOT)
-SCORER_FILE = 'phenotype_severity_scorer_v3_3_monotone_ontology.py'
-PRENATAL_FILE = 'prenatal_severity_analysis_v3_multichannel.py'
+SCORER_FILE = 'phenotype_scorer.py'
+PRENATAL_FILE = 'prenatal_analysis.py'
 
 
 def require(condition, message):

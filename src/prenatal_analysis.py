@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-prenatal_severity_analysis_v3_multichannel.py
+prenatal_analysis.py
 ===============================================
 Use the complete cohort, combine repeated rows belonging to the same family,
 and test a selected v3 severity channel against two ordered prenatal outcomes:
@@ -21,10 +21,10 @@ including missing outcomes, empty-HPO profiles, and model abstentions, remain in
 the main family output with explicit analysis-inclusion flags.
 
 USAGE
-  python3 prenatal_severity_analysis_v3_multichannel.py \
+  python3 prenatal_analysis.py \
       --cohort prenatal_cohort_merged.csv \
       --model PHENOTYPE_SEVERITY_MODEL_V3/model.pkl \
-      --scorer-code phenotype_severity_scorer_v3_3_monotone_ontology.py\
+      --scorer-code phenotype_scorer.py\
       --score-channel combined \
       --output PRENATAL_ANALYSIS_V3
 """
@@ -2279,10 +2279,10 @@ def write_paragraph(
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--cohort", default="prenatal_cohort_merged.csv")
-    ap.add_argument("--model", default="PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL_final/model.pkl")
+    ap.add_argument("--model", default="results/scorer/model.pkl")
     ap.add_argument(
         "--scorer-code",
-        default="phenotype_severity_scorer_v3_3_monotone_ontology.py",
+        default="phenotype_scorer.py",
         help=(
             "Python file used to create the saved scorer model. The same file "
             "should normally be supplied for v3 artifacts."
@@ -2308,14 +2308,14 @@ def main() -> None:
     )
     ap.add_argument(
         "--scorer-heldout",
-        default="PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL_final/held_out_test_predictions.csv",
+        default="results/scorer/held_out_test_predictions.csv",
         help=(
             "Held-out predictions written by the phenotype scorer. When present, "
             "two scorer-validation panels are prepended to the prenatal figure. "
             "Pass an empty string for the four-panel prenatal figure only."
         ),
     )
-    ap.add_argument("--output", default="PRENATAL_ANALYSIS_V3-PHENOTYPE1")
+    ap.add_argument("--output", default="results/prenatal")
     ap.add_argument("--family-col", default="family_id")
     ap.add_argument("--outcome-col", default="pregnancy_outcome")
     ap.add_argument("--hpo-col", default="hpo_ids")

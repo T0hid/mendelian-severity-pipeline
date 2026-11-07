@@ -7,7 +7,7 @@ Bundled inputs are extracted and checked by `python run.py --check-inputs`. Path
 | Input | Source | SHA-256 from the reference run |
 |---|---|---|
 | `final_output_with_severity.csv` | training_tables.zip | `da7dac61447a4be2e18b69e52063c5cde33996754eb14856e94b77977df28f84` |
-| `final_gnn_dataset.csv` | training_tables.zip | `8de956183594d5aa5f0db50d767c87439db3af374372194132b139c5fd469f6a` |
+| `gene_annotations.csv` | training_tables.zip | `8de956183594d5aa5f0db50d767c87439db3af374372194132b139c5fd469f6a` |
 | `CONSOLIDATED_FEATURES_v2/CORE_MECHANISTIC_FEATURES.csv` | training_tables.zip | `1721d82276b26274da1d808205e523b088837dbd1e8cf4fd6dfb47d16d427314` |
 | `enhanced_variant_features/DOMAIN_CARRIER_FEATURES.csv` | Not bundled; optional input excluded from fitted feature sets | `fbe2fb0b06e917815f0f492c8b6ecf715541f8f08737519af7232900f57ed786` |
 | `CONSOLIDATED_FEATURES_v2/EXTERNAL_MECHANISTIC_FEATURES_v4_6.csv` | training_tables.zip | `9cd15c54eb4e8b70cc44f42dafd4b207682c9408a4d40d3635f51893d1d7590d` |
@@ -20,7 +20,7 @@ Bundled inputs are extracted and checked by `python run.py --check-inputs`. Path
 
 The supplied mapping checksum is recorded separately in `training_inputs_metadata.json`; it is not a checksum from the last run.
 
-`manuscript_report.py` is present. Its docstring identifies it as a reporting replacement from an earlier repository preparation; its provenance has not been verified against the author's local original.
+`run_report.py` is present. Its docstring identifies it as a reporting replacement from an earlier repository preparation; its provenance has not been verified against the author's local original.
 
 Referenced feature builders `build_clingen_v46.py` and `build_new_gene_features.py` are not bundled. Their generated feature tables are bundled. The other feature-builder names are not recorded in this repository.
 
