@@ -37,6 +37,10 @@ def semantic_hash(source):
     if (tree.body and isinstance(tree.body[0], ast.Expr) and isinstance(tree.body[0].value, ast.Constant)
             and isinstance(tree.body[0].value.value, str)):
         tree.body.pop(0)
+    # Empty generic-parameter fields differ between Python 3.11 and 3.12.
+    for item in ast.walk(tree):
+        if hasattr(item, 'type_params') and not item.type_params:
+            del item.type_params
     return hashlib.sha256(ast.dump(tree, include_attributes=False).encode()).hexdigest()
 
 

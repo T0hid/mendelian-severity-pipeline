@@ -1,6 +1,6 @@
 # Cleanup status
 
-Work is on `paper-cleanup`. Nothing is merged into main. The existing `cleanup/reviewer-pipeline` ref prevents creating the shorter `cleanup` ref.
+The corrected pipeline is on `main`, the only repository branch. The cleanup and review branches have been removed.
 
 ## Changes by task
 
@@ -60,3 +60,5 @@ The existing token-vocabulary construction iterates Python sets. Separate proces
 The controlled benchmark comparison matches model selection and classification metrics. Strict comparison detects four final-digit differences in RPS_CI_high, RPS, Uncalibrated_RPS and Multiclass_Brier, at most 1.6653345369377348e-16; exact bitwise reproduction is not claimed.
 
 The final wording pass removes residual dated notes, patch markers and incomplete comment fragments. An AST comparison against the preceding Task 4 commit is identical after excluding docstrings and four specified log-message edits. It changes no calculations, options, output names or schemas. The source checks also inspect log literals and dated comments.
+
+Source fingerprints omit empty generic-parameter fields so the checks agree between Python 3.11 and 3.12. This changes verification only; analysis code and model calculations are unchanged.

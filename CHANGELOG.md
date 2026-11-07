@@ -11,3 +11,5 @@
 - Kept the compatibility loader required for models saved with __main__ class references.
 - Removed remaining patch notes, publishing references and decorative separators.
 - Removed residual dated notes, patch markers and incomplete comments; simplified four log messages.
+- Promoted the corrected pipeline to main and removed the other branches.
+- Made source fingerprints consistent between Python 3.11 and 3.12.

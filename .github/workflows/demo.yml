@@ -24,7 +24,9 @@ jobs:
       - name: Check original training inputs
         run: docker run --rm --network none -v "$PWD:/work" -w /work severity-demo python run.py --check-inputs
       - name: Run regression tests
-        run: docker run --rm --network none -v "$PWD:/work" -w /work severity-demo python -m unittest discover -s src/tests -v
+        run: |
+          docker run --rm --network none -v "$PWD:/work" -w /work severity-demo python -m unittest discover -s src/tests -v
+          docker run --rm --network none -v "$PWD:/work" -w /work severity-demo python -m unittest discover -s tests -v
       - name: Run predictions, verification and publication plotting
         run: docker run --rm --network none -e MPLBACKEND=Agg -v "$PWD:/work" -w /work severity-demo python run.py
       - name: Record the resolved environment

@@ -54,6 +54,10 @@ def canonical_hash(node: ast.AST, renames: dict[str, str]) -> str:
                     item.value = item.value.replace(new, old)
             return item
     normalised = Normalise().visit(RestoreNames().visit(copy.deepcopy(node)))
+    # Python 3.12 adds empty generic-parameter fields to ordinary definitions.
+    for item in ast.walk(normalised):
+        if hasattr(item, 'type_params') and not item.type_params:
+            del item.type_params
     return hashlib.sha256(ast.dump(normalised, include_attributes=False).encode()).hexdigest()
 
 
