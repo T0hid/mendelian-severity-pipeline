@@ -46,7 +46,7 @@ def generate_manuscript_report(all_results, container, pub_outputs, *, output_di
                                config=None, report_path=None):
     """Write an evidence-linked report from completed tables and the active Config."""
     if config is None:
-        from pipeline import Config
+        from severity_pipeline import Config
     else:
         Config = config
 

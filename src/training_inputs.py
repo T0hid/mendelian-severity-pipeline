@@ -55,7 +55,7 @@ def prepare_training_inputs(data_directory, destination=None):
     annotation = destination / 'gene_annotations.csv'
     if annotation.exists() and sha256(annotation) != sha256(original_annotation):
         raise ValueError('gene_annotations.csv differs from the bundled annotation table')
-    if not annotation.exists():
+    if original_annotation.exists() and not annotation.exists():
         shutil.copyfile(original_annotation, annotation)
     return destination.resolve(), {'status': 'passed', 'required_files_checked': len(metadata['files']),
         'all_required_hashes_matched': True, 'individual_prenatal_data_included': False,

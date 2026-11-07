@@ -45,6 +45,9 @@ def _saved_model_results(reference, publication=None):
             if len(selected_metrics) != 1:
                 raise ValueError('Expected one test metric row per selected model.')
             entry['metrics'] = selected_metrics.iloc[0].to_dict()
+    names = {'S1_Mechanistic': 'S1_Gene_Level', 'S2_Mech_Pheno': 'S2_Combined'}
+    results = {names.get(key, key): value for key, value in results.items()}
+    selected = {names.get(key, key): value for key, value in selected.items()}
     return results, {'selected_models': selected}
 
 
@@ -94,13 +97,29 @@ def render_saved_figures(reference, publication, destination):
     """
     import matplotlib
     matplotlib.use('Agg')
-    import publication_figures_v2 as native
+    import publication_figures as native
 
     reference, publication, destination = map(Path, (reference, publication, destination))
     destination.mkdir(parents=True, exist_ok=True)
     panel_data = destination / 'panel_data'
     panel_data.mkdir(exist_ok=True)
-    source = publication / 'benchmark'
+    import shutil
+    from tempfile import TemporaryDirectory
+    temporary = TemporaryDirectory(prefix='severity-figure-inputs-')
+    source = Path(temporary.name) / 'benchmark'
+    shutil.copytree(publication / 'benchmark', source)
+    names = {'S1_Mechanistic': 'S1_Gene_Level', 'S2_Mech_Pheno': 'S2_Combined',
+             'feat_gnn_': 'feat_annot_', 'has_gnn_': 'has_annot_'}
+    for path in list(source.rglob('*.csv')):
+        text = path.read_text(encoding='utf-8-sig')
+        filename = path.name
+        for old, new in names.items():
+            text = text.replace(old, new)
+            filename = filename.replace(old, new)
+        target = path.with_name(filename)
+        target.write_text(text, encoding='utf-8')
+        if target != path:
+            path.unlink()
     results, outputs = _saved_model_results(reference, publication)
     native._setup_rcparams()
     native.figure_2_model_comparison(results, outputs, str(source), str(destination), str(panel_data))
@@ -116,7 +135,8 @@ def render_saved_figures(reference, publication, destination):
         native.figure_5_interpretation_biology(results, outputs, SimpleNamespace(), SimpleNamespace(), {},
                                               str(source), str(destination), str(panel_data),
                                               native.FeatureLabeler(str(source)), random_seed=42)
-    _render_cohort(publication, destination, native)
+    _render_cohort(Path(temporary.name), destination, native)
+    temporary.cleanup()
     files = [p.relative_to(destination).as_posix() for p in sorted(destination.rglob('*')) if p.is_file()]
     expected = ['figure_2_model_comparison', 'figure_3_prediction_and_calibration',
                 'extended_data_fig_2_robustness_and_audits', 'figure_4_interpretation_and_biology',

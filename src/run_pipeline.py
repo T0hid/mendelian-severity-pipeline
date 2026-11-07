@@ -56,6 +56,7 @@ def main(argv=None) -> int:
     parser.add_argument('--check-inputs', action='store_true', help='Report missing inputs/dependencies without importing the pipeline.')
     parser.add_argument('--permutations', type=int,
                         help='Explicitly change the reference count of 100; a different count produces a new inference run.')
+    parser.add_argument('--smoke-test', action='store_true')
     args = parser.parse_args(argv)
     data_dir = args.data_dir.resolve()
     if args.permutations is not None and args.permutations < 1:
@@ -76,7 +77,7 @@ def main(argv=None) -> int:
     pipeline.Config.OUTPUT_DIR = str(output_dir)
     if args.permutations is not None:
         pipeline.Config.N_PERMUTATIONS = args.permutations
-    pipeline.main()
+    pipeline.main(smoke_test=args.smoke_test)
     return 0
 
 

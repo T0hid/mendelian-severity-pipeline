@@ -16,7 +16,7 @@ PACKAGE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PACKAGE_DIR))
 from runtime_paths import reference_directory
 REFERENCE_DIR = reference_directory(PACKAGE_DIR)
-from manuscript_report import generate_manuscript_report
+from run_report import generate_manuscript_report
 from run_pipeline import require_fresh_output
 from verify_results import (CheckFailure, check_model_selection, check_split_frame,
                             compare_metrics, load_predictions, source_functions,

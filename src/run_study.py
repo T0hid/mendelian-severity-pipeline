@@ -72,7 +72,7 @@ def main(argv=None):
     train.add_argument('--cv-repeats', type=int, default=3)
     prenatal = sub.add_parser('prenatal', help='Apply a frozen scorer to a local cohort and analyse outcomes.')
     prenatal.add_argument('--cohort', type=Path, required=True)
-    prenatal.add_argument('--model', type=Path, default=ROOT / 'artifacts/phenotype_scorer/model.pkl')
+    prenatal.add_argument('--model', type=Path, default=ROOT.parent / 'results/scorer/model.pkl')
     prenatal.add_argument('--scorer-heldout', type=Path, default=REFERENCE_DIR / 'scorer/held_out_test_predictions.csv')
     prenatal.add_argument('--output-dir', type=Path, required=True)
     prenatal.add_argument('--score-channel', choices=['phenotype', 'combined', 'headline'], default='phenotype')
@@ -80,7 +80,7 @@ def main(argv=None):
     prenatal.add_argument('--n-perm', type=int, default=2000)
     prenatal.add_argument('--check-inputs', action='store_true')
     demo = sub.add_parser('score-demo', help='Score invented demonstration profiles with the saved scorer.')
-    demo.add_argument('--model', type=Path, default=ROOT / 'artifacts/phenotype_scorer/model.pkl')
+    demo.add_argument('--model', type=Path, default=ROOT.parent / 'results/scorer/model.pkl')
     args = parser.parse_args(argv)
     if args.command == 'verify':
         from verify_results import verify as verify_benchmark
@@ -103,7 +103,7 @@ def main(argv=None):
                           'model_training_performed': False}, indent=2))
         return 0
     if args.command == 'benchmark':
-        command = [sys.executable, str(ROOT / 'run_severity_pipeline.py'), '--data-dir', str(args.data_dir.resolve())]
+        command = [sys.executable, str(ROOT / 'run_pipeline.py'), '--data-dir', str(args.data_dir.resolve())]
         if args.output_dir:
             command += ['--output-dir', str(args.output_dir.resolve())]
         if args.permutations is not None:

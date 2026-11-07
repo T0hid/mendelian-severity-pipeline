@@ -56,7 +56,7 @@ CLASS_INDICES = {n: i for i, n in enumerate(CLASS_NAMES)}
 # as Gene-level core.
 SCENARIO_LABELS = {
     "S1_Gene_Level":      "S1: Gene-level",
-    "S1b_Disease_Context": "S1b: Gene-level + disease context",
+    "S1b_Disease_Context": "S1b: Disease-context",
     "S2_Combined":       "S2: Combined",
     "S3_Phenotype":        "S3: Phenotype-only",
     "S2_blind_diagnostic": "S2-blind: S2 without tier features",
@@ -579,7 +579,7 @@ def _selected_publication_models(
     pub_outputs: Optional[Dict] = None,
 ) -> Dict[str, str]:
     """Use the validation-selected models supplied by make_publication.py.
-    Only models with saved locked-test predictions are accepted.
+    Only models with saved held-out-test predictions are accepted.
     """
     supplied = (pub_outputs or {}).get("selected_models", {}) or {}
     selected: Dict[str, str] = {}
@@ -616,7 +616,7 @@ def _resolve_headline(
     all_results: Dict,
     pub_outputs: Optional[Dict] = None,
 ) -> Tuple[str, str]:
-    """Return a headline pair that has locked-test predictions."""
+    """Return a selected pair that has held-out-test predictions."""
     selected = _selected_publication_models(all_results, pub_outputs)
     if HEADLINE_SCENARIO in selected:
         return HEADLINE_SCENARIO, selected[HEADLINE_SCENARIO]
@@ -790,7 +790,7 @@ def table_2_gene_level_companion(
     gene causes several diseases of differing severity the model sees an
     identical feature vector and must emit an identical prediction, so that part
     of the label variation is structurally unreachable by S1 and by the
-    non-phenotype half of S1b. This table rescores the same locked predictions
+    non-phenotype half of S1b. This table rescores the same held-out predictions
     with the gene as the unit. Nothing is retrained, and the pair-level metrics
     in Table 1 remain the primary cross-scenario comparison.
     """
@@ -854,9 +854,7 @@ def figure_5_family_summed_shap(
     correlated siblings. A single undiplicated binary such as feat_is_dominant
     keeps all of its attribution and therefore looks stronger than a
     multi-column family that collectively contributes more. Summing within
-    family removes that artefact. Panels a-d stay per-feature, since reviewers
-    expect named features; this table is the check against misreading them.
-    """
+    expect named features; this table is the check against misreading them."""
     
     # (pair-level sums within biologically defined groups), report that instead.
     groups_path = os.path.join(output_dir, "results", "severity_shap_groups.csv")
@@ -1311,7 +1309,7 @@ def _selected_test_frame(
     pub_outputs: Dict,
     output_dir: str,
 ) -> pd.DataFrame:
-    """Locked-test metrics and bootstrap CIs for validation-selected models only."""
+    """held-out-test metrics and bootstrap CIs for validation-selected models only."""
     selected = _validation_selected_models(all_results, pub_outputs)
     bootstrap = _read_result_dataframe(
         pub_outputs, "bootstrap", output_dir,
@@ -2709,7 +2707,7 @@ def _per_class_ordinal_error_frame(
 ) -> pd.DataFrame:
     """Return selected-model per-class ordinal error composition.
     Prefer the pipeline-generated CSV. If it is absent, reconstruct the same
-    quantities from the stored locked-test predictions so Figure 5 remains
+    quantities from the stored held-out-test predictions so Figure 5 remains
     reproducible from ``all_results`` alone.
     """
     columns = [
@@ -2907,7 +2905,7 @@ def figure_4_robustness_composite(
     fig_data_dir: str,
     logger=print,
 ):
-    """Plot split sensitivity, validation sweeps and the feature audit."""
+    """Plot split sensitivity, validation sweeps and the feature check."""
     seed_df = _read_result_dataframe(
         pub_outputs, "seed_sensitivity", output_dir,
         ["split_sensitivity_fixed_configuration.csv", "seed_sensitivity.csv"],
@@ -3182,7 +3180,7 @@ def _build_s3_locked_test_pca(
     random_seed: int = 42,
 ) -> Tuple[pd.DataFrame, np.ndarray, Optional[str], str]:
     """Build one leakage-safe PCA projection for the S3 phenotype scenario.
-    PCA is fitted on the S3 training rows and applied to the locked-test rows.
+    PCA is fitted on the S3 training rows and applied to the held-out-test rows.
     The preferred input is the in-memory selected S3 matrix.  For stand-alone
     publication rendering, where fold artefacts are commonly absent, the
     visualization reconstructs the phenotype matrix directly from

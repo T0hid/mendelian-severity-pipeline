@@ -980,12 +980,9 @@ def safe_feature_name(prefix: str, raw_value: str, max_len: int = 40) -> str:
 def get_git_commit_hash() -> str:
     """Resolve the commit hash, or return an explicit machine-readable reason.
 
-    The manifest previously recorded ``null`` whenever anything went wrong, which
     made "not under version control" indistinguishable from "git is missing" or
-    "the call timed out". The return value is now always a string: either a
     40-character hex commit (optionally suffixed ``-dirty``) or a
-    ``not_available:<reason>`` marker.
-    """
+    ``not_available:<reason>`` marker."""
     search_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
     try:
         completed = subprocess.run(
@@ -2790,7 +2787,7 @@ def _collapse_annotation_to_gene_level(
     """Return one deterministic union-of-annotations profile per gene.
 
     The input may repeat a gene across disease rows. Only gene identity and the
-    configured functional text columns survive this transformation. An audit
+    configured functional text columns survive this transformation. An check
     records whether repeated source rows contained distinct token profiles.
     """
     if "gene_symbol" not in source.columns:
@@ -4900,7 +4897,7 @@ def evaluate_frozen_selected_model_on_test(
     y_test: np.ndarray,
     scenario_name: str,
 ) -> Dict[str, Any]:
-    """Evaluate an already-frozen model/calibrator on the main test set once."""
+    """Evaluate an already-fixed after selection model/calibrator on the main test set once."""
     model_name = result["model_name"]
     if not result.get("model_frozen", False) or not result.get("calibrator_frozen", False):
         raise RuntimeError(
@@ -5323,7 +5320,7 @@ def _fit_selected_calibration(
 
 
 def _available_candidate_names() -> List[str]:
-    """Return the single authoritative, ordered set of headline candidates."""
+    """Return the single authoritative, ordered set of selected candidates."""
     enabled = {
         "MultinomialLogisticRegression": bool(Config.MULTINOMIAL_LOGISTIC_ENABLED),
         "ExtraTrees": bool(Config.EXTRA_TREES_ENABLED),
@@ -5405,7 +5402,7 @@ def _run_workflow_for_split(
     seed: int,
     primary: bool,
 ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-    """Develop candidates on training data, select and calibrate on validation, then open the locked evaluation gate."""
+    """Develop candidates on training data, select and calibrate on validation, then open the held-out evaluation gate."""
     train_idx, val_idx = _split_development_train_validation(
         container, development_idx, grouping, seed
     )
@@ -5931,7 +5928,7 @@ def evaluate_at_gene_level(all_results: Dict, container: DataContainer) -> pd.Da
     model, obtained by assigning each gene its within-gene modal label, is
     MCC 0.651 / QWK 0.747.
 
-    This function does not retrain. It aggregates the already-locked test
+    This function does not retrain. It aggregates the already-held-out test
     predictions and the corresponding truths to one row per gene by taking the
     rounded mean of each, then rescores. The result is reported alongside, never
     instead of, the pair-level metrics, which remain the primary comparison across
@@ -6548,7 +6545,7 @@ def run_paired_scenario_contrasts(
     """Paired gene-cluster bootstrap contrasts between adjacent scenarios.
 
     Nothing is refit and no additional test evaluation occurs. The stored
-    locked-test predictions in ``results_collector.predictions`` (keyed
+    held-out-test predictions in ``results_collector.predictions`` (keyed
     ``"<scenario>_<model>"``) are resampled with the same severity-stratified
     gene-cluster scheme used for the Table 2 confidence intervals
     (``_cluster_bootstrap_indices``, Config.N_BOOTSTRAP replicates, RANDOM_SEED).
@@ -6755,10 +6752,10 @@ def _primary_partition_indices(container: DataContainer) -> Dict[str, np.ndarray
 
 
 def run_disease_overlap_audit(container: DataContainer) -> pd.DataFrame:
-    """Quantify MONDO-level overlap between the locked test set and training.
+    """Quantify MONDO-level overlap between the held-out test set and training.
 
     The primary split is gene-disjoint but not disease-disjoint, so the same
-    MONDO identifier can appear on both sides. This audit makes the extent of
+    MONDO identifier can appear on both sides. This check makes the extent of
     that overlap explicit. It reads only the stored split indices and metadata;
     nothing is refit and no model is evaluated.
     """
@@ -9651,8 +9648,18 @@ def _log_and_validate_runtime_identity() -> None:
 # 9. Complete analysis entry point
 
 
-def main():
+def main(smoke_test=False):
     """Run the reference workflow in a fresh output directory."""
+    if smoke_test:
+        from functools import lru_cache
+        # Cache raw tokens; each fold still learns its own vocabulary.
+        globals()['_load_text_token_maps'] = lru_cache(maxsize=1)(_load_text_token_maps)
+        Config.N_PERMUTATIONS = 10
+        Config.N_BOOTSTRAP = 50
+        Config.CALIBRATION_N_BOOTSTRAP = 50
+        Config.N_SEEDS_SENSITIVITY = 3
+        Config.NESTED_SEARCH_ITERATIONS = dict.fromkeys(Config.CANDIDATE_MODEL_ORDER, 1)
+        Config.HPO_BUDGET_CANDIDATES = (20,)
     _require_fresh_output_directory()
     _initialise_runtime()
     try:
@@ -9660,6 +9667,23 @@ def main():
         _log_and_validate_runtime_identity()
         validate_preflight_inputs_and_reporting()
         container = assemble_full_dataframe()
+        if smoke_test:
+            rng = np.random.RandomState(RANDOM_SEED)
+            disease_counts = container.full_df.groupby('mondo_id')['gene_symbol'].nunique()
+            shared_disease = disease_counts.idxmax()
+            shared_indices = np.flatnonzero(container.full_df['mondo_id'].eq(shared_disease).to_numpy())
+            sampled = []
+            for label in range(Config.NUM_CLASSES):
+                pool = np.flatnonzero(container.y == label)
+                required = np.intersect1d(pool, shared_indices)[:100]
+                remaining = np.setdiff1d(pool, required)
+                extra = rng.choice(remaining, size=min(100 - len(required), len(remaining)), replace=False)
+                sampled.extend(np.concatenate([required, extra]).tolist())
+            indices = np.sort(np.asarray(sampled, dtype=int))
+            container.full_df = container.full_df.iloc[indices].reset_index(drop=True)
+            container.metadata = container.metadata.iloc[indices].reset_index(drop=True)
+            container.y = container.y[indices]
+            container.groups = container.groups[indices]
         # Export display labels before anything draws a figure, so both this
         # script's diagnostic plots and the publication figure module resolve
         # readable names rather than raw column names.
@@ -9694,6 +9718,7 @@ def main():
             pub_outputs,
             output_dir=Config.OUTPUT_DIR,
             pipeline_version=PIPELINE_VERSION,
+            config=Config,
         )
         generate_summary_report(all_results, pub_outputs)
         write_pipeline_manifest(container, all_results, pub_outputs)
@@ -9723,4 +9748,16 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--data-dir', default='data/training')
+    parser.add_argument('--output-dir', default='results/main')
+    parser.add_argument('--smoke-test', action='store_true')
+    args = parser.parse_args()
+    Config.OUTPUT_DIR = os.path.abspath(args.output_dir)
+    os.chdir(os.path.abspath(args.data_dir))
+    Config.EXTERNAL_FEATURES = next((path for path in (
+        Config._EXTERNAL_V46, Config._EXTERNAL_FIXED,
+        os.path.join(Config.CONSOLIDATED_DIR, 'EXTERNAL_MECHANISTIC_FEATURES.csv')
+    ) if os.path.isfile(path)), Config.EXTERNAL_FEATURES)
+    main(smoke_test=args.smoke_test)

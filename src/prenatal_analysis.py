@@ -16,7 +16,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 import numpy as np
 import pandas as pd
 
-SCRIPT_VERSION = "2026-11-04-V3.3-TERM-COUNT-BASELINE"
+SCRIPT_VERSION = "1.0.0"
 
 os.environ.setdefault(
     "MPLCONFIGDIR", os.path.join(tempfile.gettempdir(), "phenotype-matplotlib-cache")
@@ -1327,11 +1327,8 @@ CONTRIBUTING_SOURCE_RULES = (
 
 
 def assign_contributing_source(study: Any) -> str:
-    """Group the raw study label onto the four sources named in the Methods.
-
-    Families whose records span two EP_* sub-tables carry a compound study label
-    and are counted once under EP_*.
-    """
+    """Families whose records span two EP_* sub-tables carry a compound study label
+    and are counted once under EP_*."""
     text = str(study).strip()
     for label, prefixes in CONTRIBUTING_SOURCE_RULES:
         if any(text.startswith(prefix) for prefix in prefixes):
@@ -1619,7 +1616,7 @@ def adjacent_level_separation(
 ) -> pd.DataFrame:
     """Does the score separate each neighbouring pair of outcome levels?
 
-    The headline rank statistics summarise the ordering as a whole, so a strong
+    The selected rank statistics summarise the ordering as a whole, so a strong
     pooled value can coexist with one boundary that the score does not resolve
     at all. This reports, for every adjacent pair of levels, the probability
     that the more severe level scores higher (ties 0.5) with a percentile
@@ -2256,7 +2253,7 @@ def main() -> None:
     ap.add_argument("--model", default="results/scorer/model.pkl")
     ap.add_argument(
         "--scorer-code",
-        default="phenotype_scorer.py",
+        default="src/phenotype_scorer.py",
         help=(
             "Python file used to create the saved scorer model. The same file "
             "should normally be supplied for v3 artifacts."

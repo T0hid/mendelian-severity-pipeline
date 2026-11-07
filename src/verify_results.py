@@ -171,12 +171,27 @@ def check_config(manifest):
                  'CORE_FEATURES', 'DOMAIN_FEATURES', 'EXTERNAL_FEATURES', 'NEW_GENE_FEATURES',
                  'MOUSE_LETHALITY_FEATURES', 'MOUSE_HUMAN_PHENOTYPE_FEATURES', 'HPO_OBO_PATH',
                  'MONDO_OBO_PATH', 'REBUILT_GENE_DISEASE_MAPPING'}
+    def restore_names(value):
+        if isinstance(value, dict):
+            return {restore_names(k): restore_names(v) for k, v in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [restore_names(v) for v in value]
+        if isinstance(value, str):
+            value = {'publication_figures': 'publication_figures_v2', 'run_report': 'manuscript_report'}.get(value, value)
+            for new, old in [('S1_Gene_Level','S1_Mechanistic'), ('S2_Combined','S2_Mech_Pheno'),
+                             ('annotation_text','gnn_text'), ('feat_annot_','feat_gnn_'),
+                             ('has_annot_','has_gnn_')]:
+                value = value.replace(new, old)
+        return value
     checked = []
     for key, value in manifest['config'].items():
         if key in path_keys:
             continue
+        if key == 'USE_ORGAN_CRITICALITY_FEATURES' and key not in current:
+            require(value is False, 'Removed organ-criticality option was enabled in reference')
+            continue
         require(key in current, f'Missing configuration: {key}')
-        require(json.dumps(current[key], sort_keys=True) == json.dumps(value, sort_keys=True),
+        require(json.dumps(restore_names(current[key]), sort_keys=True) == json.dumps(value, sort_keys=True),
                 f'Scientific configuration changed: {key}')
         checked.append(key)
     return checked

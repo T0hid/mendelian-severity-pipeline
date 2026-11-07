@@ -14,13 +14,13 @@ Bundled inputs are extracted and checked by `python run.py --check-inputs`. Path
 | `CONSOLIDATED_FEATURES_v2/NEW_GENE_LEVEL_FEATURES.csv` | training_tables.zip | `ae11ccc9bdab89f32ad53cdccd95d05eaa75a1414bd0e4ba72caff3ed4006845` |
 | `CONSOLIDATED_FEATURES_v2/MOUSE_LETHALITY_FEATURES.csv` | training_tables.zip | `2c6285e75aaae125e1fd3c7dcd1458f8e0e76cc170aad0954b0915771d12230b` |
 | `CONSOLIDATED_FEATURES_v2/MOUSE_HUMAN_PHENOTYPE_FEATURES.csv` | training_tables.zip | `2496de7a66331128eba90a3f2a6d75a638b56811fb1dd2ff8963f34bc89593eb` |
-| `hp.obo` | ontologies.zip | Not recorded in the last-run manifest |
-| `mondo.obo` | ontologies.zip | Not recorded in the last-run manifest |
+| `hp.obo` | ontologies.zip | `d1f3e411add1a1bbe68c00b628f7a2c8210433de1e478c6b79924a7c1e4dc737` |
+| `mondo.obo` | ontologies.zip | `9be712b20f187726f5306a4adb0bb50617851c60d1a0fb7615892270ca11bda1` |
 | `gene_disease_mapping_HPO_rebuilt.csv` | training_tables.zip | Not recorded in the last-run manifest |
 
 The supplied mapping checksum is recorded separately in `training_inputs_metadata.json`; it is not a checksum from the last run.
 
-`run_report.py` is present. Its docstring identifies it as a reporting replacement from an earlier repository preparation; its provenance has not been verified against the author's local original.
+`run_report.py` is present. Its pre-cleanup docstring identifies it as a reporting replacement from an earlier repository preparation; its provenance has not been verified against the author's local original.
 
 Referenced feature builders `build_clingen_v46.py` and `build_new_gene_features.py` are not bundled. Their generated feature tables are bundled. The other feature-builder names are not recorded in this repository.
 

@@ -1,0 +1,29 @@
+{
+  "benchmark_smoke": {
+    "status": "passed",
+    "pairs": 400,
+    "permutations": 10,
+    "bootstrap_replicates": 50,
+    "split_seeds": 3,
+    "runtime_seconds": 247.408416,
+    "required_output_validation": "passed"
+  },
+  "unit_tests": {
+    "existing_passed": 33,
+    "comparison_passed": 2
+  },
+  "bundled_input_checks": {
+    "status": "passed",
+    "count": 10
+  },
+  "scorer_reduced_training": "passed",
+  "bundled_and_new_model_loading": "passed",
+  "demo_and_saved_result_replay": "passed",
+  "prenatal_original_vs_cleanup_numeric_differences": 0,
+  "prenatal_available_input_rows": 275,
+  "prenatal_available_analysed_profiles": 241,
+  "prenatal_reference_input_rows": 614,
+  "prenatal_reference_analysed_profiles": 531,
+  "full_reference_training_rerun": false,
+  "python": "3.12.14"
+}
