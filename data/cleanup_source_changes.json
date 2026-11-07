@@ -27,7 +27,7 @@
     "build_gene_disease_target": "204c8d6bb33bad90420c3274f2d1a11f2e3e491fc18cc60139535b2502a0466a",
     "enrich_with_gnn_dataset": "82edada3913b0053e7752a4460f72a71f579290c887857ba88d18b81708ef259",
     "engineer_features": "c13a568ee7726504aeff25f1d26265503c1c61ccafa6211497188a36e9d177b0",
-    "build_inheritance_features": "2901d849ca32ce163c67dd5885a4816ba87f323757d62e37a41e563c6c12459a",
+    "build_inheritance_features": "e533720bc18dba01860ff46471d8a6ce63d498deaa0c55b0b5a9d621899baea7",
     "_validate_gene_level_source": "3dae642163140be5c021d3c2623a607177dbdec76b7732c09623fb86b6c19e09",
     "_merge_gene_level_features": "fd4cceaf46fd9455c9069e81d989334a947cb46f439533ecf4cd8920e63b76d6",
     "_missing_value_semantics_for_family": "a96a342c4aa6a9badb881b5b8b541597227ab0236de9122cac902e76c42881c8",
@@ -178,8 +178,8 @@
     "PIPELINE_VERSION": "273c672f106e074d6970d1b95a920894d41fd17d29eb7f72fa6ab90b71ced468"
   },
   "clinical_modules": {
-    "phenotype_scorer.py": "62520612fc27fadd60e4f56532851c659a4eb72c1d78eeb68d6fda1c3e0adc92",
-    "prenatal_analysis.py": "edeac5838159d22cb7e753b9b8dd71fa3c09aea491ac6f6f222e62ed672f590e"
+    "phenotype_scorer.py": "0f42de8b4b3ccaa801c49de8284a1a2365c85d87d6c7b59dbb200d9d70f5c64d",
+    "prenatal_analysis.py": "22b7a21bda85e7eb6150f42be98d8cb305e9ebc5e7f212920b4c6003a36794a3"
   },
   "removed_benchmark_definitions": [
     "_read_hpo_ontology",

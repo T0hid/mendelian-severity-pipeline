@@ -10,3 +10,4 @@
 - Removed unused scorer policies, dimension-model fitting/prediction and patient visualisation.
 - Kept the compatibility loader required for models saved with __main__ class references.
 - Removed remaining patch notes, publishing references and decorative separators.
+- Removed residual dated notes, patch markers and incomplete comments; simplified four log messages.

@@ -37,17 +37,11 @@ except ImportError:
     HAS_SKLEARN = False
 
 
-
 HEADLINE_SCENARIO = "S2_Combined"
 HEADLINE_MODEL    = "LightGBM"
 CLASS_NAMES   = ["Mild", "Moderate", "Severe", "Profound"]
 CLASS_INDICES = {n: i for i, n in enumerate(CLASS_NAMES)}
-# Scenario human labels, expanded once. Drives every figure legend / axis.
-# The dict KEYS are the pipeline scenario identifiers and must not be renamed:
-# they index results, fold artefacts and on-disk output files. Only the VALUES
-
-# S2 = combined, S3 = phenotype-only. The mechanistic_core family is displayed
-# as Gene-level core.
+# Keys index saved results and fold artefacts; values are display labels.
 SCENARIO_LABELS = {
     "S1_Gene_Level":      "S1: Gene-level",
     "S1b_Disease_Context": "S1b: Disease-context",
@@ -165,9 +159,7 @@ NEUTRAL_DARK       = "#333333"
 NEUTRAL_MID        = "#777777"
 
 
-#   (PC1 7.3%, PC2 4.9%). Setting it True standardises first, which up-weights
-#   rare terms and yields materially larger ratios (about PC1 21.2%, PC2 15.8%);
-#   if you change it you must also change the value quoted in the Results.
+# Binary terms share a 0/1 scale; standardisation would up-weight rare terms.
 S3_PCA_STANDARDISE = False
 # Minimum size of a group of pairs sharing one exact projection before it is
 # treated as a duplicate cluster and excluded from the central-view axis limits.
@@ -175,14 +167,7 @@ S3_PCA_STANDARDISE = False
 # duplicate clusters exist (e.g. MONDO:0014343 and MONDO:0007542, 571 genes each)
 # and otherwise compress the central cloud to a few pixels.
 S3_PCA_DUPLICATE_CLUSTER_MIN = 25
-# Figure 1 panel d content.
-#   "disease_clustering" (default) - complementary cumulative distribution of
-#       gene-disease pairs per MONDO disease, mirroring panel b at the disease
-#       level. This is the quantity that motivates the disease-disjoint and
-#       joint gene-and-disease-disjoint evaluations.
-#   "mondo_classes" - the previous bar chart of the most represented specific
-#       MONDO disease classes. Retained for reproducibility; uninformative in
-#       this corpus, where the largest class covers 4.3% of pairs.
+# Panel d shows pairs per disease; mondo_classes selects the class-count view.
 PANEL_D_MODE = "disease_clustering"
 
 
@@ -384,13 +369,11 @@ class FeatureLabeler:
                 )
             except Exception:
                 pass
-    # -- public API --
     def __call__(self, name: str, max_len: Optional[int] = None) -> str:
         out = self._prettify(name)
         if max_len and len(out) > max_len:
             out = out[: max_len - 1].rstrip() + "\u2026"
         return out
-    # -- internals --
     def _prettify(self, name: str) -> str:
         if not isinstance(name, str):
             name = str(name)
@@ -400,7 +383,7 @@ class FeatureLabeler:
 
         if name in self.hpo_dict:
             return self.hpo_dict[name]
-        # 2b. HPO direct-term columns named by id: hpo_HP_0002977 / feat_hpo_HP_0002977
+        # HPO direct-term columns use IDs, e.g. hpo_HP_0002977.
         m_hp = re.match(r"^(?:feat_)?hpo_HP[_:](\d{7})$", name, re.IGNORECASE)
         if m_hp:
             hp_id = f"HP:{m_hp.group(1)}"
@@ -422,9 +405,6 @@ class FeatureLabeler:
         if low.startswith("feat_mondo_"):
             tail = name[len("feat_mondo_"):].replace("_", " ").strip()
             return f"MONDO: {tail}"
-        # Functional-annotation features (feat_annot_<source>_<term> or _count).
-        # Without this branch they fell through to the generic rule and were shown
-        # as "Gnn expression sites count" (fixed 2026-11-01).
         for prefix, human, count_label in _ANNOTATION_LABEL_PREFIXES:
             if low.startswith(prefix):
                 tail = name[len(prefix):]
@@ -648,8 +628,7 @@ def _read_scenario_shap_observations(output_dir: str, scenario: str):
     import json
     expl_dir = os.path.join(output_dir, "per_disease_explanations")
 
-    # save_severity_shap (every test pair, every feature, missing flags merged
-    # into their parent feature, positive = towards more severe).
+    # Severity SHAP merges missing flags into their parent; positive means more severe.
     severity_path = os.path.join(expl_dir, f"severity_shap_{scenario}.npz")
     if os.path.exists(severity_path):
         try:
@@ -774,7 +753,7 @@ def figure_5_family_summed_shap(
 ) -> pd.DataFrame:
     """Aggregate SHAP by feature family, as a companion to the per-feature panel."""
 
-    # (pair-level sums within biologically defined groups), report that instead.
+    # Prefer pair-level sums over biologically defined feature groups.
     groups_path = os.path.join(output_dir, "results", "severity_shap_groups.csv")
     if os.path.exists(groups_path):
         try:
@@ -874,7 +853,7 @@ def table_1_headline_metrics(
             result = all_models.get(model_name)
             if not result:
                 continue
-            # Only validation-selected models were evaluated on the test set.
+            # Test metrics are available only for validation-selected models.
             metrics = _get_test_metrics(result)
             if not metrics:
                 logger(
@@ -986,11 +965,7 @@ def table_1_headline_metrics(
                             np.nan,
                         )
                     ),
-                    # Ordinal ranking quality. On a four-class ordinal target with
-                    # an irreducible within-gene noise floor, multiclass MCC
-                    # understates a model that orders severity correctly but sets
-                    # the class thresholds imperfectly. Reported alongside MCC so
-                    # the low-signal scenarios are not judged on MCC alone.
+                    # Ordinal ranking can be informative even when class thresholds are imperfect.
                     "Spearman_rho": float(
                         metrics.get("spearman_rho", np.nan)
                     ),
@@ -1454,7 +1429,6 @@ def generate_publication_figures(all_results: Dict, container, pub_outputs: Dict
                                  output_dir=output_dir)
     _write_main_figure_manifest(main_dir, fig_data_dir)
     print("[publication_figures] done; no supplementary figures were generated.")
-# Backward-compatible alias retained for external scripts that imported it.
 
 
 import math
@@ -1464,10 +1438,7 @@ NATURE_SHOW_MISSING_PANELS = False
 NATURE_MIN_FONT_PT = 6.2
 
 
-# generate. Saving under the internal names forced a manual renaming step on
-# every rebuild, and that step is what allowed superseded figures from an older
-# output folder to reach the submission set. Files are therefore written under
-
+# Map internal figure names to the exported filenames.
 
 
 MANUSCRIPT_FIGURE_NAMES = {
@@ -1607,9 +1578,6 @@ def _plot_interpretation_nature(ax, output_dir: str, scenario: str,
     return pd.DataFrame(), None
 
 
-# These definitions provide the final layout. They retain the public API
-# and the strict
-# validation/test separation of the pipeline.
 from matplotlib.ticker import PercentFormatter, LogLocator, NullFormatter
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 AESTHETIC_VERSION = "3.0"
@@ -1786,7 +1754,7 @@ def figure_1_study_design(
     labeler: FeatureLabeler,
     logger=print,
 ):
-    """Five-panel cohort overview after removing the workflow infographic."""
+    """Draw the cohort and feature overview."""
     y = np.asarray(container.y)
     full_df = container.full_df
     train_idx, val_idx, test_idx = _resolve_partition_indices(container, fold_artifacts)
@@ -1801,7 +1769,6 @@ def figure_1_study_design(
     bottom = outer[1].subgridspec(
         1, 2, width_ratios=[1.12, 1.0], wspace=0.68
     )
-    # a - within-partition composition (former panel b)
     ax = fig.add_subplot(top[0, 0])
     active = [
         ("Train", np.asarray(train_idx, dtype=int)),
@@ -1874,7 +1841,6 @@ def figure_1_study_design(
         "figure_1a_partition_composition.csv",
         fig_data_dir,
     )
-    # b - clustering CCDF (former panel c)
     ax = fig.add_subplot(top[0, 1])
     pairs_per_gene = pd.Series(container.groups).value_counts().to_numpy(dtype=int)
     x_values = np.arange(1, int(np.max(pairs_per_gene)) + 1)
@@ -1917,7 +1883,6 @@ def figure_1_study_design(
         "figure_1b_gene_pair_ccdf.csv",
         fig_data_dir,
     )
-    # c - inheritance prevalence heatmap (former panel d)
     ax = fig.add_subplot(top[0, 2])
     inheritance_columns = [
         "feat_is_dominant",
@@ -1989,21 +1954,8 @@ def figure_1_study_design(
         _empty_panel(ax, "Inheritance indicators unavailable")
     _soft_title(ax, "Inheritance prevalence by severity")
     _panel_label(ax, "c", x=-0.18)
-    # d - disease-level clustering CCDF.
-    #
-    # Replaces the former "most represented specific MONDO disease classes" bar
-    # chart. That panel was uninformative: the largest class covered 4.3% of
-    # pairs and the seven shown covered ~10.7% between them, because MONDO
-    # class annotation is sparse in this corpus.
-    #
-    # This panel instead mirrors panel b at the disease level. Because a
-    # disease's directly annotated HPO terms are shared by every gene assigned
-    # to it, pairs from the same MONDO disease carry identical phenotype
-    # vectors. The pairs-per-disease distribution is therefore the quantity
-    # that motivates the disease-disjoint and joint gene-and-disease-disjoint
-    # evaluations, and it belongs in the main figure rather than in the text.
-    #
-    # Set PANEL_D_MODE = "mondo_classes" to restore the previous behaviour.
+    # Genes assigned to the same disease share HPO vectors.
+    # Pairs per disease show the grouping behind the disease-disjoint evaluations.
     ax = fig.add_subplot(bottom[0, 0])
     _disease_column = next(
         (
@@ -2068,8 +2020,7 @@ def figure_1_study_design(
             "figure_1d_disease_pair_ccdf.csv",
             fig_data_dir,
         )
-        # Per-disease detail for the largest groups, so the tail of the CCDF is
-        # auditable against the disease-overlap check.
+        # Export the largest disease groups for checking the CCDF tail.
         _disease_sizes = (
             full_df[_disease_column].astype(str).value_counts()
         )
@@ -2114,7 +2065,6 @@ def figure_1_study_design(
         _plot_mondo_class_panel_d(
             ax, full_df, labeler, fig_data_dir
         )
-    # e - representation matrix (former panel f), widened and relabelled
     ax = fig.add_subplot(bottom[0, 1])
     family_frame = _scenario_feature_family_frame(
         container, selected_only=False
@@ -2264,7 +2214,6 @@ def figure_2_model_comparison(
     fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.52, 0.985),
                frameon=False, ncol=len(handles), title="Candidate models; black outline = selected",
                handlelength=1.4, columnspacing=1.2)
-    # d - selected models only on held-out test; hero forest plot
     ax = fig.add_subplot(gs[1:3, 0:2])
     scenarios = _present_scenarios(test.get("Scenario", pd.Series(dtype=str)).unique())
     metrics = [("mcc", "MCC", "o"), ("qwk", "QWK", "s"),
@@ -2389,7 +2338,7 @@ def figure_2_model_comparison(
     _save_csv(validation, "figure_2_candidate_validation_metrics.csv", fig_data_dir)
     _save_csv(test, "figure_2_selected_test_metrics.csv", fig_data_dir)
     _save(fig, "figure_2_model_comparison", out_dir)
-    logger("[figure_2] saved aesthetic v3")
+    logger("[figure_2] saved")
 # Figure 3 - prediction behaviour and calibration
 def figure_3_prediction_calibration(
     all_results: Dict,
@@ -2405,8 +2354,6 @@ def figure_3_prediction_calibration(
         logger("[figure_3] no selected models; skipping")
         return
     ece_df, bins_df = _calibration_tables(pub_outputs, output_dir)
-
-
 
 
     ordinal_errors = _per_class_ordinal_error_frame(all_results, selected, output_dir)
@@ -2484,7 +2431,6 @@ def figure_3_prediction_calibration(
                frameon=False, title="Severity class")
 
 
-
     ax = fig.add_subplot(bot_gs[0, 0])
     if not ordinal_errors.empty:
         _plot_per_class_ordinal_composition_matrix_panel(
@@ -2546,7 +2492,7 @@ def figure_3_prediction_calibration(
     if confusion_export: _save_csv(pd.DataFrame(confusion_export),"figure_3_confusion_matrices.csv",fig_data_dir)
     if calibration_export: _save_csv(pd.concat(calibration_export,ignore_index=True),"figure_3_calibration_curves.csv",fig_data_dir)
     _save(fig,"figure_3_prediction_and_calibration",out_dir)
-    logger("[figure_3] saved aesthetic v3")
+    logger("[figure_3] saved")
 
 def _humanize_drop_reason(reason: str) -> str:
     key = str(reason).strip().lower()
@@ -2565,9 +2511,6 @@ def _humanize_drop_reason(reason: str) -> str:
     cleaned = cleaned.replace("high_", "").replace("_", " ").strip()
     cleaned = cleaned[:1].upper() + cleaned[1:] if cleaned else "Other"
     return _wrap_label(cleaned, 18)
-# Figure 5 - interpretation and phenotype biology
-# Keep the manifest synchronized with the final layouts.
-# Compact per-class ordinal error panel.
 def _per_class_ordinal_error_frame(
     all_results: Dict,
     selected: Dict[str, str],
@@ -2654,8 +2597,6 @@ def _per_class_ordinal_error_frame(
     )
     frame["_class_order"] = frame["true_class"].map(CLASS_INDICES)
     return frame.sort_values(["_scenario_order", "_class_order"]).reset_index(drop=True)
-# Per-class ordinal errors are drawn in Figure 4;
-# Figure 5 has panels a-e.
 def _plot_per_class_ordinal_composition_matrix_panel(
     ax,
     frame: pd.DataFrame,
@@ -3132,7 +3073,6 @@ def _build_s3_locked_test_pca(
             candidate_source = "S3 scenario phenotype-column registry"
 
 
-
         present_names = []
         seen = set()
         for name in candidate_names:
@@ -3242,9 +3182,7 @@ def _build_s3_locked_test_pca(
             X_train_scaled = scaler.fit_transform(X_train)
             X_test_scaled = scaler.transform(X_test)
         else:
-            # Binary indicators are already on a common 0/1 scale; PCA is run on
-            # them directly so that the explained-variance ratios match the
-            # delivered figure_5e CSV and the value quoted in the Results.
+            # Binary HPO indicators share a 0/1 scale; use them directly for PCA.
             X_train_scaled = X_train
             X_test_scaled = X_test
         pca = PCA(n_components=2, random_state=random_seed)
@@ -3347,8 +3285,6 @@ def _plot_s3_two_part_pca_panel(
     pred_values = plot_frame["predicted_severity_numeric"].astype(int).to_numpy()
     valid = np.isin(true_values, np.arange(len(CLASS_NAMES))) & np.isin(pred_values, np.arange(len(CLASS_NAMES)))
     misclassified = true_values != pred_values
-    # Show a smaller but still representative display set: all misclassified cases
-    # plus a class-balanced 20% sample of correctly classified cases.
     shown = np.zeros(len(plot_frame), dtype=bool)
     if S3_PCA_SAMPLING == "proportional":
         # Sample within each observed class at one common rate, drawing correct
@@ -3431,10 +3367,6 @@ def _plot_s3_two_part_pca_panel(
     _n_off_axis = int(_off_axis_mask.sum())
 
 
-
-
-
-
     _n_duplicate_clusters_dropped_from_limits = int(_n_duplicate_clusters)
     if _n_duplicate_clusters_dropped_from_limits > 0 and _off_axis_mask.any():
         _off_keys = np.unique(
@@ -3502,16 +3434,8 @@ def _plot_s3_two_part_pca_panel(
             alpha=0.45,
             zorder=2,
         )
-        # The two subplots show the same 1,750 pairs, so outlining the
-        # misclassified ones twice adds nothing. They are marked on the predicted
-        # panel only, which is where the model's error is expressed.
+        # Both panels show the same pairs; mark errors only on the prediction panel.
         if mark_errors:
-
-
-
-
-
-
 
 
             _proportional = S3_PCA_SAMPLING == "proportional"
@@ -3624,11 +3548,7 @@ def _plot_s3_two_part_pca_panel(
         columnspacing=1.4,
         borderaxespad=0.0,
     )
-    # Returned so the caller can write these to disk. The figure legend in the
-
-    # clusters excluded from the axis limits and the off-axis count; those
-    # values change whenever the sampling or clustering rule changes, so they
-    # must be read from the run rather than carried over between versions.
+    # Export sampling and off-axis counts from this run for the figure legend.
     gap_all = np.abs(
         plot_frame["predicted_severity_numeric"].astype(int).to_numpy()
         - plot_frame["true_severity_numeric"].astype(int).to_numpy()

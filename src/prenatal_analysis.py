@@ -162,7 +162,6 @@ def map_outcome_4level(value: Any) -> float:
         return 2.0
 
 
-
     if text in LIVE_BIRTH_NO_NICU or "no nicu/special care required" in text:
         return 0.0
     if text in NICU_SET:
@@ -343,7 +342,6 @@ def load_cohort(path: str, exclude_studies: Sequence[str],
         wanted = {_normalise_text(v) for v in exclude_studies}
         df = df[~df[study_col].map(_normalise_text).isin(wanted)].copy()
     audit["n_after_exclude_studies_rows"] = int(len(df))
-
 
 
     lb_only = {_normalise_text(v) for v in livebirth_only_studies} if has_study else set()
@@ -691,7 +689,7 @@ def score_families(
     score_channel: str = "combined",
     allow_low_information: bool = False,
 ) -> Tuple[pd.DataFrame, str]:
-    """Score all families while preserving v2 columns and exporting v3 channels."""
+    """Score family profiles and export the phenotype and combined channels."""
     if score_channel not in SCORE_CHANNEL_LABELS:
         raise ValueError(
             f"Unknown score channel {score_channel!r}; choose from "
@@ -782,7 +780,6 @@ def score_families(
             if np.isfinite(combined_expected)
             else np.nan
         )
-
 
 
         if not np.isfinite(phenotype_score) and model_generation == "v2_phenotype_only":
@@ -1884,9 +1881,7 @@ def _draw_class_probability_panel(
 
 CLASS_NAMES = ["Mild", "Moderate", "Severe", "Profound"]
 
-# Sequential single-hue map. Nature Communications asks for distinct colours of
-# comparable visibility, discourages the rainbow scale and discourages red/green
-# contrast, so a perceptually ordered blue ramp is used for the confusion matrix.
+# A single blue ramp keeps the confusion-matrix values perceptually ordered.
 CONFUSION_CMAP = "Blues"
 
 
@@ -2366,7 +2361,6 @@ def main() -> None:
         )
 
 
-
     exportable(all_profiles).to_csv(
         os.path.join(args.output, "severity_by_family.csv"),
         index=False,
@@ -2404,7 +2398,6 @@ def main() -> None:
         os.path.join(args.output, "mean_by_outcome_3group.csv"),
         index=False,
     )
-    # Retain the original filename for downstream compatibility.
     mean3.to_csv(
         os.path.join(args.output, "mean_by_outcome.csv"),
         index=False,
@@ -2541,9 +2534,7 @@ def main() -> None:
         scorer_heldout=scorer_heldout,
         score_channel=args.score_channel,
     )
-    # Keep the earlier filename for compatibility, but make it an exact copy of
-    # the new three-panel figure so an old two-panel image cannot be mistaken
-    # for the current output.
+    # Both filenames contain the same three-panel figure for downstream compatibility.
     import shutil
     shutil.copy2(
         four_group_roc_figure,

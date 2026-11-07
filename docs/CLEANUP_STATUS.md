@@ -15,7 +15,7 @@ Work is on `paper-cleanup`. Nothing is merged into main. The existing `cleanup/r
 ## Validation
 
 - The complete benchmark smoke test passed in 4 minutes 7 seconds: 400 pairs, 10 permutations, 50 bootstrap replicates and three split seeds. Required-output validation passed and RUN_COMPLETE.json was written.
-- All 33 existing tests and two result-comparison tests pass.
+- All 37 tests pass, including result-comparison and Task 4 source checks.
 - All ten bundled input checksums pass.
 - Scorer training completed with one candidate configuration and two cross-validation folds. This was a reduced configuration, not the published model-selection run.
 - Both the supplied model and the newly trained smoke model load through the prenatal loader and score profiles.
@@ -57,4 +57,6 @@ Reduced scorer retraining matches the previous held-out predictions and model-se
 
 The existing token-vocabulary construction iterates Python sets. Separate processes with an unset PYTHONHASHSEED can therefore choose a different order among tied token counts, changing some tree-model results. This pre-existing behaviour is left unchanged under the instruction to preserve known bugs. Before/after numerical checks use the same explicit PYTHONHASHSEED=0 for both versions; this is a verification setting, not a new pipeline default.
 
-The controlled benchmark comparison matches model selection and classification metrics. Strict comparison detects a Multiclass_Brier difference of 1.6653345369377348e-16; exact bitwise reproduction is not claimed.
+The controlled benchmark comparison matches model selection and classification metrics. Strict comparison detects four final-digit differences in RPS_CI_high, RPS, Uncalibrated_RPS and Multiclass_Brier, at most 1.6653345369377348e-16; exact bitwise reproduction is not claimed.
+
+The final wording pass removes residual dated notes, patch markers and incomplete comment fragments. An AST comparison against the preceding Task 4 commit is identical after excluding docstrings and four specified log-message edits. It changes no calculations, options, output names or schemas. The source checks also inspect log literals and dated comments.

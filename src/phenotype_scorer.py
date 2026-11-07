@@ -56,7 +56,6 @@ EXCLUDED_CLINICAL_MODIFIER_HPO_IDS = {
 }
 
 
-
 LEGACY_ORGAN_SYSTEM_KEYWORDS: Dict[str, Tuple[str, ...]] = {
     "nervous_system": ("nervous system", "neurolog", "brain", "spinal cord"),
     "cardiovascular": ("cardiovascular", "heart", "cardiac", "blood vessel", "vascular"),
@@ -245,8 +244,6 @@ def _parse_bool(value: Any) -> Optional[bool]:
     if text in {"0", "false", "no", "n", "absent", "negative", "negated", "excluded"}:
         return False
     return None
-
-
 
 
 def _is_severity_term(hpo_id: str, name: str = "") -> bool:
@@ -719,7 +716,7 @@ class ExplicitSeverityVectorizer:
         self.training_counts = dict(counts)
         self.unmapped_training_terms = dict(unmapped)
         print(
-            "[vectorizer] explicit ordinal levels="
+            "[vectorizer] severity levels="
             + ", ".join(f"{name}:{counts.get(name, 0)}" for name in CLASS_NAMES)
             + f"; unmapped severity-coded terms={sum(unmapped.values())}"
         )
@@ -1258,8 +1255,6 @@ class OrdinalThresholdModel:
         return np.vstack(rows)
 
 
-
-
 def _ordinal_model_from_config(config: ModelConfig, max_iter: int) -> OrdinalThresholdModel:
     return OrdinalThresholdModel(
         C=config.C,
@@ -1417,7 +1412,7 @@ def load_pairs(
         "n_hpo_records": int(len(frame)),
         "n_gene_disease_pairs": int(len(gene_disease_pairs)),
         "n_diseases": int(len(pairs)),
-        "n_pairs": int(len(pairs)),  # compatibility alias; one row now equals one disease
+        "n_pairs": int(len(pairs)),  # alias for consumers using pair-count field names
         "n_conflicting_label_diseases": int(len(conflicting_diseases)),
         "n_conflicting_label_pairs": int(len(conflicting_diseases)),  # compatibility alias
         "n_present_absent_term_conflicts_removed": int(polarity_conflicts),

@@ -12,7 +12,7 @@ FILES = ['severity_pipeline.py', 'phenotype_scorer.py', 'prenatal_analysis.py',
 
 class CleanupTests(unittest.TestCase):
     def test_comments_and_docstrings_have_no_patch_notes(self):
-        pattern = re.compile(r'\b(locked|frozen|untouched|headline|audit|reviewers?|manuscript|previously|legacy|explicit|robust|ensures|comprehensive|safeguard|leverage|seamless)\b|manuscript-complete|is now|no longer|Note:|Important:|This function|\bv\d+\.\d+', re.I)
+        pattern = re.compile(r'\b(locked|frozen|untouched|headline|audit|reviewers?|manuscript|paper|methods|previously|previous|former|legacy|patch|explicit|robust|ensures|comprehensive|safeguard|leverage|seamless)\b|manuscript-complete|is now|no longer|Note:|Important:|This function|\bv\d+\.\d+|\b\d{1,2} Nov 2026|aesthetic v\d+', re.I)
         for name in FILES:
             source = (ROOT / name).read_text()
             for token in tokenize.generate_tokens(io.StringIO(source).readline):
@@ -20,6 +20,15 @@ class CleanupTests(unittest.TestCase):
                     self.assertTrue(token.string.isascii(), (name, token.start))
                     self.assertIsNone(pattern.search(token.string), (name, token.start))
             for node in ast.walk(ast.parse(source)):
+                if isinstance(node, ast.Call):
+                    func = node.func
+                    log_call = (isinstance(func, ast.Name) and func.id in {'print', 'logger'}) or (
+                        isinstance(func, ast.Attribute) and func.attr in
+                        {'log', 'section', 'subsection', 'info', 'warning', 'debug'})
+                    if log_call:
+                        for value in ast.walk(node):
+                            if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                                self.assertIsNone(pattern.search(value.value), (name, node.lineno))
                 if isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef)):
                     text = ast.get_docstring(node)
                     if text:

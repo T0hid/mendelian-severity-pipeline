@@ -37,7 +37,15 @@
     "hash_seed_comparison": "Both versions use PYTHONHASHSEED=0 for the controlled check; pipeline defaults unchanged",
     "controlled_benchmark_comparison": {
       "model_selection_validation.csv": "exact match",
-      "publication_table.csv": "all fields match except Multiclass_Brier; maximum difference 1.6653345369377348e-16"
-    }
+      "publication_table.csv": "four fields differ in their final floating-point digits; maximum difference 1.6653345369377348e-16",
+      "differing_fields": [
+        "RPS_CI_high",
+        "RPS",
+        "Uncalibrated_RPS",
+        "Multiclass_Brier"
+      ],
+      "maximum_absolute_difference": 1.6653345369377348e-16
+    },
+    "final_wording_pass": "AST identical after removing docstrings and normalising four specified log messages"
   }
 }

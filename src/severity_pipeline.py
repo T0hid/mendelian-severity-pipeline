@@ -82,7 +82,6 @@ from gene_disease_mapping_filter import (
 class Config:
     """Single authoritative configuration for the complete pipeline."""
 
-    # Set to False to drop the organ-criticality block from all scenarios.
     ORGAN_CRITICALITY_COLUMNS = [
         "critical_brain", "critical_heart", "critical_lung", "critical_kidney",
         "critical_liver", "critical_immune", "critical_metabolic",
@@ -91,16 +90,12 @@ class Config:
         "noncritical_total", "n_noncritical_organs",
     ]
 
-    # Set to False to keep the mixed-inheritance columns in S1.
-    # From inheritance is pair-specific (built from moi_title of each gene-disease
-    # pair), so these columns describe modes within one pair and are expected to be
-    # near-constant. They are still kept out of S1, as in Mode-of-inheritance
-    # columns (is_dominant / is_recessive / is_xlinked) are retained.
+    # Mixed-inheritance counts can reveal disease context, so S1 excludes them.
     DROP_INHERITANCE_COUNT_PROXIES_FROM_S1 = True
     # Pair-level inheritance: moi_title values in the primary file mapped to the
     # dominant / recessive / X-linked flags. Values not listed (Mitochondrial,
     # Y-linked inheritance) count as a known "other" mode with all three flags 0.
-    # Pairs whose only values are unknown or blank get NaN flags (unknown, not 0).
+    # Unknown or blank modes start as NaN; build_inheritance_features handles their coding.
     USE_PAIR_LEVEL_INHERITANCE = True
     PAIR_INHERITANCE_COLUMN = "moi_title"
     MOI_DOMINANT = ("Autosomal dominant", "Semidominant")
@@ -114,9 +109,7 @@ class Config:
         "n_inheritance_modes", "all_inheritance_modes", "primary_inheritance",
     ]
 
-    # Input columns removed when the source files are loaded (), with the reason.
-    # Listed per source file, because the CORE and EXTERNAL files share some column
-    # names (the CORE paralogue columns hold real values; the EXTERNAL ones are empty).
+    # CORE and EXTERNAL share names but differ in content; exclusions are source-specific.
     REMOVED_INPUT_COLUMNS_CORE = {
 
         # copies of gnomad_regional_*. The standard gene-level gnomad_* values are kept.
@@ -163,10 +156,7 @@ class Config:
         "feat_has_mixed_inheritance",
     ]
 
-    # Set to False to keep redundant twins in the candidate sets. In the gnomAD,
-    # ClinGen and paralogue twins are removed at load (REMOVED_INPUT_COLUMNS), so the
-    # only remaining entry is gene_age, an exact linear function of conservation_score
-    # (conservation_score == (5 - gene_age) / 4, Pearson r = -1.0).
+    # gene_age is an exact linear function of conservation_score (r = -1.0).
     DROP_DUPLICATE_COLUMNS = True
     DUPLICATE_COLUMNS = [
         "gene_age",
@@ -178,9 +168,7 @@ class Config:
 
     # Inputs.
     PRIMARY_DATA = "final_output_with_severity.csv"
-    # HPO-verified gene-disease mapping (see Script/gene_disease_mapping_filter.py).
-    # Removes the gene-panel-collapse artefacts that gave one disease term up to
-    # 571 genes sharing a single feature vector and label.
+    # HPO-verified mapping excludes gene-panel-collapse artefacts.
     REBUILT_GENE_DISEASE_MAPPING = os.path.join(
         BASE_DIR, "gene_disease_mapping_HPO_rebuilt.csv"
     )
@@ -196,9 +184,8 @@ class Config:
     # (CONSOLIDATED_FEATURES_v2/clingen_2026-10-31/). Uncurated genes are 0 in every
     # ClinGen column with clingen_dosage_curated = 0. clingen_hi_score and
     # clingen_ts_score are ordinal 0-3; ClinGen codes 30 (autosomal recessive) and 40
-    # (dosage sensitivity unlikely) are separate flags. Broken Collins and paralogue
-    # columns are not in this file. Built by build_clingen_v46.py.
-    # Falls back to the file (with REMOVED_INPUT_COLUMNS applied) if absent.
+    # (dosage sensitivity unlikely) are separate flags. Built by build_clingen_v46.py.
+    # REMOVED_INPUT_COLUMNS also applies to the fallback source.
     _EXTERNAL_V46 = os.path.join(
         CONSOLIDATED_DIR, "EXTERNAL_MECHANISTIC_FEATURES_v4_6.csv"
     )
@@ -298,17 +285,14 @@ class Config:
     MI_MAX_DISCRETE_UNIQUE = 10
     MI_MIN_FEATURES_DEFAULT = 15
     MI_MIN_FEATURES_MECHANISTIC = 30
-    # no "value was imputed" indicators. They record which databases lack a
-    # gene, not its biology. Missing values are still filled with the training median.
+    # Missingness flags measure database coverage; missing values use the training median.
     ADD_MISSING_INDICATORS = False
-    # off. Every gene is present in every source file, so these flags were
-    # constant and always removed by the variance filter.
+    # Source-presence flags are constant in this corpus.
     ADD_SOURCE_AVAILABILITY_INDICATORS = False
     MISSING_DROP_THRESHOLD = 0.5
     VAR_DROP_THRESHOLD = 1e-10
     MONDO_MIN_TRAIN_COUNT = 5
-    # MONDO disease-class features are the direct subclasses of this term in the pinned
-    # mondo.obo, so no class IDs are written by hand (). MONDO:0700096 = human disease.
+    # Disease classes are direct subclasses of MONDO:0700096 in the pinned ontology.
     MONDO_CLASS_ROOT = "MONDO:0700096"
     FEATURE_BUDGET = {
         "hpo_binary": 200,
@@ -346,8 +330,7 @@ class Config:
     ORDINAL_EXPLANATION_POLICY = "uncalibrated_boundary_models_only"
     ORDINAL_BOUNDARY_MULT = [2.5, 1.5, 1.0, 1.0]
 
-    # (2 Nov 2026). Features that record how well a gene or disease is
-
+    # These columns measure annotation coverage rather than biology.
     DROP_RECORD_KEEPING_FEATURES = True
     RECORD_KEEPING_COLUMNS = (
         "feat_mondo_depth",                      # level of the disease in the MONDO tree
@@ -366,18 +349,12 @@ class Config:
     TEXT_ADD_COUNT_AND_AVAILABILITY = False
 
 
-
     INHERITANCE_UNKNOWN_AS_FLAG = True
     # no separate "inheritance not recorded" feature. Unrecorded pairs stay 0 on
     # every inheritance flag, so no mode is invented, but the gap is not a feature.
     INHERITANCE_NOT_RECORDED_FLAG = False
-    # (3 Nov 2026). Features that describe how much a gene has been studied,
-    # tested in the clinic or annotated, rather than its biology, are removed from
-    # every scenario: database-presence flags (has_*_record), reported-variant counts
-    # and the densities and proportions derived from them, protein-interaction network
-    # features (curated interactions favour well-studied genes) and the network-based
-    # engineered features, the uncertainty of the s_het estimate, and the ClinGen
-    # "curated" flag.
+    # Exclude study-intensity proxies, interaction-network features, s_het uncertainty
+    # and the ClinGen curation flag; curated sources favour well-studied genes.
     DROP_NON_BIOLOGICAL_FEATURES = True
     NON_BIOLOGICAL_PREFIXES = ("var_", "ppi_", "network_")
     NON_BIOLOGICAL_COLUMNS = (
@@ -389,13 +366,9 @@ class Config:
         "feat_triple_constraint", "feat_central_essential", "feat_log_ppi_degree",
     )
 
-    # (3 Nov 2026). Redundant gene-level features are removed from every
-    # scenario. Each column below is either derived from a feature that is kept,
-    # or nearly identical to one (|Spearman rho| >= 0.9 on CORE_MECHANISTIC_FEATURES /
-    # EXTERNAL_MECHANISTIC_FEATURES_v4_6 / NEW_GENE_LEVEL_FEATURES, 4,733 genes).
-    # Removal follows these rules, not SHAP ranks. (4 Nov 2026) adds one
-    # rule: one expression-specificity measure per level (tissue: gtex_tau;
-    # cell: hpa_celltype_group_specificity_ord).
+    # Exclude derived features and near-duplicates (|Spearman rho| >= 0.9, 4,733 genes).
+    # Keep one expression-specificity measure per level: gtex_tau and
+    # hpa_celltype_group_specificity_ord. Selection does not use SHAP ranks.
     DROP_REDUNDANT_FEATURES = True
     REDUNDANT_FEATURE_COLUMNS = (
         # Derived from a kept feature (cut-off, count or transform).
@@ -420,14 +393,10 @@ class Config:
         # Inheritance x constraint products; tree models form these interactions themselves.
         "feat_pli_x_dominant", "feat_pli_x_recessive",
         "feat_dominant_low_constraint", "feat_recessive_high_constraint",
-        # One specificity measure per level (). Not duplicates: rho 0.71 with
-        # gtex_tau (tissue) and 0.80 with the HPA cell-lineage grade (cell).
     )
 
-    # interpretation. SHAP explains the expected severity class
-    # sum_k k * p_k(x) (0 = mild ... 3 = profound) of the uncalibrated selected
-    # model, so a positive value always means "towards more severe" and all four
-    # scenarios share one scale. The full matrix is saved for every test pair.
+    # SHAP explains sum_k k * p_k(x) from the uncalibrated selected model.
+    # Positive values mean greater severity on the same scale across scenarios.
     SEVERITY_SHAP_ENABLED = True
     SEVERITY_SHAP_BACKGROUND_N = 100              # training pairs, interventional SHAP
     SEVERITY_SHAP_PERMUTATION_BACKGROUND_N = 25   # fallback for non-tree models
@@ -437,7 +406,6 @@ class Config:
     MI_SENSITIVITY_THRESHOLDS = [0.0, 0.005, 0.01, 0.02]
     RUN_BUDGET_SENSITIVITY = True
     RUN_PERMUTATION_TEST = True
-    # Reference outputs contain one permutation. See SUBMISSION_NOTES.md.
     N_PERMUTATIONS = 100
     PERMUTATION_MODE = "gene_block_candidate_selection_fixed_hyperparameters"
     PERMUTATION_MIN_MOVABLE_FRACTION = 0.80
@@ -454,11 +422,8 @@ class Config:
     SAVE_MI_CSV_FOR_INTERNAL_RUNS = False
     ALLOW_OUTPUT_REUSE = False
 
-    # This string is written verbatim into pipeline_manifest.json and the summary
-
-    # The labels come from an evidence-grounded artificial-intelligence
-    # agent operationalising the Lazarin and ACMG framework, validated against
-    # expert-curated cohorts rather than produced by case-by-case expert review.
+    # Labels come from an evidence-grounded AI agent using the Lazarin and ACMG
+    # framework; validation uses expert-curated cohorts.
     TARGET_LABEL_PROVENANCE = (
         "Severity labels were assigned by an evidence-grounded artificial-intelligence "
         "agent operationalising the Lazarin and ACMG severity framework from published "
@@ -887,8 +852,6 @@ SCENARIO_TEXT_SOURCES: Dict[str, Tuple[str, ...]] = {
     "S2_Combined": ("annotation",),
     "S3_Phenotype": (),
 
-    # A future, separately reported text scenario could use:
-    # "S4_Text_Augmented": ("annotation",),
 }
 
 
@@ -1659,10 +1622,7 @@ def engineer_features(df: pd.DataFrame, feature_cols: List[str]) -> Tuple[pd.Dat
         eng_df["feat_missz_x_pli"] = eng_df[missz_col] * eng_df[pli_col]
         new_features.append("feat_missz_x_pli")
     if missz_col and synz_col:
-        # feat_missz_over_synz removed: synonymous Z is a SIGNED z-score centred near
-        # zero, so dividing by it (even clipped) creates artificial spikes and sign
-        # flips. Replaced with a difference (missense constraint excess over synonymous),
-        # which is well defined across the whole range.
+        # Use a difference: dividing by signed synonymous Z creates spikes near zero.
         eng_df["feat_missz_minus_synz"] = pd.to_numeric(
             eng_df[missz_col], errors="coerce"
         ) - pd.to_numeric(eng_df[synz_col], errors="coerce")
@@ -1690,10 +1650,7 @@ def engineer_features(df: pd.DataFrame, feature_cols: List[str]) -> Tuple[pd.Dat
         eng_df["feat_conserved_constrained"] = eng_df[cons_col] * eng_df[pli_col]
         new_features.append("feat_conserved_constrained")
     para_col = find_col(["paralog_count", "n_paralogs", "paralog"], feature_cols)
-    # feat_no_paralog_constrained removed: it duplicated feat_constrained_no_paralog
-    # (identical formula pLI * (paralog_count == 0)); the canonical version is built
-    # below. Resolution prefers the exact 'paralog_count' name so it cannot match
-    # has_close_paralog or max_paralog_identity by accident.
+    # Match 'paralog_count' exactly to avoid identity and close-paralogue columns.
     expr_col = find_col(
         ["expression_breadth", "n_tissues", "tissue_breadth", "gtex_n_tissues", "ubiquity"],
         feature_cols,
@@ -1868,7 +1825,7 @@ def build_inheritance_features(
     elif recorded is not None:
         logger.log(
             f"  Inheritance: {int((~recorded).sum())} pairs without a recorded mode coded 0 "
-            "on every flag (v4.8: no separate not-recorded feature)"
+            "on every flag without a separate not-recorded feature"
         )
 
     if pli_col and pli_col in full_df.columns:
@@ -2054,8 +2011,7 @@ def parse_mondo_obo(obo_path: str):
                 elif line.startswith("name: "):
                     current_name = line[6:].strip()
                 elif line.startswith("is_a: "):
-                    # Strip the trailing "! name" comment and any axiom annotation
-                    # ("{source=...}") so only the parent ID remains ().
+                    # Strip the name and axiom annotation so only the parent ID remains.
                     parent_id = line[6:].split("!")[0].split("{")[0].strip()
                     current_parents.append(parent_id)
                 elif line.startswith("is_obsolete: true"):
@@ -2320,7 +2276,6 @@ def assemble_full_dataframe() -> DataContainer:
     mouse_availability: List[str] = []
 
 
-
     mechanistic_df = load_mechanistic_features()
     n_pairs_before_mechanistic = int(len(disease_df))
     full_df, mechanistic_availability = _merge_gene_level_features(
@@ -2391,9 +2346,8 @@ def assemble_full_dataframe() -> DataContainer:
             availability_columns.append(availability)
             non_mouse_availability.append(availability)
 
-    # New published gene-level constraint / expression block. Its availability
-    # flag joins non_mouse_availability, never mouse_availability, so S1 and S1b
-    # remain free of mouse-derived signal.
+    # Gene-level source availability belongs to non_mouse_availability,
+    # keeping S1 and S1b free of mouse-derived signal.
     new_gene_df, new_gene_cols = load_new_gene_features()
     if len(new_gene_df) > 0:
         full_df, availability = _merge_gene_level_features(
@@ -2503,8 +2457,7 @@ def assemble_full_dataframe() -> DataContainer:
         + mouse_human_phenotype_cols,
     )
 
-    # [PATCH #1] Mouse-derived engineered interactions are confined to S2 so that
-    # the mechanistic scenarios S1/S1b contain no mouse-derived signal.
+    # Mouse-derived interactions belong to S2; S1 and S1b exclude mouse signal.
     _MOUSE_DERIVED_ENGINEERED = [
         column for column in (
             "feat_lethal_x_pli",
@@ -2565,10 +2518,7 @@ def assemble_full_dataframe() -> DataContainer:
         column for column in s1b_cols
         if column in full_df.columns and not column.startswith("hpo_")
     ]
-    # Phenotype scenarios S2/S3 use ONLY the per-term binary HPO presence
-    # indicators (hpo_HP_*). The per-system organ rollups (feat_hpo_sys_*) are
-    # excluded here so the phenotype signal is the directly annotated terms
-    # alone. S1b is unchanged and still keeps organ_system_features.
+    # S2 and S3 use individual HPO terms; only S1b keeps organ-system rollups.
     s2_raw = [
         column for column in s1b_cols + hpo_binary_cols + mouse_cols
         if column in full_df.columns
@@ -2608,9 +2558,7 @@ def assemble_full_dataframe() -> DataContainer:
     )
 
     if getattr(Config, "DROP_DUPLICATE_COLUMNS", False):
-        # ALL SCENARIOS. Redundant twins introduced by merging several upstream
-        # feature tables. One member of each pair is retained; see
-        # Config.DUPLICATE_COLUMNS for the pairing and the rationale.
+        # Keep one member of each duplicate pair (Config.DUPLICATE_COLUMNS).
         _duplicate_drop = set(Config.DUPLICATE_COLUMNS)
         _duplicate_removed = set()
         for _scenario, _columns in container.scenario_cols.items():
@@ -2628,9 +2576,7 @@ def assemble_full_dataframe() -> DataContainer:
         )
 
     if getattr(Config, "DROP_MONDO_AVAILABILITY_FLAG", True) and "has_mondo_record" in full_df.columns:
-        # the MONDO availability flag (disease ID found in mondo.obo) is constant or
-        # nearly so in this corpus and was always removed by the variance filter. Like the
-
+        # Ontology coverage is not a biological feature.
         _mondo_flag_counts = (
             pd.to_numeric(full_df["has_mondo_record"], errors="coerce").value_counts(dropna=False).to_dict()
         )
@@ -2643,8 +2589,7 @@ def assemble_full_dataframe() -> DataContainer:
         )
 
     if getattr(Config, "DROP_RECORD_KEEPING_FEATURES", False):
-        # , ALL SCENARIOS. These columns describe how a disease is classified or
-        # how much data exist for a gene, not its biology (Config.RECORD_KEEPING_COLUMNS).
+        # These columns measure classification depth or annotation coverage.
         _record_drop = set(getattr(Config, "RECORD_KEEPING_COLUMNS", ()))
         _record_removed = set()
         for _scenario, _columns in container.scenario_cols.items():
@@ -2659,8 +2604,7 @@ def assemble_full_dataframe() -> DataContainer:
         )
 
     if getattr(Config, "DROP_NON_BIOLOGICAL_FEATURES", False):
-        # , ALL SCENARIOS (Config.NON_BIOLOGICAL_*): study-intensity and
-        # data-availability features are removed so that the models rest on biology.
+        # Study intensity and source availability are not biological features.
         _nb_columns = set(getattr(Config, "NON_BIOLOGICAL_COLUMNS", ()))
         _nb_prefixes = tuple(getattr(Config, "NON_BIOLOGICAL_PREFIXES", ()))
 
@@ -2685,8 +2629,7 @@ def assemble_full_dataframe() -> DataContainer:
         )
 
     if getattr(Config, "DROP_REDUNDANT_FEATURES", False):
-        # , ALL SCENARIOS (Config.REDUNDANT_FEATURE_COLUMNS): columns derived from,
-        # or nearly identical to, a feature that is kept.
+        # These columns duplicate or closely track retained features.
         _redundant = set(getattr(Config, "REDUNDANT_FEATURE_COLUMNS", ()))
         _redundant_removed = set()
         for _scenario, _columns in container.scenario_cols.items():
@@ -2767,11 +2710,7 @@ def assemble_full_dataframe() -> DataContainer:
     container.feature_family_lookup = family_lookup
     container.full_df = full_df
 
-    # Feature check hook.
-    # Set env var DUMP_FEATURE_MATRIX=1 to dump the assembled full feature matrix,
-    # the per-column family map, and the per-scenario candidate columns, so that
-    # feature_audit_toolkit.py can check EVERY feature (mechanistic, engineered,
-    # HPO, MONDO, ANNOTATION, mouse, text). Off by default; normal runs are unchanged.
+    # DUMP_FEATURE_MATRIX exports candidate columns and their source families.
     if os.environ.get("DUMP_FEATURE_MATRIX"):
         try:
             _audit_dir = os.path.join(Config.OUTPUT_DIR, "FEATURE_MATRIX_DUMP")
@@ -2960,10 +2899,7 @@ def _add_training_text_features(
                 pair_key = _text_pair_key(gene, mondo)
                 gene_key = _text_gene_key(gene)
 
-                # a record counts as available only when it holds at least one
-                # real annotation. A record that held only placeholders ("Unknown")
-                # gives availability 0 and count 0; a gene absent from the source
-                # gives availability 0 and a missing count.
+                # Placeholder-only records have zero counts; absent records keep missing counts.
                 if pair_key in token_map:
                     tokens_here = token_map[pair_key]
                 elif gene_key in token_map:
@@ -3247,8 +3183,7 @@ class FoldPreprocessor:
                 .to_numpy(dtype=float)
             )
             if getattr(Config, "DROP_HPO_DERIVED_IC", True):
-                # Keep the binary HPO columns, but do not learn frequencies,
-                # information-content scores, rarity thresholds, or HPO PCA.
+                # Direct binary HPO terms need no frequency or information-content estimates.
                 self.hpo_ic_scores = None
                 self.hpo_ic_75th = None
                 self.derived_feature_names = []
@@ -3324,8 +3259,6 @@ class FoldPreprocessor:
             )
             hpo_derived = self._add_hpo_derived_features(hpo_matrix)
         else:
-            # Direct binary HPO columns remain in ``base`` and are imputed below.
-            # Only the optional IC-derived block is absent.
             hpo_derived = np.zeros((len(base), 0))
         imputed = self.imputer.transform(base.to_numpy(dtype=float))
         combined = np.hstack([imputed, hpo_derived])
@@ -3352,7 +3285,6 @@ class FoldPreprocessor:
             Config.OUTPUT_DIR, "results", f"feature_audit_{safe_scenario}.csv"
         )
         dataframe.to_csv(feature_audit_path, index=False)
-        # Backward-compatible filename used by existing report generation.
         dataframe.to_csv(
             os.path.join(Config.OUTPUT_DIR, "results", f"leakage_audit_{safe_scenario}.csv"),
             index=False,
@@ -3990,7 +3922,6 @@ def _fit_scenario_representation(
     combined_static_drops = list(container.scenario_static_drops.get(scenario, []))
     combined_static_drops.extend(dynamic_static_drops)
     combined_static_drops = list(dict.fromkeys(combined_static_drops))
-
 
 
     text_prefix_to_source = {
@@ -4661,7 +4592,7 @@ def freeze_selected_model_and_calibrator(
     y_val: np.ndarray,
     scenario_name: str,
 ) -> Dict[str, Any]:
-    """Fit validation-only calibration and lock the selected estimator."""
+    """Fit calibration on validation data and fix the selected estimator."""
     if result.get("model_frozen", False) or result.get("calibrator_frozen", False):
         raise RuntimeError(f"{scenario_name} was already frozen before calibration.")
     _fit_selected_calibration(result, X_val, y_val, scenario_name)
@@ -4680,7 +4611,7 @@ def evaluate_frozen_selected_model_on_test(
     y_test: np.ndarray,
     scenario_name: str,
 ) -> Dict[str, Any]:
-    """Evaluate an already-fixed after selection model/calibrator on the main test set once."""
+    """Evaluate the selected model and calibrator on the test set once."""
     model_name = result["model_name"]
     if not result.get("model_frozen", False) or not result.get("calibrator_frozen", False):
         raise RuntimeError(
@@ -4882,7 +4813,7 @@ def _metric_key(metrics: Dict[str, float]) -> Tuple[float, float, float]:
 
 
 def validation_selection_score(metrics: Dict[str, float]) -> float:
-    # Kept for compatibility; selection itself is lexicographic, not a weighted sum.
+    # Selection uses lexicographic ranks; this score is an interface field.
     return _finite_metric_or_neg_inf(metrics, "qwk")
 
 
@@ -6339,7 +6270,7 @@ def compute_bootstrap_ci(
             "mean": float(np.mean(array)) if n_valid else np.nan,
             "ci_low": float(np.percentile(array, 2.5)) if n_valid >= 10 else np.nan,
             "ci_high": float(np.percentile(array, 97.5)) if n_valid >= 10 else np.nan,
-            "n": n_valid,  # Backward-compatible alias.
+            "n": n_valid,
             "n_valid": n_valid,
             "n_attempted": int(attempted),
             "n_requested": int(n_bootstrap),
@@ -8655,8 +8586,7 @@ def _severity_shap_matrix(
             cumulative.append(boundary_model.predict_proba(X_test)[:, 1])
         cumulative_matrix = np.column_stack(cumulative)
         crossing = float(np.mean(np.any(np.diff(cumulative_matrix, axis=1) > 1e-12, axis=1)))
-        # Distance between the explained quantity and the expected class of the
-        # pipeline's monotone class probabilities (equation 2); 0 when no crossing.
+        # Distance from the expected class of monotone probabilities; zero without crossings.
         class_probabilities = ordinal_cumulative_to_class_probs(cumulative_matrix)
         gap = np.abs(cumulative_matrix.sum(axis=1) - class_probabilities @ weights)
         return (
