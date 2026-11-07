@@ -6,7 +6,7 @@ One UTF-8 prediction CSV row represents one HPO profile.
 |---|---|---|
 | `sample_id` | Required, unique | User-selected identifier |
 | `hpo_terms` | Required column | Present HPO IDs separated by semicolons. The value may be empty. |
-| `absent_hpo_terms` | Optional | Explicitly absent HPO IDs |
+| `absent_hpo_terms` | Optional | HPO IDs recorded as absent |
 
 Aliases `family_id` and `hpo_ids` remain supported. IDs use `HP:` followed by seven digits. Duplicate HPO IDs within a profile are normalised. Duplicate profile IDs, malformed HPO IDs and extra CSV fields are rejected.
 
@@ -16,11 +16,11 @@ Aliases `family_id` and `hpo_ids` remain supported. IDs use `HP:` followed by se
 | `status` | Original scorer status or `insufficient_information` |
 | `severity_score` | Phenotype-only expected class divided by three, on 0–1 |
 | `severity_class` | Original rounding rule applied to mild, moderate, severe, profound |
-| `prob_mild`, `prob_moderate`, `prob_severe`, `prob_profound` | Frozen phenotype-channel probabilities |
+| `prob_mild`, `prob_moderate`, `prob_severe`, `prob_profound` | Saved phenotype-channel probabilities |
 
 Score/class/probability cells stay empty when evidence is insufficient. Finite probabilities and their sum are validated before export. `run_info.json` records the model checksum and profile count.
 
-## Reviewer outputs
+## Demo outputs
 
 | Path below the output directory | Contents |
 |---|---|

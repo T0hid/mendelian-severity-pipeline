@@ -1,4 +1,4 @@
-"""Regression checks for scientific preservation and reviewer entry points."""
+"""Regression checks for result preservation and workflow entry points."""
 from __future__ import annotations
 
 import json

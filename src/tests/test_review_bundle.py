@@ -1,4 +1,4 @@
-"""Integrity, safe export and plotting interactions for the reviewer package."""
+"""Integrity and plotting checks for results export."""
 from __future__ import annotations
 
 import hashlib

@@ -1,4 +1,4 @@
-"""Render publication plots from frozen tables and arrays, without training."""
+"""Render publication plots from saved tables and arrays."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -37,7 +37,7 @@ def _saved_model_results(reference, publication=None):
             key = next((key for key in predictions if key in {
                 f'{scenario}_{model}', f'{scenario}__{model}', f'{scenario}::{model}'}), None)
             if key is None:
-                raise ValueError(f'Frozen predictions missing for {scenario}/{model}.')
+                raise ValueError(f'Saved predictions missing for {scenario}/{model}.')
             prediction = predictions[key]
             entry['y_true'] = prediction['y_true']
             entry['predictions'] = {'y_pred': prediction['y_pred'], 'y_prob': prediction['y_prob']}
@@ -146,5 +146,5 @@ def render_saved_figures(reference, publication, destination):
             raise ValueError('Expected replay figure was not rendered: ' + name)
     return {'files': files, 'figures_rendered': len(expected), 'model_training_performed': False,
             'pca_refitted': False, 'shap_recomputed': False,
-            'cohort_overview_layout': 'Saved descriptive tables, compact reviewer layout.',
+            'cohort_overview_layout': 'Cohort overview from saved descriptive tables.',
             'clinical_figure': 'Original exports and public source tables included; family-level replot uses the governed workflow.'}

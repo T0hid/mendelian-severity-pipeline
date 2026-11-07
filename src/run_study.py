@@ -70,7 +70,7 @@ def main(argv=None):
     train.add_argument('--max-configs', type=int, default=24)
     train.add_argument('--cv-folds', type=int, default=5)
     train.add_argument('--cv-repeats', type=int, default=3)
-    prenatal = sub.add_parser('prenatal', help='Apply a frozen scorer to a local cohort and analyse outcomes.')
+    prenatal = sub.add_parser('prenatal', help='Apply a saved scorer to a local cohort and analyse outcomes.')
     prenatal.add_argument('--cohort', type=Path, required=True)
     prenatal.add_argument('--model', type=Path, default=ROOT.parent / 'results/scorer/model.pkl')
     prenatal.add_argument('--scorer-heldout', type=Path, default=REFERENCE_DIR / 'scorer/held_out_test_predictions.csv')
@@ -79,7 +79,7 @@ def main(argv=None):
     prenatal.add_argument('--n-boot', type=int, default=2000)
     prenatal.add_argument('--n-perm', type=int, default=2000)
     prenatal.add_argument('--check-inputs', action='store_true')
-    demo = sub.add_parser('score-demo', help='Score invented demonstration profiles with the saved scorer.')
+    demo = sub.add_parser('score-demo', help='Score synthetic demonstration profiles with the saved scorer.')
     demo.add_argument('--model', type=Path, default=ROOT.parent / 'results/scorer/model.pkl')
     args = parser.parse_args(argv)
     if args.command == 'verify':

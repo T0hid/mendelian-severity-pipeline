@@ -10,7 +10,9 @@
   },
   "unit_tests": {
     "existing_passed": 33,
-    "comparison_passed": 2
+    "comparison_passed": 2,
+    "structure_passed": 1,
+    "total_passed": 36
   },
   "bundled_input_checks": {
     "status": "passed",
@@ -26,8 +28,8 @@
   "prenatal_reference_analysed_profiles": 531,
   "full_reference_training_rerun": false,
   "python": "3.12.14",
-  "task4_followup": {
-    "tests_passed": 37,
+  "source_and_model_checks": {
+    "tests_passed": 36,
     "wrapper_pairs_merged": 5,
     "scorer_retraining_predictions_exact_match": true,
     "scorer_retraining_selection_exact_match": true,
@@ -45,7 +47,6 @@
         "Multiclass_Brier"
       ],
       "maximum_absolute_difference": 1.6653345369377348e-16
-    },
-    "final_wording_pass": "AST identical after removing docstrings and normalising four specified log messages"
+    }
   }
 }

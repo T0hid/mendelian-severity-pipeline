@@ -1,8 +1,7 @@
-"""Export frozen figures, source tables and a local reviewer report.
+"""Export saved figures, source tables and a local results report.
 
-This module never fits a model or changes an analysis result. Original figure
-exports and CSV bytes are retained; Excel workbooks provide a convenient view
-of the same source tables.
+Figure exports and CSV files are copied unchanged; Excel workbooks contain
+the same source tables.
 """
 from __future__ import annotations
 

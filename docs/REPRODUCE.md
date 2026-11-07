@@ -37,7 +37,7 @@ python -m pip install -r src/requirements-full.txt
 python run.py --prenatal --cohort prenatal_cohort_merged.csv --output-dir prenatal_results
 ```
 
-This uses the bundled frozen scorer and regenerates the prenatal analyses and plots. Compare `statistics.json` and the aggregate CSVs with [the saved outputs](../data/reference/prenatal/). The output directory also contains family-level scores and should be kept local.
+This uses the bundled trained scorer and regenerates the prenatal analyses and plots. Compare `statistics.json` and the aggregate CSVs with [the saved outputs](../data/reference/prenatal/). The output directory also contains family-level scores and should be kept local.
 
 ## Run the full pipeline
 

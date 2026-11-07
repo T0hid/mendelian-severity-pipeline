@@ -5,7 +5,7 @@ from pathlib import Path
 
 def reference_directory(source_directory=None):
     source=Path(source_directory or Path(__file__).resolve().parent)
-    # Explicit temporary/legacy package roots remain usable by preservation tests.
+    # Tests can supply a temporary source/reference directory.
     legacy=source/'reference'
     if legacy.is_dir():
         return legacy

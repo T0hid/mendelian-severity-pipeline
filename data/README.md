@@ -1,6 +1,6 @@
 # Input data
 
-Data archive: https://doi.org/10.5281/zenodo.24026146. The DOI was supplied by the author; its download contents have not been verified here. Files over 50 MB should be downloaded from that archive.
+Data archive: [10.5281/zenodo.24026146](https://doi.org/10.5281/zenodo.24026146). Archive contents have not been independently verified against the bundled files. Files over 50 MB are distributed through the archive.
 
 Bundled inputs are extracted and checked by `python run.py --check-inputs`. Paths below are relative to `data/training/`.
 
@@ -20,8 +20,8 @@ Bundled inputs are extracted and checked by `python run.py --check-inputs`. Path
 
 The supplied mapping checksum is recorded separately in `training_inputs_metadata.json`; it is not a checksum from the last run.
 
-`run_report.py` is present. Its pre-cleanup docstring identifies it as a reporting replacement from an earlier repository preparation; its provenance has not been verified against the author's local original.
+`run_report.py` is a replacement report generator from repository preparation. Equivalence to the original local report generator has not been checked.
 
 Referenced feature builders `build_clingen_v46.py` and `build_new_gene_features.py` are not bundled. Their generated feature tables are bundled. The other feature-builder names are not recorded in this repository.
 
-`prenatal_cohort_merged.csv` is not bundled. Supply it with `--cohort` for prenatal replay. No replacement data are generated.
+`prenatal_cohort_merged.csv` is not bundled. Supply it with `--cohort` for prenatal replay.

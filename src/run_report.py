@@ -10,7 +10,7 @@ TABLES = (
     ('Dataset partitions', 'split_summary.csv'),
     ('Validation model selection', 'model_selection_validation.csv'),
     ('Shared direct-HPO budget', 'shared_hpo_budget_training_cv_selection.csv'),
-    ('Locked-test performance and uncertainty', 'publication_table.csv'),
+    ('Held-out test performance and uncertainty', 'publication_table.csv'),
     ('Naive baselines', 'naive_baselines.csv'),
     ('Ordinal errors', 'error_decomposition.csv'),
     ('Calibration', 'calibration_metrics.csv'),
@@ -54,8 +54,8 @@ def generate_manuscript_report(all_results, container, pub_outputs, *, output_di
     sections = [
         '# Genetic disease severity analysis report',
         f'Reference analysis version: {pipeline_version}. Generated: {datetime.now().isoformat(timespec="seconds")}.',
-        'This report transcribes completed result tables. Candidate identity was selected on validation; '
-        'stored test performance did not select the candidate.',
+        'This report summarises completed result tables. Model selection uses validation data; '
+        'test results do not affect model selection.',
         '## Label provenance',
         Config.TARGET_LABEL_PROVENANCE,
         '## Recorded analysis settings',
@@ -75,7 +75,7 @@ def generate_manuscript_report(all_results, container, pub_outputs, *, output_di
     if Config.N_PERMUTATIONS < 99:
         sections.extend(['## Permutation limitation',
             f'This run used {Config.N_PERMUTATIONS} permutation(s). '
-            'Do not describe it as a 99-permutation analysis. Reconcile the Methods and this run before submission.'])
+            'Permutation P values have limited resolution with fewer than 99 permutations.'])
     for title, filename in TABLES:
         path = output_dir / 'results' / filename
         sections.extend([f'## {title}', f'Source: results/{filename}.',
