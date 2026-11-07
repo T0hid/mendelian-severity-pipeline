@@ -1,8 +1,11 @@
-# Python 3.11. Versions recorded by the reference analysis.
+# Python 3.11.15
 numpy==2.4.6
 pandas==2.2.2
 scipy==1.17.1
 scikit-learn==1.8.0
+lightgbm==4.6.0
+imbalanced-learn==0.14.1
+shap==0.51.0
 matplotlib==3.10.9
-# Plotting-only replay of the original publication module.
+statsmodels==0.14.6
 seaborn==0.13.2

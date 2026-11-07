@@ -1,15 +1,1 @@
-# Reference run: Python 3.11.15 on Linux.
-numpy==2.4.6
-pandas==2.2.2
-scikit-learn==1.8.0
-lightgbm==4.6.0
-shap==0.51.0
-imbalanced-learn==0.14.1
-scipy==1.17.1
-matplotlib==3.10.9
-# Used by the original code; version was not recorded.
-seaborn==0.13.2
-# Optional interactive figure export dependency: plotly
-# Required for the manuscript's prenatal proportional-odds analyses. The original
-# prenatal outputs did not record a statsmodels version; none is invented here.
-statsmodels
+-r ../requirements.txt
