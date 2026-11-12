@@ -40,7 +40,7 @@ These commands use the models and results saved from the run reported in the pap
 | `python run.py prenatal` | Applies the saved scorer to the public part of the prenatal cohort and draws Fig. 5 | under 1 min | `outputs/prenatal` |
 | `python run.py score --input my_profiles.csv` | Scores your own HPO profiles (columns `sample_id`, `hpo_terms` separated by `;`) | seconds | `outputs/scores.csv` |
 
-`verify` ends with `PASSED` when the rebuilt feature inventory (Supplementary Table 1) is identical to the saved one, the split matches pair for pair, the predicted probabilities match the saved ones and all 28 Table 1 values (seven metrics for four models) are reproduced.
+`verify` ends with `PASSED` when the rebuilt feature inventory (Supplementary Table 1) is identical to the saved one, the split matches pair for pair, the predicted probabilities match the saved ones and all 28 Table 1 values (seven metrics for four models) are reproduced to within 0.00001. The paper reports three decimals; the differences seen in practice are below 0.000001 and come from floating-point rounding, which differs slightly between operating systems.
 
 The prenatal cohort in the paper has 531 analysed families. 290 of them come from an in-house cohort that cannot be shared, so `data/prenatal_cohort_public.csv` holds only the published cases (275 rows, 241 analysed families). Results from the public subset therefore differ from the paper (for example, Spearman's rho is 0.195 rather than 0.383). The full-cohort results are in `published_run/prenatal`.
 

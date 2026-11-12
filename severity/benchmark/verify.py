@@ -42,7 +42,9 @@ TABLE_1_COLUMNS = {
     "Multiclass_Brier": "multiclass_brier",
 }
 PROBABILITY_TOLERANCE = 1e-9
-METRIC_TOLERANCE = 1e-9
+# Metrics are compared to 1e-5 (the paper reports three decimals). Probabilities can differ by
+# about 1e-16 between operating systems, which can reorder near-tied pairs and move AUC by ~1e-6.
+METRIC_TOLERANCE = 1e-5
 
 
 class _BundleUnpickler(pickle.Unpickler):
