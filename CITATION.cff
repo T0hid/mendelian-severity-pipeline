@@ -23,6 +23,6 @@ authors:
     given-names: Mahmoud
   - family-names: Alinejad-Rokny
     given-names: Hamid
-repository-code: "https://github.com/T0hid/mendelian-severity-pipeline"
+   repository-code: "https://github.com/T0hid/mendelian-severity-pipeline"
    license: MIT
    version: 1.0.0
