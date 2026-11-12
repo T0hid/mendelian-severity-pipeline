@@ -1,0 +1,125 @@
+Scenario,feature,hpo_id,hpo_term_name,rule
+S2_Mech_Pheno,hpo_HP_0001249,HP:0001249,Intellectual disability,identifier_list
+S2_Mech_Pheno,hpo_HP_0001263,HP:0001263,Global developmental delay,identifier_list
+S2_Mech_Pheno,hpo_HP_0001256,HP:0001256,Mild intellectual disability,identifier_list
+S2_Mech_Pheno,hpo_HP_0011342,HP:0011342,Mild global developmental delay,identifier_list
+S2_Mech_Pheno,hpo_HP_0011344,HP:0011344,Severe global developmental delay,identifier_list
+S2_Mech_Pheno,hpo_HP_0010864,HP:0010864,Severe intellectual disability,identifier_list
+S2_Mech_Pheno,hpo_HP_0004430,HP:0004430,Severe combined immunodeficiency,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0002187,HP:0002187,Profound intellectual disability,identifier_list
+S2_Mech_Pheno,hpo_HP_0003510,HP:0003510,Severe short stature,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0002342,HP:0002342,Moderate intellectual disability,identifier_list
+S2_Mech_Pheno,hpo_HP_0012736,HP:0012736,Profound global developmental delay,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0011343,HP:0011343,Moderate global developmental delay,identifier_list
+S2_Mech_Pheno,hpo_HP_0006863,HP:0006863,Severe expressive language delay,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0011352,HP:0011352,Severe receptive language delay,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0003502,HP:0003502,Mild short stature,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0025573,HP:0025573,Mild myopia,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0006829,HP:0006829,Severe muscular hypotonia,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0008625,HP:0008625,Severe sensorineural hearing impairment,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0012594,HP:0012594,Moderate albuminuria,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0005428,HP:0005428,Severe recurrent varicella,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0025664,HP:0025664,Moderate to late preterm birth,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0031624,HP:0031624,Moderate myopia,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0001525,HP:0001525,Severe failure to thrive,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0010952,HP:0010952,Mild fetal ventriculomegaly,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0004900,HP:0004900,Severe lactic acidosis,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0008850,HP:0008850,Severe postnatal growth retardation,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0020105,HP:0020105,Severe toxoplasmosis,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0032170,HP:0032170,Severe varicella zoster infection,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0031729,HP:0031729,Moderate hypermetropia,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0012596,HP:0012596,Moderate proteinuria,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0031692,HP:0031692,Severe cytomegalovirus infection,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0000166,HP:0000166,Severe periodontitis,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0001530,HP:0001530,Mild postnatal growth retardation,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0031691,HP:0031691,Severe viral infection,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0008846,HP:0008846,Severe intrauterine growth retardation,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0040196,HP:0040196,Mild microcephaly,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0011476,HP:0011476,Profound sensorineural hearing impairment,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0005897,HP:0005897,Severe generalized osteoporosis,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0012717,HP:0012717,Severe conductive hearing impairment,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0004565,HP:0004565,Severe platyspondyly,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0200083,HP:0200083,Severe limb shortening,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0031728,HP:0031728,Mild hypermetropia,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0008598,HP:0008598,Mild conductive hearing impairment,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0032169,HP:0032169,Severe infection,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0007537,HP:0007537,Severe photosensitivity,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0012595,HP:0012595,Mild proteinuria,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0031693,HP:0031693,Severe Epstein Barr virus infection,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0025162,HP:0025162,Severe temper tantrums,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0012712,HP:0012712,Mild hearing impairment,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0012715,HP:0012715,Profound hearing impairment,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0005352,HP:0005352,Severe T-cell immunodeficiency,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0008890,HP:0008890,Severe short-limb dwarfism,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0008883,HP:0008883,Mild intrauterine growth retardation,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0006882,HP:0006882,Severe hydrocephalus,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0034249,HP:0034249,Severe influenza infection,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0007258,HP:0007258,Severe demyelination of the white matter,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0008587,HP:0008587,Mild neurosensory hearing impairment,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0012828,HP:0012828,Severe,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0012826,HP:0012826,Moderate,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0007069,HP:0007069,Profound static encephalopathy,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0008855,HP:0008855,Moderate postnatal growth retardation,severity_word_in_name
+S2_Mech_Pheno,hpo_HP_0033141,HP:0033141,Severe SARS-CoV-2 infection,severity_word_in_name
+S3_Phenotype,hpo_HP_0001249,HP:0001249,Intellectual disability,identifier_list
+S3_Phenotype,hpo_HP_0001263,HP:0001263,Global developmental delay,identifier_list
+S3_Phenotype,hpo_HP_0001256,HP:0001256,Mild intellectual disability,identifier_list
+S3_Phenotype,hpo_HP_0011342,HP:0011342,Mild global developmental delay,identifier_list
+S3_Phenotype,hpo_HP_0011344,HP:0011344,Severe global developmental delay,identifier_list
+S3_Phenotype,hpo_HP_0010864,HP:0010864,Severe intellectual disability,identifier_list
+S3_Phenotype,hpo_HP_0004430,HP:0004430,Severe combined immunodeficiency,severity_word_in_name
+S3_Phenotype,hpo_HP_0002187,HP:0002187,Profound intellectual disability,identifier_list
+S3_Phenotype,hpo_HP_0003510,HP:0003510,Severe short stature,severity_word_in_name
+S3_Phenotype,hpo_HP_0002342,HP:0002342,Moderate intellectual disability,identifier_list
+S3_Phenotype,hpo_HP_0012736,HP:0012736,Profound global developmental delay,severity_word_in_name
+S3_Phenotype,hpo_HP_0011343,HP:0011343,Moderate global developmental delay,identifier_list
+S3_Phenotype,hpo_HP_0006863,HP:0006863,Severe expressive language delay,severity_word_in_name
+S3_Phenotype,hpo_HP_0011352,HP:0011352,Severe receptive language delay,severity_word_in_name
+S3_Phenotype,hpo_HP_0003502,HP:0003502,Mild short stature,severity_word_in_name
+S3_Phenotype,hpo_HP_0025573,HP:0025573,Mild myopia,severity_word_in_name
+S3_Phenotype,hpo_HP_0006829,HP:0006829,Severe muscular hypotonia,severity_word_in_name
+S3_Phenotype,hpo_HP_0008625,HP:0008625,Severe sensorineural hearing impairment,severity_word_in_name
+S3_Phenotype,hpo_HP_0012594,HP:0012594,Moderate albuminuria,severity_word_in_name
+S3_Phenotype,hpo_HP_0005428,HP:0005428,Severe recurrent varicella,severity_word_in_name
+S3_Phenotype,hpo_HP_0025664,HP:0025664,Moderate to late preterm birth,severity_word_in_name
+S3_Phenotype,hpo_HP_0031624,HP:0031624,Moderate myopia,severity_word_in_name
+S3_Phenotype,hpo_HP_0001525,HP:0001525,Severe failure to thrive,severity_word_in_name
+S3_Phenotype,hpo_HP_0010952,HP:0010952,Mild fetal ventriculomegaly,severity_word_in_name
+S3_Phenotype,hpo_HP_0004900,HP:0004900,Severe lactic acidosis,severity_word_in_name
+S3_Phenotype,hpo_HP_0008850,HP:0008850,Severe postnatal growth retardation,severity_word_in_name
+S3_Phenotype,hpo_HP_0020105,HP:0020105,Severe toxoplasmosis,severity_word_in_name
+S3_Phenotype,hpo_HP_0032170,HP:0032170,Severe varicella zoster infection,severity_word_in_name
+S3_Phenotype,hpo_HP_0031729,HP:0031729,Moderate hypermetropia,severity_word_in_name
+S3_Phenotype,hpo_HP_0012596,HP:0012596,Moderate proteinuria,severity_word_in_name
+S3_Phenotype,hpo_HP_0031692,HP:0031692,Severe cytomegalovirus infection,severity_word_in_name
+S3_Phenotype,hpo_HP_0000166,HP:0000166,Severe periodontitis,severity_word_in_name
+S3_Phenotype,hpo_HP_0001530,HP:0001530,Mild postnatal growth retardation,severity_word_in_name
+S3_Phenotype,hpo_HP_0031691,HP:0031691,Severe viral infection,severity_word_in_name
+S3_Phenotype,hpo_HP_0008846,HP:0008846,Severe intrauterine growth retardation,severity_word_in_name
+S3_Phenotype,hpo_HP_0040196,HP:0040196,Mild microcephaly,severity_word_in_name
+S3_Phenotype,hpo_HP_0011476,HP:0011476,Profound sensorineural hearing impairment,severity_word_in_name
+S3_Phenotype,hpo_HP_0005897,HP:0005897,Severe generalized osteoporosis,severity_word_in_name
+S3_Phenotype,hpo_HP_0012717,HP:0012717,Severe conductive hearing impairment,severity_word_in_name
+S3_Phenotype,hpo_HP_0004565,HP:0004565,Severe platyspondyly,severity_word_in_name
+S3_Phenotype,hpo_HP_0200083,HP:0200083,Severe limb shortening,severity_word_in_name
+S3_Phenotype,hpo_HP_0031728,HP:0031728,Mild hypermetropia,severity_word_in_name
+S3_Phenotype,hpo_HP_0008598,HP:0008598,Mild conductive hearing impairment,severity_word_in_name
+S3_Phenotype,hpo_HP_0032169,HP:0032169,Severe infection,severity_word_in_name
+S3_Phenotype,hpo_HP_0007537,HP:0007537,Severe photosensitivity,severity_word_in_name
+S3_Phenotype,hpo_HP_0012595,HP:0012595,Mild proteinuria,severity_word_in_name
+S3_Phenotype,hpo_HP_0031693,HP:0031693,Severe Epstein Barr virus infection,severity_word_in_name
+S3_Phenotype,hpo_HP_0025162,HP:0025162,Severe temper tantrums,severity_word_in_name
+S3_Phenotype,hpo_HP_0012712,HP:0012712,Mild hearing impairment,severity_word_in_name
+S3_Phenotype,hpo_HP_0012715,HP:0012715,Profound hearing impairment,severity_word_in_name
+S3_Phenotype,hpo_HP_0005352,HP:0005352,Severe T-cell immunodeficiency,severity_word_in_name
+S3_Phenotype,hpo_HP_0008890,HP:0008890,Severe short-limb dwarfism,severity_word_in_name
+S3_Phenotype,hpo_HP_0008883,HP:0008883,Mild intrauterine growth retardation,severity_word_in_name
+S3_Phenotype,hpo_HP_0006882,HP:0006882,Severe hydrocephalus,severity_word_in_name
+S3_Phenotype,hpo_HP_0034249,HP:0034249,Severe influenza infection,severity_word_in_name
+S3_Phenotype,hpo_HP_0007258,HP:0007258,Severe demyelination of the white matter,severity_word_in_name
+S3_Phenotype,hpo_HP_0008587,HP:0008587,Mild neurosensory hearing impairment,severity_word_in_name
+S3_Phenotype,hpo_HP_0012828,HP:0012828,Severe,severity_word_in_name
+S3_Phenotype,hpo_HP_0012826,HP:0012826,Moderate,severity_word_in_name
+S3_Phenotype,hpo_HP_0007069,HP:0007069,Profound static encephalopathy,severity_word_in_name
+S3_Phenotype,hpo_HP_0008855,HP:0008855,Moderate postnatal growth retardation,severity_word_in_name
+S3_Phenotype,hpo_HP_0033141,HP:0033141,Severe SARS-CoV-2 infection,severity_word_in_name

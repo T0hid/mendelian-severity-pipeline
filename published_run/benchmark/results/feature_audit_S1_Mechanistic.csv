@@ -1,0 +1,2 @@
+feature,audit_action,drop_reason,drop_statistic
+all_diseases,drop,high_missing_training_fold,1.0

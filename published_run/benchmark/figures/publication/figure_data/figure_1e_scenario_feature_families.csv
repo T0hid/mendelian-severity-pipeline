@@ -1,0 +1,23 @@
+Scenario,family,family_label,n_features,representation
+S1_Mechanistic,mechanistic_core,Gene-level core,26,candidate
+S1_Mechanistic,gene_constraint_v2,Constraint and expression,12,candidate
+S1_Mechanistic,external,External,13,candidate
+S1_Mechanistic,inheritance,Inheritance,3,candidate
+S1_Mechanistic,engineered,Engineered,5,candidate
+S1b_Disease_Context,mechanistic_core,Gene-level core,26,candidate
+S1b_Disease_Context,gene_constraint_v2,Constraint and expression,12,candidate
+S1b_Disease_Context,external,External,13,candidate
+S1b_Disease_Context,inheritance,Inheritance,4,candidate
+S1b_Disease_Context,engineered,Engineered,5,candidate
+S1b_Disease_Context,organ_system,Organ systems,24,candidate
+S1b_Disease_Context,mondo,Disease context,38,candidate
+S2_Mech_Pheno,mechanistic_core,Gene-level core,26,candidate
+S2_Mech_Pheno,gene_constraint_v2,Constraint and expression,12,candidate
+S2_Mech_Pheno,external,External,13,candidate
+S2_Mech_Pheno,inheritance,Inheritance,4,candidate
+S2_Mech_Pheno,engineered,Engineered,9,candidate
+S2_Mech_Pheno,mondo,Disease context,38,candidate
+S2_Mech_Pheno,hpo_binary,HPO terms,9595,candidate
+S2_Mech_Pheno,mouse_lethality,Mouse lethality,4,candidate
+S2_Mech_Pheno,mouse_phenotype,Mouse phenotype,45,candidate
+S3_Phenotype,hpo_binary,HPO terms,9595,candidate

@@ -1,0 +1,7 @@
+feature,audit_action,drop_reason,drop_statistic,analysis_context,feature_family,source_dataset,same_source_as_target_label,provenance_status
+all_diseases,drop,high_missing_training_fold,1.0,,,,,
+feat_has_mixed_inheritance,drop,low_variance_training_fold,0.0,,,,,
+feat_mondo_post_infectious_disorder,drop,low_variance_training_fold,0.0,,,,,
+feat_mondo_obstetric_disorder,drop,mondo_low_frequency_training_fold,4.0,,,,,
+feat_mondo_radiation_induced_disorder,drop,mondo_low_frequency_training_fold,1.0,,,,,
+feat_hpo_sys_abnormality_of_the_nervous_system,review_only,high_mi_provenance_review_not_dropped,0.283168350792776,primary_S1b_Disease_Context_final,organ_system,primary_label_source,True,same_source_review_required

@@ -1,0 +1,31 @@
+mondo_id,n_pairs,disease_name,percent_of_pairs
+MONDO:0005575,22,colorectal cancer,0.3320754716981132
+MONDO:0010789,17,MELAS syndrome,0.25660377358490566
+MONDO:0010767,16,"spermatogenic failure, Y-linked, 2",0.24150943396226415
+MONDO:0018874,14,acute myeloid leukemia,0.21132075471698114
+MONDO:0008542,13,tetralogy of fallot,0.19622641509433963
+MONDO:0007794,11,hypogonadotropic hypogonadism 7 with or without anosmia,0.1660377358490566
+MONDO:0019200,10,retinitis pigmentosa,0.1509433962264151
+MONDO:0008903,10,lung cancer,0.1509433962264151
+MONDO:0010788,9,Leber hereditary optic neuropathy,0.13584905660377358
+MONDO:0001056,9,gastric cancer,0.13584905660377358
+MONDO:0007256,9,hepatocellular carcinoma,0.13584905660377358
+MONDO:0016419,9,hereditary breast carcinoma,0.13584905660377358
+MONDO:0013108,8,"leukemia, acute lymphocytic, susceptibility to, 1",0.12075471698113208
+MONDO:0008300,8,Prader-Willi syndrome,0.12075471698113208
+MONDO:0010790,8,MERRF syndrome,0.12075471698113208
+MONDO:0008170,7,ovarian cancer,0.10566037735849057
+MONDO:0005148,7,type 2 diabetes mellitus,0.10566037735849057
+MONDO:0008679,6,Wilms tumor 1,0.09056603773584905
+MONDO:0007763,6,nonpapillary renal cell carcinoma,0.09056603773584905
+MONDO:0700275,6,"prostate cancer, hereditary",0.09056603773584905
+MONDO:0008684,5,Wolf-Hirschhorn syndrome,0.07547169811320754
+MONDO:0009364,5,"muscular dystrophy-dystroglycanopathy (congenital with brain and eye anomalies), type A1",0.07547169811320754
+MONDO:0007576,5,esophageal cancer,0.07547169811320754
+MONDO:0009413,5,"immunodeficiency, common variable, 2",0.07547169811320754
+MONDO:0008644,5,velocardiofacial syndrome,0.07547169811320754
+MONDO:0015278,5,familial pancreatic carcinoma,0.07547169811320754
+MONDO:0024309,4,"neuropathy, hereditary sensory and autonomic, type 2A",0.06037735849056604
+MONDO:0009970,4,renal tubular dysgenesis of genetic origin,0.06037735849056604
+MONDO:0007639,4,fundus albipunctatus,0.06037735849056604
+MONDO:0016581,4,conotruncal heart malformations,0.06037735849056604

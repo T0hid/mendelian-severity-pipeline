@@ -1,0 +1,24 @@
+record_type,metric,value,mondo_id,disease_name,n_genes,n_pairs,n_direct_hpo_terms,severity_label,severity_label_is_unique,severity_labels_observed,n_train_pairs,n_validation_pairs,n_test_pairs,spans_train_and_test
+summary,n_pairs_total,6625,,,,,,,,,,,,
+summary,n_train_pairs,4306,,,,,,,,,,,,
+summary,n_validation_pairs,994,,,,,,,,,,,,
+summary,n_test_pairs,1325,,,,,,,,,,,,
+summary,n_test_pairs_with_mondo_id_also_in_train,107,,,,,,,,,,,,
+summary,percent_test_pairs_with_mondo_id_also_in_train,8.0755,,,,,,,,,,,,
+summary,n_distinct_mondo_total,6204,,,,,,,,,,,,
+summary,n_distinct_mondo_train,4089,,,,,,,,,,,,
+summary,n_distinct_mondo_validation,970,,,,,,,,,,,,
+summary,n_distinct_mondo_test,1283,,,,,,,,,,,,
+summary,n_distinct_mondo_in_test_and_train,71,,,,,,,,,,,,
+summary,n_distinct_mondo_in_test_and_validation,37,,,,,,,,,,,,
+summary,percent_distinct_test_mondo_also_in_train,5.5339,,,,,,,,,,,,
+summary,min_genes_for_per_disease_table,10,,,,,,,,,,,,
+summary,split_policy,gene-disjoint; MONDO identifiers are not disjoint,,,,,,,,,,,,
+disease,,,MONDO:0005575,colorectal cancer,22.0,22.0,5.0,Moderate,True,Moderate:22,9.0,5.0,8.0,True
+disease,,,MONDO:0010789,MELAS syndrome,17.0,17.0,101.0,Profound,True,Profound:17,10.0,1.0,6.0,True
+disease,,,MONDO:0010767,"spermatogenic failure, Y-linked, 2",16.0,16.0,2.0,Mild,True,Mild:16,10.0,4.0,2.0,True
+disease,,,MONDO:0018874,acute myeloid leukemia,14.0,14.0,2.0,Moderate,True,Moderate:14,9.0,2.0,3.0,True
+disease,,,MONDO:0008542,tetralogy of fallot,13.0,13.0,12.0,Severe,True,Severe:13,11.0,1.0,1.0,True
+disease,,,MONDO:0007794,hypogonadotropic hypogonadism 7 with or without anosmia,11.0,11.0,10.0,Severe,True,Severe:11,7.0,3.0,1.0,True
+disease,,,MONDO:0008903,lung cancer,10.0,10.0,5.0,Moderate,True,Moderate:10,7.0,2.0,1.0,True
+disease,,,MONDO:0019200,retinitis pigmentosa,10.0,10.0,34.0,Severe,True,Severe:10,8.0,1.0,1.0,True

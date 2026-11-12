@@ -1,0 +1,13 @@
+Scenario,Model,group,rank,n_features,mean_abs_group_shap,mean_signed_group_shap,share_pairs_raised,top_feature,top_feature_label,top_feature_mean_abs_shap,share_of_total
+S1b_Disease_Context,ExtraTrees,Organ-system indicators,1,16,0.8167650263293684,0.6167660287742911,0.7411320754716981,feat_hpo_sys_abnormality_of_the_nervous_system,Abnormality of the nervous system,0.3511088145602318,0.6763165514277414
+S1b_Disease_Context,ExtraTrees,MONDO disease categories,2,12,0.1781175228426223,0.14848372804565166,0.8950943396226415,feat_mondo_nervous_system_disorder,MONDO: nervous system disorder,0.06381090763644802,0.14748896550964227
+S1b_Disease_Context,ExtraTrees,Constraint,3,12,0.05564505149484575,0.05431211294548075,0.9313207547169812,shet_log10,"LoF selection, log10 s_het",0.009143645505258187,0.04607649460719811
+S1b_Disease_Context,ExtraTrees,"Tissue expression (GTEx, HPA)",4,5,0.03269223651426007,0.028242449640952638,0.8694339622641509,gtex_tau,Tissue specificity of expression (GTEx tau),0.011759055845161546,0.02707057714891463
+S1b_Disease_Context,ExtraTrees,Inheritance,5,1,0.026324205486286716,0.007180203793895027,0.4422641509433962,feat_is_recessive,Recessive inheritance,0.026324205486286716,0.021797573720279777
+S1b_Disease_Context,ExtraTrees,Brain expression (BrainSpan),6,4,0.023878820145928244,0.020291093215434396,0.9275471698113208,brainspan_expressed_in_brain,Expressed in brain at any stage (BrainSpan),0.012405564635528074,0.01977268954063291
+S1b_Disease_Context,ExtraTrees,Cellular essentiality,7,6,0.023801985536682866,0.02313266307991602,0.9350943396226415,depmap_mean_score,Cell-line essentiality (DepMap mean),0.00792701985493413,0.019709067181349647
+S1b_Disease_Context,ExtraTrees,Dosage sensitivity,8,2,0.013875733774651722,0.012546815996142272,0.8415094339622642,pHaplo,Haploinsufficiency probability (pHaplo),0.007453557476496821,0.011489704030517026
+S1b_Disease_Context,ExtraTrees,Protein structure,9,2,0.01078143534740321,0.01035200786020077,0.9381132075471698,af_plddt_std,AlphaFold confidence variability,0.0055237866097342875,0.008927491920615682
+S1b_Disease_Context,ExtraTrees,Conservation,10,2,0.01052325787187287,0.00861656048562387,0.8392452830188679,conservation_score,Cross-species conservation,0.007010476129174708,0.008713709872807252
+S1b_Disease_Context,ExtraTrees,Paralogues and redundancy,11,2,0.008716700061334987,0.008395355413929311,0.9215094339622641,redundancy_score,Functional redundancy score,0.005221355137478866,0.007217802348621553
+S1b_Disease_Context,ExtraTrees,Gene and protein size,12,2,0.006544796323354908,0.006530158885418104,0.9879245283018868,af_protein_length,Protein length (AlphaFold),0.003744601497228793,0.005419372691679605

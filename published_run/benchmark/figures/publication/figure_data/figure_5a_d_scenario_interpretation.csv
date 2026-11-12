@@ -1,0 +1,41 @@
+Scenario,Model,raw_feature,label,mean_abs_shap,source,n_explained
+S1_Mechanistic,ExtraTrees,feat_is_recessive,Recessive inheritance,0.24443714172491487,SHAP on expected severity class,1325
+S1_Mechanistic,ExtraTrees,shet_log10,"LoF selection, log10 s_het",0.09338370573795335,SHAP on expected severity class,1325
+S1_Mechanistic,ExtraTrees,depmap_mean_score,Cell-line essentiality (DepMap mean),0.0747979505477695,SHAP on expected severity class,1325
+S1_Mechanistic,ExtraTrees,gtex_tau,Tissue specificity of expression (GTEx tau),0.07165145662362811,SHAP on expected severity class,1325
+S1_Mechanistic,ExtraTrees,feat_is_dominant,Dominant inheritance,0.0669111206364941,SHAP on expected severity class,1325
+S1_Mechanistic,ExtraTrees,hpa_tissue_specificity_ord,Tissue-restricted expression (HPA),0.06396597453116282,SHAP on expected severity class,1325
+S1_Mechanistic,ExtraTrees,hpa_celltype_group_specificity_ord,Cell-lineage-restricted expression (HPA),0.05093950907682192,SHAP on expected severity class,1325
+S1_Mechanistic,ExtraTrees,brainspan_expressed_in_brain,Expressed in brain at any stage (BrainSpan),0.044759907586113465,SHAP on expected severity class,1325
+S1_Mechanistic,ExtraTrees,domino_score,Probability of dominant inheritance (DOMINO),0.030118440381577457,SHAP on expected severity class,1325
+S1_Mechanistic,ExtraTrees,conservation_score,Cross-species conservation,0.0261491470406917,SHAP on expected severity class,1325
+S1b_Disease_Context,ExtraTrees,feat_hpo_sys_abnormality_of_the_nervous_system,Abnormality of the nervous system,0.35110881444418207,SHAP on expected severity class,1325
+S1b_Disease_Context,ExtraTrees,feat_hpo_sys_abnormality_of_the_musculoskeletal_system,Abnormality of the musculoskeletal system,0.1919870430568479,SHAP on expected severity class,1325
+S1b_Disease_Context,ExtraTrees,feat_hpo_sys_abnormality_of_the_eye,Abnormality of the eye,0.15554626449942588,SHAP on expected severity class,1325
+S1b_Disease_Context,ExtraTrees,feat_hpo_sys_abnormality_of_head_or_neck,Abnormality of head or neck,0.10779993906898319,SHAP on expected severity class,1325
+S1b_Disease_Context,ExtraTrees,feat_hpo_sys_growth_abnormality,Growth abnormality,0.1001871883363094,SHAP on expected severity class,1325
+S1b_Disease_Context,ExtraTrees,feat_hpo_sys_abnormality_of_the_digestive_system,Abnormality of the digestive system,0.08031283531408265,SHAP on expected severity class,1325
+S1b_Disease_Context,ExtraTrees,feat_hpo_sys_abnormality_of_limbs,Abnormality of limbs,0.07399826094525744,SHAP on expected severity class,1325
+S1b_Disease_Context,ExtraTrees,feat_mondo_nervous_system_disorder,MONDO: nervous system disorder,0.06381090757173469,SHAP on expected severity class,1325
+S1b_Disease_Context,ExtraTrees,feat_mondo_reproductive_system_disorder,MONDO: reproductive system disorder,0.05963336927038705,SHAP on expected severity class,1325
+S1b_Disease_Context,ExtraTrees,feat_hpo_sys_abnormality_of_the_ear,Abnormality of the ear,0.056179882991566975,SHAP on expected severity class,1325
+S2_Mech_Pheno,OrdinalDecomp,hpo_HP_0000252,Microcephaly,0.06818837611505515,SHAP on expected severity class,1325
+S2_Mech_Pheno,OrdinalDecomp,hpo_HP_0001250,Seizure,0.059050306386159476,SHAP on expected severity class,1325
+S2_Mech_Pheno,OrdinalDecomp,mouse_lethal_pheno_max,Strongest mouse-lethal phenotype match,0.05284548926423359,SHAP on expected severity class,1325
+S2_Mech_Pheno,OrdinalDecomp,hpo_HP_0000750,Delayed speech and language development,0.049438653836486136,SHAP on expected severity class,1325
+S2_Mech_Pheno,OrdinalDecomp,feat_mondo_reproductive_system_disorder,MONDO: reproductive system disorder,0.028921528648374217,SHAP on expected severity class,1325
+S2_Mech_Pheno,OrdinalDecomp,mouse_subviable_pheno_mean,Mean mouse-subviable phenotype match,0.02816219557095363,SHAP on expected severity class,1325
+S2_Mech_Pheno,OrdinalDecomp,feat_is_recessive,Recessive inheritance,0.02644298554310259,SHAP on expected severity class,1325
+S2_Mech_Pheno,OrdinalDecomp,hpo_HP_0001252,Hypotonia,0.020408463523096356,SHAP on expected severity class,1325
+S2_Mech_Pheno,OrdinalDecomp,hpo_HP_0000821,Hypothyroidism,0.019142918100902913,SHAP on expected severity class,1325
+S2_Mech_Pheno,OrdinalDecomp,hpo_HP_0001344,Absent speech,0.016969534912443966,SHAP on expected severity class,1325
+S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0001250,Seizure,0.048293145072628864,SHAP on expected severity class,1325
+S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0011876,Abnormal platelet volume,0.037952385673053424,SHAP on expected severity class,1325
+S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0000252,Microcephaly,0.03591095120215543,SHAP on expected severity class,1325
+S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0000750,Delayed speech and language development,0.03380727103937699,SHAP on expected severity class,1325
+S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0031831,Decreased serum zinc,0.031336906985291894,SHAP on expected severity class,1325
+S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0003251,Male infertility,0.02659779011049085,SHAP on expected severity class,1325
+S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0001252,Hypotonia,0.019814722561727734,SHAP on expected severity class,1325
+S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0001510,Growth delay,0.016584055713237317,SHAP on expected severity class,1325
+S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0000853,Goiter,0.015635472755683673,SHAP on expected severity class,1325
+S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0007018,Attention deficit hyperactivity disorder,0.0154930951816188,SHAP on expected severity class,1325

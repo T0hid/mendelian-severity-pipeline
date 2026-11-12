@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the article."
+title: "Code for: A systematic machine-learning approach to predict severity in Mendelian disorders"
+type: software
+authors:
+  - family-names: Ghasemnejad
+    given-names: Tohid
+  - family-names: Argha
+    given-names: Ahmadreza
+  - family-names: Horta
+    given-names: Fabrizzio
+  - family-names: Rowntree
+    given-names: Conor
+  - family-names: Farbehi
+    given-names: Nona
+  - family-names: Porntaveetus
+    given-names: Thantrira
+  - family-names: Lovell
+    given-names: Nigel H.
+  - family-names: Roscioli
+    given-names: Tony
+  - family-names: Aarabi
+    given-names: Mahmoud
+  - family-names: Alinejad-Rokny
+    given-names: Hamid
+repository-code: "https://github.com/T0hid/mendelian-severity-pipeline"

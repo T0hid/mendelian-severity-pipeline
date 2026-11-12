@@ -1,0 +1,12 @@
+Scenario,Model,group,rank,n_features,mean_abs_group_shap,mean_signed_group_shap,share_pairs_raised,top_feature,top_feature_label,top_feature_mean_abs_shap,share_of_total
+S1_Mechanistic,ExtraTrees,Constraint,1,12,0.22469249035070976,0.2127353432216065,0.8822641509433963,shet_log10,"LoF selection, log10 s_het",0.09338370581565318,0.2083792953571447
+S1_Mechanistic,ExtraTrees,Inheritance,2,2,0.2192956757708519,0.07211554064859195,0.539622641509434,feat_is_recessive,Recessive inheritance,0.2444371420878694,0.20337430201015458
+S1_Mechanistic,ExtraTrees,"Tissue expression (GTEx, HPA)",3,5,0.1718352806832618,0.1404005333856709,0.8007547169811321,gtex_tau,Tissue specificity of expression (GTEx tau),0.07165145659474159,0.1593596414832836
+S1_Mechanistic,ExtraTrees,Cellular essentiality,4,6,0.13193279486488582,0.11987341236863228,0.8656603773584906,depmap_mean_score,Cell-line essentiality (DepMap mean),0.07479795040400909,0.12235416851507955
+S1_Mechanistic,ExtraTrees,Brain expression (BrainSpan),5,5,0.10088543195793347,0.08724742022207596,0.9192452830188679,brainspan_expressed_in_brain,Expressed in brain at any stage (BrainSpan),0.04475990753457797,0.09356091603409894
+S1_Mechanistic,ExtraTrees,Dosage sensitivity,6,4,0.06664237162495086,0.06000527248498071,0.750188679245283,pTriplo,Triplosensitivity probability (pTriplo),0.024358268806053428,0.06180398115869816
+S1_Mechanistic,ExtraTrees,Paralogues and redundancy,7,3,0.052999754831331874,0.05218518391990496,0.9743396226415094,redundancy_score,Functional redundancy score,0.019809839814441954,0.049151849928835305
+S1_Mechanistic,ExtraTrees,Protein structure,8,2,0.041740703230131584,0.039405201691299574,0.9539622641509434,af_plddt_std,AlphaFold confidence variability,0.02176799108989199,0.0387102315401394
+S1_Mechanistic,ExtraTrees,Conservation,9,2,0.03528308237979355,0.02928190761813602,0.8769811320754717,conservation_score,Cross-species conservation,0.02614914701082278,0.03272144891381878
+S1_Mechanistic,ExtraTrees,Gene and protein size,10,2,0.02443909995334265,0.024436910093097917,0.9969811320754717,af_protein_length,Protein length (AlphaFold),0.013735621849771697,0.022664764716843075
+S1_Mechanistic,ExtraTrees,Functional annotations,11,5,0.008539379029268913,0.006910795565527733,0.939622641509434,feat_gnn_molecular_activities_DNA_binding_transcription_acti_7c3d9a,GO function: DNA binding transcription acti…,0.004461394026275582,0.007919400341903833

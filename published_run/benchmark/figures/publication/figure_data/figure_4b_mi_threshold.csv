@@ -1,0 +1,9 @@
+Scenario,Model,evaluation_partition,minimum_mi_threshold,n_features_selected,mcc,qwk,balanced_accuracy
+S2_Mech_Pheno,OrdinalDecomp,validation_only,0.0,5377,0.6934111218453121,0.8463782707985815,0.722185221915815
+S2_Mech_Pheno,OrdinalDecomp,validation_only,0.005,431,0.6390907598612825,0.8143666532289744,0.7030216029356102
+S2_Mech_Pheno,OrdinalDecomp,validation_only,0.01,249,0.6105898748253472,0.8082751066118433,0.676532271476768
+S2_Mech_Pheno,OrdinalDecomp,validation_only,0.02,118,0.5663567694865325,0.7584077367963786,0.6374366806270368
+S3_Phenotype,MultinomialLogisticRegression,validation_only,0.0,5200,0.609751850116364,0.7802732738550107,0.7302560814453243
+S3_Phenotype,MultinomialLogisticRegression,validation_only,0.005,341,0.5043982633860385,0.6490893058730363,0.6591452714161419
+S3_Phenotype,MultinomialLogisticRegression,validation_only,0.01,173,0.4149948124369022,0.5988982920320616,0.5682125687572812
+S3_Phenotype,MultinomialLogisticRegression,validation_only,0.02,63,0.3720960174257025,0.5421422437398512,0.5229405074397959

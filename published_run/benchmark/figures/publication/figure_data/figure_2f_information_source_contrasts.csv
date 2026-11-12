@@ -1,0 +1,7 @@
+contrast,metric,difference
+Disease context,QWK,0.3344545279321681
+Disease context,MCC,0.30671621819322176
+Phenotype added,QWK,0.040152992262489695
+Phenotype added,MCC,0.10314346485560244
+Gene-level added,QWK,0.011391231730647267
+Gene-level added,MCC,0.033090336143998256

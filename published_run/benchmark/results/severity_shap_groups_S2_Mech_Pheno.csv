@@ -1,0 +1,15 @@
+Scenario,Model,group,rank,n_features,mean_abs_group_shap,mean_signed_group_shap,share_pairs_raised,top_feature,top_feature_label,top_feature_mean_abs_shap,share_of_total
+S2_Mech_Pheno,OrdinalDecomp,HPO findings,1,5200,0.5386266561418105,-0.07016847226590921,0.4316981132075472,hpo_HP_0000252,Microcephaly,0.0681883761933054,0.6159994979020224
+S2_Mech_Pheno,OrdinalDecomp,Mouse knockout,2,25,0.09164386141258674,-0.0033289939128267896,0.6943396226415094,mouse_lethal_pheno_max,Strongest mouse-lethal phenotype match,0.052845489177831814,0.10480835282146346
+S2_Mech_Pheno,OrdinalDecomp,MONDO disease categories,3,35,0.08522711920359473,0.006758276595867266,0.72,feat_mondo_reproductive_system_disorder,MONDO: reproductive system disorder,0.02892152861787963,0.0974698560466861
+S2_Mech_Pheno,OrdinalDecomp,Inheritance,4,3,0.02898595805912498,-0.0023251416996098203,0.4611320754716981,feat_is_recessive,Recessive inheritance,0.026442985519399505,0.0331497437177136
+S2_Mech_Pheno,OrdinalDecomp,Constraint,5,13,0.027686147512557522,-0.0008133374524587017,0.5667924528301886,shet_log10,"LoF selection, log10 s_het",0.007899812761141413,0.0316632175034549
+S2_Mech_Pheno,OrdinalDecomp,Cellular essentiality,6,6,0.015922939967754225,0.0018599353381881635,0.609811320754717,feat_essential_constrained,Essential and constrained,0.00789727026771811,0.018210244356488443
+S2_Mech_Pheno,OrdinalDecomp,Brain expression (BrainSpan),7,5,0.01382375370015528,0.0004824604031385356,0.5547169811320755,brainspan_postnatal_mean_rpkm,Postnatal brain expression (BrainSpan),0.007833197513428236,0.015809513401013192
+S2_Mech_Pheno,OrdinalDecomp,Functional annotations,8,60,0.013362930962071506,0.0020235552648959305,0.6837735849056604,feat_gnn_biological_processes_apoptotic_process,GO process: apoptotic process,0.0035288056851641146,0.015282494227259741
+S2_Mech_Pheno,OrdinalDecomp,Gene and protein size,9,2,0.01325719583805453,0.004843573588958028,0.5916981132075472,af_protein_length,Protein length (AlphaFold),0.00802120828860613,0.015161570424914695
+S2_Mech_Pheno,OrdinalDecomp,Protein structure,10,2,0.01186345650657292,-0.0018887861584614225,0.5509433962264151,af_plddt_std,AlphaFold confidence variability,0.00940358815029664,0.013567622708793988
+S2_Mech_Pheno,OrdinalDecomp,Dosage sensitivity,11,14,0.010326638544406403,0.0010341738611219825,0.5162264150943396,pTriplo,Triplosensitivity probability (pTriplo),0.007556527053052614,0.011810043349758069
+S2_Mech_Pheno,OrdinalDecomp,"Tissue expression (GTEx, HPA)",12,5,0.010079018131145673,0.0005752772051724656,0.6030188679245283,gtex_max_exp,Peak tissue expression (GTEx),0.007146808715502313,0.011526852667493094
+S2_Mech_Pheno,OrdinalDecomp,Paralogues and redundancy,13,5,0.00820633505125033,0.00011794632310622954,0.5652830188679245,max_paralog_identity,Closest paralogue sequence identity,0.0064356714632246735,0.009385161713673259
+S2_Mech_Pheno,OrdinalDecomp,Conservation,14,2,0.005382623990973641,0.0009381683391329582,0.49433962264150944,feat_conserved_constrained,Conserved and constrained,0.004257621562979961,0.006155829159264969
