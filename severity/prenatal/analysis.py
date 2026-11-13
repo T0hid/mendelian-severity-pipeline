@@ -197,13 +197,27 @@ def _aggregate_by_family(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame.from_records(records)
 
 
-def load_cohort(path: str) -> Tuple[pd.DataFrame, Dict[str, Any]]:
-    """Read the cohort (columns family_id, pregnancy_outcome, hpo_ids, study) and combine rows by family."""
+def load_cohort(
+    path: str, exclude_studies: Sequence[str] = ()
+) -> Tuple[pd.DataFrame, Dict[str, Any]]:
+    """Read the cohort (columns family_id, pregnancy_outcome, hpo_ids, study) and combine rows by family.
+
+    Rows whose ``study`` is in ``exclude_studies`` are dropped first. The paper's sensitivity
+    analysis leaves out ``PED_cohort``, the genomic-autopsy cohort, so that only findings
+    recorded before the outcome remain. By default no study is excluded.
+    """
     df = pd.read_csv(path, low_memory=False)
     missing = [column for column in (OUTCOME_COL, HPO_COL) if column not in df.columns]
     if missing:
         raise ValueError(f"Cohort is missing required columns: {missing}")
     audit: Dict[str, Any] = {"n_start_rows": int(len(df))}
+    if exclude_studies:
+        if STUDY_COL not in df.columns:
+            raise ValueError(f"--exclude-studies needs a '{STUDY_COL}' column in the cohort.")
+        wanted = {_normalise_text(study) for study in exclude_studies}
+        df = df[~df[STUDY_COL].map(_normalise_text).isin(wanted)].copy()
+    audit["excluded_studies"] = list(exclude_studies)
+    audit["n_after_exclude_studies_rows"] = int(len(df))
     if FAMILY_COL not in df.columns:
         df[FAMILY_COL] = [f"ROW_{i + 1:06d}" for i in range(len(df))]
         audit["family_id_generated_from_rows"] = True
@@ -867,11 +881,17 @@ def _records(table: pd.DataFrame) -> List[Dict[str, Any]]:
 
 
 def run(
-    cohort: str, model: str, heldout: str, output: str, n_boot: int = 2000, n_perm: int = 2000
+    cohort: str,
+    model: str,
+    heldout: str,
+    output: str,
+    n_boot: int = 2000,
+    n_perm: int = 2000,
+    exclude_studies: Sequence[str] = (),
 ) -> Dict[str, Any]:
     """Run the full prenatal analysis and write tables, ``statistics.json`` and Fig. 5 to ``output``."""
     os.makedirs(output, exist_ok=True)
-    families, audit = load_cohort(cohort)
+    families, audit = load_cohort(cohort, exclude_studies)
     scorer = load_scorer(model)
     families = score_families(families, scorer)
     analysis = families[families["included_in_analysis"]].reset_index(drop=True)
@@ -946,5 +966,19 @@ def main(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser.add_argument("--output", required=True)
     parser.add_argument("--n-boot", type=int, default=2000)
     parser.add_argument("--n-perm", type=int, default=2000)
+    parser.add_argument(
+        "--exclude-studies",
+        nargs="*",
+        default=[],
+        help="values of the study column to leave out (for example PED_cohort); none by default",
+    )
     args = parser.parse_args(argv)
-    return run(args.cohort, args.model, args.heldout, args.output, args.n_boot, args.n_perm)
+    return run(
+        args.cohort,
+        args.model,
+        args.heldout,
+        args.output,
+        args.n_boot,
+        args.n_perm,
+        exclude_studies=args.exclude_studies,
+    )

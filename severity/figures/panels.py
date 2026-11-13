@@ -6,6 +6,7 @@ Fig. 3              figure_3_prediction_calibration       figure_3_prediction_an
 Fig. 4              figure_4_interpretation               figure_4_interpretation_and_biology.*
 Extended Data Fig. 1  extended_data_fig_1_cohort          extended_data_fig_1_cohort_composition.*
 Extended Data Fig. 2  extended_data_fig_2_robustness      extended_data_fig_2_robustness_and_audits.*
+Extended Data Fig. 3  extended_data_fig_3_calibration     extended_data_fig_3_calibration_confusion.*
 Table 1             table_1_headline_metrics              table_1_headline_metrics.csv
 
 The numbers behind every panel are written to <out>/figure_data. Those file names keep the
@@ -32,6 +33,14 @@ from matplotlib.ticker import LogLocator, NullFormatter, PercentFormatter
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from sklearn.decomposition import PCA
 from sklearn.metrics import confusion_matrix
+
+from severity.benchmark.calibration_changes import (
+    CHANGES_FILE,
+    CONFUSION_FILE,
+    STAGES,
+    TRANSITIONS_FILE,
+    calibration_change_tables,
+)
 
 CLASS_NAMES = ["Mild", "Moderate", "Severe", "Profound"]
 CLASS_INDICES = {n: i for i, n in enumerate(CLASS_NAMES)}
@@ -940,6 +949,8 @@ def generate_publication_figures(
     figure_2_model_comparison(all_results, pub_outputs, output_dir, main_dir, fig_data_dir)
     print("Fig. 3: predictions and calibration")
     figure_3_prediction_calibration(all_results, pub_outputs, output_dir, main_dir, fig_data_dir)
+    print("Extended Data Fig. 3: predicted classes before and after calibration")
+    extended_data_fig_3_calibration(all_results, pub_outputs, output_dir, main_dir, fig_data_dir)
     print("Extended Data Fig. 2: robustness and audits")
     extended_data_fig_2_robustness(
         all_results, pub_outputs, container, fold_artifacts, output_dir, main_dir, fig_data_dir
@@ -962,6 +973,129 @@ def generate_publication_figures(
     table_1_headline_metrics(all_results, pub_outputs, main_dir, fig_data_dir)
     _write_main_figure_manifest(main_dir, fig_data_dir)
     print(f"[figures] done: {main_dir}")
+
+
+def _calibration_change_inputs(all_results: Dict, pub_outputs: Dict, output_dir: str):
+    """Tables for Extended Data Fig. 3.
+
+    Built from this run's test predictions when they include the predictions before
+    calibration (a pipeline run); otherwise read from the run's saved figure data
+    (``run.py figures`` on ``published_run``). Returns None when neither is available.
+    """
+    selected = _validation_selected_models(all_results, pub_outputs)
+    records = []
+    for scenario in SCENARIO_ORDER:
+        model = selected.get(scenario)
+        result = all_results.get(scenario, {}).get("all", {}).get(model, {}) if model else {}
+        if not all(key in result for key in ("y_true", "predictions", "predictions_uncalibrated")):
+            records = None
+            break
+        records.append(
+            (
+                scenario,
+                model,
+                result["y_true"],
+                result["predictions_uncalibrated"]["y_pred"],
+                result["predictions"]["y_pred"],
+            )
+        )
+    if records:
+        return calibration_change_tables(records)
+    saved = os.path.join(output_dir, "figures", "publication", "figure_data")
+    paths = [os.path.join(saved, name) for name in (CONFUSION_FILE, CHANGES_FILE, TRANSITIONS_FILE)]
+    if not all(os.path.exists(path) for path in paths):
+        return None
+    return tuple(pd.read_csv(path) for path in paths)
+
+
+def extended_data_fig_3_calibration(
+    all_results: Dict, pub_outputs: Dict, output_dir: str, out_dir: str, fig_data_dir: str, logger=print
+):
+    """Confusion matrices of the selected models before (a-d) and after (e-h) calibration."""
+    tables = _calibration_change_inputs(all_results, pub_outputs, output_dir)
+    if tables is None:
+        logger("[extended_data_fig_3] no predictions before calibration in this run; skipping")
+        return
+    confusion, changes, transitions = tables
+    confusion.to_csv(os.path.join(fig_data_dir, CONFUSION_FILE), index=False)
+    changes.to_csv(os.path.join(fig_data_dir, CHANGES_FILE), index=False)
+    transitions.to_csv(os.path.join(fig_data_dir, TRANSITIONS_FILE), index=False)
+
+    short = ["Mi", "Mo", "Se", "Pr"]
+    fig, axes = plt.subplots(2, 4, figsize=(7.09, 4.05))
+    image = None
+    for col, scenario in enumerate(SCENARIO_ORDER):
+        rows = confusion[confusion["Scenario"] == scenario]
+        summary = changes[changes["Scenario"] == scenario]
+        if rows.empty or summary.empty:
+            for row_i in range(2):
+                axes[row_i, col].set_axis_off()
+            continue
+        model = rows["Model"].iloc[0]
+        for row_i, stage in enumerate(STAGES):
+            ax = axes[row_i, col]
+            stage_rows = rows[rows["stage"] == stage]
+            cm = (
+                stage_rows.pivot(index="true_class", columns="predicted_class", values="count")
+                .reindex(index=CLASS_NAMES, columns=CLASS_NAMES)
+                .fillna(0)
+                .to_numpy(dtype=int)
+            )
+            norm = cm / cm.sum(axis=1, keepdims=True).clip(min=1)
+            image = ax.imshow(norm, cmap="Blues", vmin=0, vmax=1, aspect="equal")
+            for r in range(4):
+                for c in range(4):
+                    ax.text(
+                        c,
+                        r,
+                        f"{cm[r, c]}\n{norm[r, c]:.0%}",
+                        ha="center",
+                        va="center",
+                        fontsize=5.45,
+                        color=_adaptive_text_color(norm[r, c], 0, 1),
+                        fontweight="bold" if r == c else "normal",
+                    )
+            ax.set_xticks(range(4))
+            ax.set_xticklabels(short)
+            ax.set_yticks(range(4))
+            ax.set_yticklabels(short if col == 0 else [])
+            ax.set_xlabel("Predicted")
+            if col == 0:
+                label = "Before calibration" if stage == STAGES[0] else "After calibration"
+                ax.set_ylabel(f"{label}\nObserved")
+            for spine in ax.spines.values():
+                spine.set_visible(True)
+                spine.set_linewidth(0.45)
+            if row_i == 0:
+                ax.set_title(SCENARIO_SHORT[scenario], loc="left", pad=6, fontsize=8.0, color="#252525")
+                ax.text(
+                    0.0,
+                    1.01,
+                    MODEL_SHORT_LABELS.get(model, model),
+                    transform=ax.transAxes,
+                    ha="left",
+                    va="bottom",
+                    fontsize=5.3,
+                    color="#666666",
+                )
+            else:
+                n_changed = int(summary["n_changed"].iloc[0])
+                n_test = int(summary["n_test"].iloc[0])
+                ax.set_title(
+                    f"{n_changed:,} of {n_test:,} changed class",
+                    loc="left",
+                    pad=4,
+                    fontsize=5.3,
+                    color="#444444",
+                )
+            _panel_label(ax, chr(ord("a") + row_i * 4 + col), x=-0.18)
+    if image is not None:
+        cax = fig.add_axes([0.93, 0.30, 0.012, 0.40])
+        bar = fig.colorbar(image, cax=cax)
+        bar.set_label("Within-observed-class proportion")
+        bar.outline.set_linewidth(0.4)
+        bar.ax.tick_params(labelsize=6.2)
+    _save(fig, "extended_data_fig_3_calibration_confusion", out_dir)
 
 
 NATURE_MIN_FONT_PT = 6.2
@@ -3220,6 +3354,13 @@ def _write_main_figure_manifest(out_dir: str, fig_data_dir: str) -> None:
             "Ordinal error composition, ECE, calibration improvement",
             "test; selected models",
             "figure_3*",
+        ),
+        (
+            "Extended Data Fig. 3",
+            "a-h",
+            "Confusion matrices before and after calibration, pairs that changed class",
+            "test; selected models",
+            "extended_data_fig_3*",
         ),
         (
             "Extended Data Fig. 2",

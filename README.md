@@ -6,7 +6,7 @@ The repository has three parts, in the order of the manuscript:
 
 | Part | Manuscript | Code |
 |---|---|---|
-| Gene-disease severity benchmark: four feature sets, four model families, 6,625 gene-disease pairs | Figs 1-4, Table 1, Extended Data Figs 1-2, Supplementary Tables 1-16, 24, 25 | `severity/benchmark`, `severity/figures` |
+| Gene-disease severity benchmark: four feature sets, four model families, 6,625 gene-disease pairs | Figs 1-4, Table 1, Extended Data Figs 1-3, Supplementary Tables 1-16, 24, 25 | `severity/benchmark`, `severity/figures` |
 | Disease-level phenotype scorer: 6,204 diseases, 1,241 held out | Fig. 5a,b, Supplementary Tables 17-19 | `severity/scorer` |
 | Application to a prenatal cohort | Fig. 5c-f, Supplementary Tables 20-23 | `severity/prenatal` |
 
@@ -35,14 +35,16 @@ These commands use the models and results saved from the run reported in the pap
 
 | Command | What it does | Time | Output |
 |---|---|---|---|
-| `python run.py verify` | Rebuilds the feature table from the raw inputs, draws the split again, applies the four selected models to the 1,325 test pairs and compares the results with the saved predictions and with Table 1 | about 1 min, 6 GB RAM | `outputs/verify/verification.json`, `verification_metrics.csv` |
-| `python run.py figures` | Redraws Figs 2-4, Extended Data Figs 1-2 and Table 1 from the saved results | under 1 min | `outputs/figures/main`, panel data in `outputs/figures/figure_data` |
-| `python run.py prenatal` | Applies the saved scorer to the public part of the prenatal cohort and draws Fig. 5 | under 1 min | `outputs/prenatal` |
+| `python run.py verify` | Rebuilds the feature table from the raw inputs, draws the split again, applies the four selected models to the 1,325 test pairs with and without their calibrators, and compares the results with the saved predictions, with Table 1 and with the values before calibration (Supplementary Table 5) | about 1 min, 6 GB RAM | `outputs/verify/verification.json`, `verification_metrics.csv`, `extended_data_fig_3_*.csv` |
+| `python run.py figures` | Redraws Figs 2-4, Extended Data Figs 1-3 and Table 1 from the saved results | under 1 min | `outputs/figures/main`, panel data in `outputs/figures/figure_data` |
+| `python run.py prenatal` | Applies the saved scorer to the public part of the prenatal cohort and draws Fig. 5. Add `--exclude-studies PED_cohort` to leave out the genomic-autopsy cohort | under 1 min | `outputs/prenatal` |
 | `python run.py score --input my_profiles.csv` | Scores your own HPO profiles (columns `sample_id`, `hpo_terms` separated by `;`) | seconds | `outputs/scores.csv` |
 
-`verify` ends with `PASSED` when the rebuilt feature inventory (Supplementary Table 1) is identical to the saved one, the split matches pair for pair, the predicted probabilities match the saved ones and all 28 Table 1 values (seven metrics for four models) are reproduced to within 0.00001. The paper reports three decimals; the differences seen in practice are below 0.000001 and come from floating-point rounding, which differs slightly between operating systems.
+`verify` ends with `PASSED` when the rebuilt feature inventory (Supplementary Table 1) is identical to the saved one, the split matches pair for pair, the predicted probabilities match the saved ones all 28 Table 1 values (seven metrics for four models) and the 20 values before calibration (five metrics for four models, Supplementary Table 5) are reproduced to within 0.00001, and the confusion matrices before and after calibration match the saved Extended Data Fig. 3 data. The paper reports three decimals; the differences seen in practice are below 0.000001 and come from floating-point rounding, which differs slightly between operating systems.
 
 The prenatal cohort in the paper has 531 analysed families. 290 of them come from an in-house cohort that cannot be shared, so `data/prenatal_cohort_public.csv` holds only the published cases (275 rows, 241 analysed families). Results from the public subset therefore differ from the paper (for example, Spearman's rho is 0.195 rather than 0.383). The full-cohort results are in `published_run/prenatal`.
+
+The paper also reports the prenatal analysis without the genomic-autopsy cohort, whose findings include post-mortem examinations and so are not all available before the outcome: `python run.py prenatal --exclude-studies PED_cohort`. On the public subset this leaves 60 families; the full-cohort result (350 families) is in `published_run/prenatal/without_autopsy_cohort`.
 
 Fig. 5a,b and Supplementary Tables 17-19 come from scorer training. The saved scorer (`published_run/scorer/model.pkl`) is the final model refitted on all 6,204 diseases; the held-out predictions were made by the model fitted on the 4,963 development diseases, so reproducing them requires `train-scorer`. `run.py prenatal` redraws Fig. 5a,b from the saved held-out predictions.
 
@@ -78,9 +80,10 @@ Figures:
 | Fig. 5 | `severity/prenatal/analysis.py: build_figure` | `outputs/prenatal/prenatal_severity_figure.*` |
 | Extended Data Fig. 1 | `extended_data_fig_1_cohort` | `main/extended_data_fig_1_cohort_composition.*` |
 | Extended Data Fig. 2 | `extended_data_fig_2_robustness` | `main/extended_data_fig_2_robustness_and_audits.*` |
+| Extended Data Fig. 3 | `extended_data_fig_3_calibration` | `main/extended_data_fig_3_calibration_confusion.*` |
 | Table 1 | `table_1_headline_metrics` | `main/table_1_headline_metrics.csv` |
 
-The numbers behind every panel are in `figure_data`. Those files keep the numbering used while drafting: `figure_1*` is Extended Data Fig. 1, `figure_4*` is Extended Data Fig. 2 and `figure_5*` is Fig. 4.
+The numbers behind every panel are in `figure_data`. Those files keep the numbering used while drafting: `figure_1*` is Extended Data Fig. 1, `figure_4*` is Extended Data Fig. 2 and `figure_5*` is Fig. 4; `extended_data_fig_3*` is Extended Data Fig. 3.
 
 Supplementary Tables. Benchmark files are in `published_run/benchmark/results` (and in `results/` of a new run), scorer files in `published_run/scorer`, prenatal files in `published_run/prenatal`.
 
@@ -133,8 +136,8 @@ severity/
   mapping.py               gene-disease mapping filter shared by the benchmark and the scorer
   benchmark/               feature construction, split, models, evaluation, sensitivity analyses, SHAP
     pipeline.py            runs the benchmark end to end; the order of steps follows the Online Methods
-    verify.py              re-scores the test set with the saved models
-  figures/                 Figs 2-4, Extended Data Figs 1-2, Table 1
+    verify.py              re-scores the test set with the saved models, before and after calibration
+  figures/                 Figs 2-4, Extended Data Figs 1-3, Table 1
   scorer/                  disease-level phenotype scorer
   prenatal/                prenatal cohort analysis and Fig. 5
 data/                      training tables, ontologies, public prenatal cohort, example profiles
@@ -154,7 +157,7 @@ tests/                     quick tests run by GitHub Actions
 python -m pytest tests
 ```
 
-The tests check that the published split is gene-disjoint and has the reported sizes, that the scorer's disease split is reproduced from the training table, that the saved scorer returns valid probabilities, and that the prenatal analysis gives the expected counts and Spearman's rho on the public cohort. GitHub Actions runs them, together with `run.py verify`, `run.py figures`, `run.py prenatal` and `run.py score`, on every push, and keeps the outputs as a downloadable artifact.
+The tests check that the published split is gene-disjoint and has the reported sizes, that the scorer's disease split is reproduced from the training table, that the saved scorer returns valid probabilities, that the saved Extended Data Fig. 3 data agree with Fig. 3 and Table 1, and that the prenatal analysis gives the expected counts and Spearman's rho on the public cohort, with and without the genomic-autopsy cohort. GitHub Actions runs them, together with `run.py verify`, `run.py figures`, `run.py prenatal` and `run.py score`, on every push, and keeps the outputs as a downloadable artifact.
 
 ## Citation
 

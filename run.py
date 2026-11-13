@@ -1,8 +1,9 @@
 """Command-line entry point. Run ``python run.py --help`` for the list of commands.
 
 Checks that use the saved models and results (minutes):
-    verify     rebuild the features, re-score the test set with the saved models, compare with Table 1
-    figures    redraw Figs 2-4, Extended Data Figs 1-2 and Table 1 from the saved results
+    verify     rebuild the features, re-score the test set with the saved models (before and after
+               calibration), compare with Table 1 and Supplementary Table 5
+    figures    redraw Figs 2-4, Extended Data Figs 1-3 and Table 1 from the saved results
     prenatal   apply the saved scorer to the public prenatal cohort and draw Fig. 5
     score      score your own HPO profiles with the saved scorer
 
@@ -73,8 +74,10 @@ def cmd_verify(args) -> None:
     print(f"feature tables identical: {all(report['feature_tables_identical'].values())}")
     print(
         f"split matches: {all(v['matches_saved_split'] for v in report['split'].values())}; "
-        f"Table 1 metrics matching: {report['metrics_matching']}/{report['metrics_checked']}"
+        f"metrics matching (Table 1 and before calibration): "
+        f"{report['metrics_matching']}/{report['metrics_checked']}"
     )
+    print(f"Extended Data Fig. 3 data match the saved run: {report['extended_data_fig_3_matches_saved']}")
     print("PASSED" if report["passed"] else "FAILED")
     if not report["passed"]:
         sys.exit(1)
@@ -100,6 +103,7 @@ def cmd_prenatal(args) -> None:
         fresh(args.output),
         n_boot=args.n_boot,
         n_perm=args.n_perm,
+        exclude_studies=args.exclude_studies,
     )
     print(f"Families analysed: {statistics['audit']['n_analyzed']}")
 
@@ -178,6 +182,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--output", default="outputs/prenatal")
     p.add_argument("--n-boot", type=int, default=2000)
     p.add_argument("--n-perm", type=int, default=2000)
+    p.add_argument(
+        "--exclude-studies",
+        nargs="*",
+        default=[],
+        help="values of the study column to leave out, e.g. PED_cohort (genomic-autopsy cohort)",
+    )
     p.set_defaults(func=cmd_prenatal)
 
     p = sub.add_parser("score", help="score HPO profiles (columns sample_id, hpo_terms separated by ';')")
