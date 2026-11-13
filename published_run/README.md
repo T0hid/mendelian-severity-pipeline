@@ -6,7 +6,7 @@ These files come from the run reported in the paper. `run.py verify`, `run.py fi
 - `models/*.pkl.xz`: the four validation-selected models (preprocessing, selected features, model and calibrator), xz-compressed. `run.py` decompresses them on first use.
 - `results/`: the tables behind Table 1 and Supplementary Tables 1-16 (see the main README). `all_results.pkl` holds the test-set predictions and metrics of the selected models.
 - `per_disease_explanations/severity_shap_*.npz`: SHAP values used in Fig. 4.
-- `figures/publication/figure_data/`: panel data written by the run. `figure_2_candidate_validation_metrics.csv` and `figure_5e_s3_true_predicted_pca.csv` are inputs to `run.py figures`.
+- `figures/publication/figure_data/`: panel data written by the run. `figure_2_candidate_validation_metrics.csv` and `figure_5e_s3_true_predicted_pca.csv` are inputs to `run.py figures`. The `extended_data_fig_3_*.csv` files (predicted classes before and after calibration) were computed afterwards from this run's saved test predictions, without refitting; `run.py figures` draws Extended Data Fig. 3 from them and `run.py verify` recomputes and checks them.
 - `pipeline_manifest.json`: input checksums, ontology releases, seeds, settings, selected models and features, software versions.
 
 `scorer/`
@@ -16,3 +16,4 @@ These files come from the run reported in the paper. `run.py verify`, `run.py fi
 
 `prenatal/`
 - Results for the full cohort (531 analysed families), including the in-house families. Only summary tables are included; family-level rows are not shared.
+- `without_autopsy_cohort/`: the same summary tables with the genomic-autopsy cohort (`PED_cohort`) left out, 350 analysed families.
