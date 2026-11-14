@@ -30,12 +30,12 @@ S2_Mech_Pheno,OrdinalDecomp,hpo_HP_0001252,Hypotonia,0.020408463523096356,SHAP o
 S2_Mech_Pheno,OrdinalDecomp,hpo_HP_0000821,Hypothyroidism,0.019142918100902913,SHAP on expected severity class,1325
 S2_Mech_Pheno,OrdinalDecomp,hpo_HP_0001344,Absent speech,0.016969534912443966,SHAP on expected severity class,1325
 S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0001250,Seizure,0.048293145072628864,SHAP on expected severity class,1325
-S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0011876,Abnormal platelet volume,0.037952385673053424,SHAP on expected severity class,1325
 S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0000252,Microcephaly,0.03591095120215543,SHAP on expected severity class,1325
 S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0000750,Delayed speech and language development,0.03380727103937699,SHAP on expected severity class,1325
-S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0031831,Decreased serum zinc,0.031336906985291894,SHAP on expected severity class,1325
 S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0003251,Male infertility,0.02659779011049085,SHAP on expected severity class,1325
 S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0001252,Hypotonia,0.019814722561727734,SHAP on expected severity class,1325
 S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0001510,Growth delay,0.016584055713237317,SHAP on expected severity class,1325
 S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0000853,Goiter,0.015635472755683673,SHAP on expected severity class,1325
 S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0007018,Attention deficit hyperactivity disorder,0.0154930951816188,SHAP on expected severity class,1325
+S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0001508,Failure to thrive,0.013353156910985181,SHAP on expected severity class,1325
+S3_Phenotype,MultinomialLogisticRegression,hpo_HP_0012869,Acephalic spermatozoa,0.013026539568870574,SHAP on expected severity class,1325

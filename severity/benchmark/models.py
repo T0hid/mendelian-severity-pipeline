@@ -46,6 +46,11 @@ def ordinal_cumulative_to_class_probs(cumulative_probs: np.ndarray) -> np.ndarra
 
 
 def compute_ordinal_sample_weights(y: np.ndarray) -> np.ndarray:
+    """Equation (3) weights for logistic regression, ExtraTrees and LightGBM.
+
+    Config.ORDINAL_BOUNDARY_MULT holds the multipliers m. The ordinal learner does not use
+    these weights; it balances the two sides of each boundary instead.
+    """
     counts = np.bincount(y, minlength=Config.NUM_CLASSES).astype(float)
     inv_freq = 1.0 / (counts + 1)
     inv_freq = inv_freq / inv_freq.sum() * Config.NUM_CLASSES
@@ -518,8 +523,6 @@ def _parameter_candidates(model_name: str, seed: int) -> List[Dict[str, Any]]:
 
 
 def _apply_resampling_only(X: np.ndarray, y: np.ndarray, scenario: str, seed: int):
-    if False:
-        return (X, y)
     old_seed = np.random.get_state()
     try:
         np.random.seed(seed)

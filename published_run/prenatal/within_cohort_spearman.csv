@@ -1,0 +1,5 @@
+cohort,n_families,Live birth (no NICU),NICU / special care,TOP,Death,outcome_groups_represented,spearman_rho,p_value
+EP_* (progressive pES),37,9,0,19,9,3,0.43550355630934223,0.007058027046560974
+ES_negative_cohort,23,12,0,8,3,3,0.27743467052038634,0.19995922541932531
+PED_cohort,181,0,0,134,47,2,0.026046017231540416,0.7278066307349336
+PreGen (in-house),290,69,100,96,25,4,0.3684926052089983,9.327950097725219e-11

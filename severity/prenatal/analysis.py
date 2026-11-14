@@ -8,7 +8,8 @@ pregnancy. Rows of the same family are combined into one profile. Outcomes are o
     < termination of pregnancy (2) < fetal or infant death (3)
 
 and the score is tested against this order with Spearman's rho, Kendall's tau-b, the ordinal
-concordance index (equation 12), a proportional-odds model (equation 13), mean score per group,
+concordance index (equation 12), a proportional-odds model (equation 13) with and without the
+contributing cohort as a covariate, Spearman's rho within each cohort, mean score per group,
 the separation of neighbouring groups and three prespecified ROC contrasts.
 """
 
@@ -447,6 +448,77 @@ def proportional_odds(
         "se": se,
         "outcome_col": outcome_col,
     }
+
+
+COHORT_PREFIXES = (
+    ("PreGen (in-house)", "PreGen"),
+    ("PED_cohort", "PED"),
+    ("ES_negative_cohort", "ES_negative"),
+    ("EP_* (progressive pES)", "EP_"),
+)
+
+
+def contributing_cohort(study: Any) -> str:
+    """The cohort a family came from. EP_* sub-tables count as one cohort."""
+    text = str(study).strip()
+    for label, prefix in COHORT_PREFIXES:
+        if text.startswith(prefix):
+            return label
+    return f"unassigned: {text}"
+
+
+def cohort_adjusted_proportional_odds(
+    df: pd.DataFrame, outcome_col: str = "outcome", score_col: str = "severity_score"
+) -> Dict[str, Any]:
+    """Equation (13) with the contributing cohort added as indicator covariates."""
+    if STUDY_COL not in df.columns:
+        return {"available": False, "reason": f"no '{STUDY_COL}' column"}
+    cohort = df[STUDY_COL].map(contributing_cohort)
+    names = sorted(cohort.unique())
+    if len(names) < 2:
+        return {"available": False, "reason": "only one cohort"}
+    s = df[score_col].to_numpy(float)
+    sd = float(s.std())
+    z = (s - s.mean()) / (sd if sd > 0 else 1.0)
+    indicators = np.column_stack([(cohort == name).to_numpy(float) for name in names[1:]])
+    y = df[outcome_col].to_numpy(int)
+    res = OrderedModel(y, np.column_stack([z, indicators]), distr="logit").fit(method="bfgs", disp=False)
+    beta, se = float(res.params[0]), float(res.bse[0])
+    return {
+        "available": True,
+        "method": "statsmodels_ordered_logit_with_cohort_indicators",
+        "cohorts": names,
+        "or_per_sd": float(np.exp(beta)),
+        "ci95": [float(np.exp(beta - 1.96 * se)), float(np.exp(beta + 1.96 * se))],
+        "p_value": float(2 * (1 - stats.norm.cdf(abs(beta / se)))) if se > 0 else float("nan"),
+        "beta": beta,
+        "se": se,
+        "n": int(len(y)),
+    }
+
+
+def within_cohort_spearman(
+    df: pd.DataFrame, outcome_col: str = "outcome", score_col: str = "severity_score"
+) -> pd.DataFrame:
+    """Families per outcome group and Spearman's rho within each contributing cohort."""
+    if STUDY_COL not in df.columns:
+        return pd.DataFrame()
+    work = df.assign(cohort=df[STUDY_COL].map(contributing_cohort))
+    rows = []
+    for name, group in work.groupby("cohort"):
+        row: Dict[str, Any] = {"cohort": name, "n_families": int(len(group))}
+        for level, label in OUTCOME_LABELS.items():
+            row[label] = int((group[outcome_col] == level).sum())
+        n_levels = int(group[outcome_col].nunique())
+        row["outcome_groups_represented"] = n_levels
+        if len(group) >= 3 and n_levels > 1:
+            rho, p = stats.spearmanr(group[score_col], group[outcome_col])
+        else:
+            rho, p = float("nan"), float("nan")
+        row["spearman_rho"] = float(rho)
+        row["p_value"] = float(p)
+        rows.append(row)
+    return pd.DataFrame(rows)
 
 
 def mean_ci_by_outcome(
@@ -909,6 +981,8 @@ def run(
 
     corr = correlation_analysis(analysis, n_boot, n_perm, seed=1)
     po = proportional_odds(analysis)
+    po_adjusted = cohort_adjusted_proportional_odds(analysis)
+    within = within_cohort_spearman(analysis)
     means = mean_ci_by_outcome(analysis)
     contrasts = roc_contrasts(analysis)
     adjacent = adjacent_level_separation(analysis, n_boot=n_boot)
@@ -924,11 +998,14 @@ def run(
     )
     adjacent.to_csv(os.path.join(output, "adjacent_level_separation.csv"), index=False)
     contributions.to_csv(os.path.join(output, "phenotype_contributions.csv"), index=False)
+    within.to_csv(os.path.join(output, "within_cohort_spearman.csv"), index=False)
 
     statistics = {
         "audit": audit,
         "correlation": corr,
         "proportional_odds": po,
+        "proportional_odds_cohort_adjusted": po_adjusted,
+        "within_cohort_spearman": _records(within),
         "roc_contrasts": _records(roc_table),
         "adjacent_level_separation": _records(adjacent),
         "score_label": SCORE_LABEL,

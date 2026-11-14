@@ -2165,6 +2165,21 @@ def write_feature_weights(output_dir: str, scorer: SeverityScorer) -> None:
             }
         )
     pd.DataFrame(rows).to_csv(os.path.join(output_dir, "combined_feature_weights.csv"), index=False)
+    write_phenotype_weights(output_dir, scorer)
+
+
+def write_phenotype_weights(output_dir: str, scorer: SeverityScorer) -> None:
+    """Weights of the phenotype-only scorer (Supplementary Table 19, upper block)."""
+    rows = [
+        {
+            "hpo_id": term,
+            "weight_severity_gt_0": weights[0],
+            "weight_severity_gt_1": weights[1],
+            "weight_severity_gt_2": weights[2],
+        }
+        for term, weights in scorer.term_weight_by_threshold.items()
+    ]
+    pd.DataFrame(rows).to_csv(os.path.join(output_dir, "phenotype_feature_weights.csv"), index=False)
 
 
 def _visualization_dependencies() -> Tuple[Any, Any]:
