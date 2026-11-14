@@ -107,10 +107,10 @@ Supplementary Tables. Benchmark files are in `published_run/benchmark/results` (
 | 16 | Disease-disjoint and gene-and-disease-disjoint evaluations | `generalisation_evaluations.csv` | `benchmark/workflow.py` |
 | 17 | Scorer: held-out performance, curation, configuration | `metadata.json`, `held_out_test_predictions.csv`, `input_curation_summary.csv`, `hpo_curation_summary.csv` | `scorer/model.py` |
 | 18 | Scorer: configuration selection | `model_selection_results.csv` | `scorer/model.py` |
-| 19 | Scorer: feature weights and held-out SHAP | `combined_feature_weights.csv`, `held_out_ordinal_shap_importance.csv` | `scorer/model.py` |
+| 19 | Scorer: feature weights and held-out SHAP | `phenotype_feature_weights.csv`, `combined_feature_weights.csv`, `held_out_ordinal_shap_importance.csv` | `scorer/model.py` |
 | 20 | Prenatal: family records and inclusion | `statistics.json` (`audit`) | `prenatal/analysis.py: load_cohort` |
-| 21 | Prenatal: association with outcome | `statistics.json` (`correlation`, `proportional_odds`), `mean_by_outcome.csv` | `prenatal/analysis.py` |
-| 22 | Prenatal: discrimination between outcome groups | `roc_contrasts.csv`, `adjacent_level_separation.csv` | `prenatal/analysis.py` |
+| 21 | Prenatal: association with outcome | `statistics.json` (`correlation`, `proportional_odds`, `proportional_odds_cohort_adjusted`), `mean_by_outcome.csv`, `adjacent_level_separation.csv`, `within_cohort_spearman.csv` | `prenatal/analysis.py` |
+| 22 | Prenatal: discrimination between outcome groups | `roc_contrasts.csv` | `prenatal/analysis.py` |
 | 23 | Prenatal: contributing phenotypes | `phenotype_contributions.csv` (written by `run.py prenatal`) | `prenatal/analysis.py: phenotype_contributions` |
 | 24 | Engineered feature definitions | | `benchmark/features.py: engineer_features` |
 | 25 | Hyperparameter search spaces | | `benchmark/models.py: _parameter_candidates` |

@@ -66,6 +66,59 @@
     "se": 0.10531885929695062,
     "outcome_col": "outcome"
   },
+  "proportional_odds_cohort_adjusted": {
+    "available": true,
+    "method": "statsmodels_ordered_logit_with_cohort_indicators",
+    "cohorts": [
+      "EP_* (progressive pES)",
+      "ES_negative_cohort",
+      "PreGen (in-house)"
+    ],
+    "or_per_sd": 2.1345443597283653,
+    "ci95": [
+      1.7325516523796012,
+      2.6298088241065027
+    ],
+    "p_value": 1.0595968547022494e-12,
+    "beta": 0.7582532092573059,
+    "se": 0.1064581346104526,
+    "n": 350
+  },
+  "within_cohort_spearman": [
+    {
+      "cohort": "EP_* (progressive pES)",
+      "n_families": 37,
+      "Live birth (no NICU)": 9,
+      "NICU / special care": 0,
+      "TOP": 19,
+      "Death": 9,
+      "outcome_groups_represented": 3,
+      "spearman_rho": 0.43550355630934223,
+      "p_value": 0.007058027046560974
+    },
+    {
+      "cohort": "ES_negative_cohort",
+      "n_families": 23,
+      "Live birth (no NICU)": 12,
+      "NICU / special care": 0,
+      "TOP": 8,
+      "Death": 3,
+      "outcome_groups_represented": 3,
+      "spearman_rho": 0.27743467052038634,
+      "p_value": 0.19995922541932531
+    },
+    {
+      "cohort": "PreGen (in-house)",
+      "n_families": 290,
+      "Live birth (no NICU)": 69,
+      "NICU / special care": 100,
+      "TOP": 96,
+      "Death": 25,
+      "outcome_groups_represented": 4,
+      "spearman_rho": 0.3684926052089983,
+      "p_value": 9.327950097725219e-11
+    }
+  ],
   "roc_contrasts": [
     {
       "contrast": "Death vs live birth (no NICU)",

@@ -69,10 +69,7 @@ def _choose_calibration_method(y: np.ndarray) -> str:
 def calibrate_prefit_model(model, X_val, y_val, label: str = "model", method: Optional[str] = None):
     selected_method = method or _choose_calibration_method(np.asarray(y_val))
     try:
-        if True:
-            calibrator = CalibratedClassifierCV(FrozenEstimator(model), method=selected_method)
-        else:
-            calibrator = CalibratedClassifierCV(model, method=selected_method, cv="prefit")
+        calibrator = CalibratedClassifierCV(FrozenEstimator(model), method=selected_method)
         calibrator.fit(X_val, y_val)
         logger.log(f"    Calibration OK ({selected_method}): {label}")
         return calibrator

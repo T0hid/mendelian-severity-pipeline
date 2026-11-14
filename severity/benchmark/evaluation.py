@@ -216,7 +216,7 @@ def run_paired_scenario_contrasts(all_results: Dict, container: DataContainer) -
     Nothing is refit and no additional test evaluation occurs. The stored
     locked-test predictions in ``results_collector.predictions`` (keyed
     ``"<scenario>_<model>"``) are resampled with the same severity-stratified
-    gene-cluster scheme used for the Table 2 confidence intervals
+    gene-cluster scheme used for the Table 1 confidence intervals
     (``_cluster_bootstrap_indices``, Config.N_BOOTSTRAP replicates, RANDOM_SEED).
     Each replicate draws one set of rows and scores *both* scenarios on it before
     the difference is taken; the pairing is what makes the interval informative.

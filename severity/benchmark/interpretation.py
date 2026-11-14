@@ -382,9 +382,6 @@ def _severity_group_summary(
 
 def save_severity_shap(container: DataContainer, all_results: Dict) -> None:
     """Full-matrix SHAP on the expected severity class for each selected model."""
-    if False:
-        logger.log("  Severity-score SHAP skipped", level="WARNING")
-        return
     logger.section("SEVERITY-SCORE SHAP (EXPECTED SEVERITY CLASS, ALL TEST PAIRS)")
     explanation_dir = os.path.join(Config.OUTPUT_DIR, "per_disease_explanations")
     results_dir = os.path.join(Config.OUTPUT_DIR, "results")
