@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this code, please cite the article."
-title: "Code for: A systematic machine-learning approach to predict severity in Mendelian disorders"
+title: "Code for: Development and evaluation of machine-learning models for Mendelian disease severity"
 type: software
 authors:
   - family-names: Ghasemnejad

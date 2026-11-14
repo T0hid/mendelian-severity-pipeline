@@ -1,6 +1,6 @@
 # Predicting severity in Mendelian disorders
 
-Code, data and trained models for the manuscript "A systematic machine-learning approach to predict severity in Mendelian disorders".
+Code, data and trained models for the manuscript "Development and evaluation of machine-learning models for Mendelian disease severity".
 
 The repository has three parts, in the order of the manuscript:
 
