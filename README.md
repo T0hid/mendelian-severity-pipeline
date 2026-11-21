@@ -2,6 +2,10 @@
 
 Code, data and trained models for the manuscript "Development and evaluation of machine-learning models for Mendelian disease severity".
 
+![Study design](docs/figure_1_study_design.jpg)
+
+*Study design (Figure 1 of the manuscript).*
+
 The repository has three parts, in the order of the manuscript:
 
 | Part | Manuscript | Code |
