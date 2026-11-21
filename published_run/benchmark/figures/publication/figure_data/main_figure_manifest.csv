@@ -1,0 +1,12 @@
+figure,panels,content,evaluation_partition
+Figure 1,a–e,"Severity composition, gene clustering, inheritance prevalence, disease classes and candidate representations",descriptive cohort summaries
+Figure 2,a–c,Candidate model comparison,outer validation only
+Figure 2,d–f,"Selected-model locked-test uncertainty, selection margin and representation contrasts",locked test; validation-selected models only
+Figure 3,a–d,Scenario confusion matrices,locked test; selected models only
+Figure 3,e–h,Scenario reliability curves,locked test; selected models only
+Figure 3,i–k,"Per-class ordinal error composition, ECE and calibration improvement",locked test; selected models only
+Figure 4,a–f,"Split, feature selection, permutation, HPO capacity, imbalance and leakage audit",validation partition only
+Figure 5,a–e,Enlarged scenario interpretation panels and combined S3 phenotype PCA,selected models; PCA fitted on S3 training features and projected to locked test
+Figure 5,f (data only),"SHAP summed within feature family, correcting the per-feature understatement of multi-column families",locked test; selected models only
+Table 1,-,Headline locked-test metrics including ordinal rank correlation and per-threshold AUC,locked test; validation-selected models only
+Table 2,-,"Companion metrics with the gene as the evaluation unit; same locked predictions, no retraining",locked test; validation-selected models only

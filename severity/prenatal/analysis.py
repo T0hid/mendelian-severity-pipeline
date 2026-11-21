@@ -1,5 +1,5 @@
 """Prenatal cohort analysis (Results, "Application to an independent prenatal cohort"; Fig. 5;
-Supplementary Tables 20-23).
+Supplementary Tables 20-22, 25 and 26).
 
 The phenotype-only scorer is applied, without retraining, to the HPO terms recorded for each
 pregnancy. Rows of the same family are combined into one profile. Outcomes are ordered
@@ -11,14 +11,23 @@ and the score is tested against this order with Spearman's rho, Kendall's tau-b,
 concordance index (equation 12), a proportional-odds model (equation 13) with and without the
 contributing cohort as a covariate, Spearman's rho within each cohort, mean score per group,
 the separation of neighbouring groups and three prespecified ROC contrasts.
+
+``count_and_outcome_analyses`` sets the score against two counts that need no training (HPO
+terms and affected organ systems), with and without the genomic-autopsy cohort (Supplementary
+Table 25), and reports termination on its own, continued pregnancies only (fetal or infant
+death, and NICU or special care) and the live births whose NICU status was not recorded
+(Supplementary Table 26). ``scorer_identity.json`` records the scorer file, its SHA-256 and its
+version.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
+from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 import matplotlib
@@ -261,7 +270,7 @@ def score_families(families: pd.DataFrame, scorer) -> pd.DataFrame:
     """Add the phenotype-only severity score (expected severity / 3) to each family.
 
     ``direct_term_effects_json`` holds, for the multichannel version, the change in expected
-    severity when each recorded term is removed (Supplementary Table 23).
+    severity when each recorded term is removed.
     """
     rows: List[Dict[str, Any]] = []
     for terms in families["hpo_list"]:
@@ -276,6 +285,7 @@ def score_families(families: pd.DataFrame, scorer) -> pd.DataFrame:
                 score_status="no_hpo_terms",
                 score_warnings="No HPO terms.",
                 n_terms_supported=0,
+                n_affected_organ_systems=0,
                 direct_term_effects_json="[]",
             )
             rows.append(row)
@@ -293,6 +303,11 @@ def score_families(families: pd.DataFrame, scorer) -> pd.DataFrame:
             score_status=str(result["status"]),
             score_warnings=" | ".join(map(str, result.get("warnings", []))),
             n_terms_supported=int(result.get("n_supported_phenotype_direct_terms", 0)),
+            n_affected_organ_systems=int(
+                ((result.get("severity_dimensions") or {}).get("organ_system_burden") or {}).get(
+                    "n_affected_systems", 0
+                )
+            ),
             direct_term_effects_json=json.dumps(
                 result.get("direct_term_leave_one_out_effects", []), sort_keys=True
             ),
@@ -634,55 +649,13 @@ def adjacent_level_separation(
     return pd.DataFrame(rows)
 
 
-def phenotype_contributions(analysis: pd.DataFrame) -> pd.DataFrame:
-    """Supplementary Table 23: leave-one-term-out changes in expected severity (multichannel
-    version), summed over the analysed families."""
-    records = []
-    for payload in analysis["direct_term_effects_json"]:
-        for effect in json.loads(payload):
-            records.append(
-                {
-                    "hpo_id": effect["hpo_id"],
-                    "name": effect.get("name", ""),
-                    "delta": float(effect["delta_expected_severity_when_present"]),
-                }
-            )
-    if not records:
-        return pd.DataFrame(
-            columns=[
-                "hpo_id",
-                "hpo_term",
-                "families",
-                "mean_change_expected_severity",
-                "total_absolute_contribution",
-                "share_of_total_absolute_contribution",
-            ]
-        )
-    effects = pd.DataFrame(records)
-    effects["abs_delta"] = effects["delta"].abs()
-    table = (
-        effects.groupby("hpo_id")
-        .agg(
-            hpo_term=("name", "first"),
-            families=("delta", "size"),
-            mean_change_expected_severity=("delta", "mean"),
-            total_absolute_contribution=("abs_delta", "sum"),
-        )
-        .reset_index()
-    )
-    table["share_of_total_absolute_contribution"] = (
-        table["total_absolute_contribution"] / table["total_absolute_contribution"].sum()
-    )
-    return table.sort_values("total_absolute_contribution", ascending=False).reset_index(drop=True)
-
-
 # Figure 5
 
 
 def _draw_scorer_confusion(
     ax, heldout: pd.DataFrame, title: str = "a  Scorer held-out confusion matrix"
 ) -> None:
-    """Phenotype-only scorer on the 1,241 held-out diseases: counts and within-row proportions."""
+    """Phenotype-only scorer on the held-out diseases: counts and within-row proportions."""
     observed = heldout["observed"].astype(int).to_numpy()
     predicted = np.clip(np.round(heldout["phenotype_expected"].to_numpy()), 0, len(CLASS_NAMES) - 1).astype(
         int
@@ -952,6 +925,328 @@ def _records(table: pd.DataFrame) -> List[Dict[str, Any]]:
     return table.to_dict(orient="records")
 
 
+# Scorer identity, the score against counts that need no training, termination reported on its
+# own, continued pregnancies, and live births with unknown NICU status (Supplementary Tables 25
+# and 26). Seeds are fixed so that the full cohort reproduces the tables in published_run/prenatal.
+
+OUTCOME_GROUP_NAMES = {
+    0: "Live birth, no NICU", 1: "Live birth, NICU", 2: "Termination", 3: "Fetal or infant death",
+}
+COUNT_MEASURES = {"HPO term count": "n_hpo", "organ-system count": "n_affected_organ_systems"}
+
+
+def _sha256(path: str) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for block in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def scorer_identity(model_path: str) -> Dict[str, Any]:
+    """The scorer behind the prenatal scores: file, SHA-256, version and training size.
+
+    The scorer is fitted on Mendelian disease profiles only; prenatal outcomes are never
+    passed to it.
+    """
+    identity: Dict[str, Any] = {
+        "model_file": os.path.abspath(model_path),
+        "model_sha256": _sha256(model_path),
+        "model_bytes": os.path.getsize(model_path),
+        "model_file_modified": datetime.fromtimestamp(os.path.getmtime(model_path)).isoformat(),
+    }
+    meta_path = os.path.join(os.path.dirname(model_path), "metadata.json")
+    if os.path.exists(meta_path):
+        with open(meta_path, encoding="utf-8") as handle:
+            meta = json.load(handle)
+        identity.update(
+            {
+                "model_created": meta.get("created"),
+                "scorer_version": meta.get("pipeline_version"),
+                "diseases_used_for_final_fit": meta.get("n_diseases"),
+                "development_diseases": meta.get("split_audit", {}).get("development_diseases"),
+                "held_out_diseases": meta.get("split_audit", {}).get("test_diseases"),
+                "phenotype_features": meta.get("feature_counts", {}).get("phenotype"),
+            }
+        )
+    identity["prenatal_outcomes_used_to_fit_scorer"] = False
+    return identity
+
+
+def _spearman_with_interval(x, y, n_boot: int, seed: int, n_perm: int = 0):
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    rho = stats.spearmanr(x, y)[0]
+    rng = np.random.RandomState(seed)
+    values = []
+    for _ in range(n_boot):
+        i = rng.randint(0, len(x), len(x))
+        if len(np.unique(y[i])) < 2 or len(np.unique(x[i])) < 2:
+            continue
+        values.append(stats.spearmanr(x[i], y[i])[0])
+    if not values:
+        return rho, float("nan"), float("nan"), float("nan")
+    p = float("nan")
+    if n_perm:
+        prng = np.random.RandomState(seed + 1)
+        null = [abs(stats.spearmanr(x, prng.permutation(y))[0]) for _ in range(n_perm)]
+        p = (1 + np.sum(np.asarray(null) >= abs(rho))) / (n_perm + 1)
+    return rho, np.percentile(values, 2.5), np.percentile(values, 97.5), p
+
+
+def _partial_spearman(score, count, outcome) -> float:
+    """Spearman correlation of score and outcome after removing the count (rank residuals)."""
+    rs, rc, ry = (stats.rankdata(v) for v in (score, count, outcome))
+    design = np.column_stack([np.ones_like(rc), rc])
+    res_s = rs - design @ np.linalg.lstsq(design, rs, rcond=None)[0]
+    res_y = ry - design @ np.linalg.lstsq(design, ry, rcond=None)[0]
+    if np.std(res_s) == 0 or np.std(res_y) == 0:
+        return float("nan")
+    return float(np.corrcoef(res_s, res_y)[0, 1])
+
+
+def _partial_spearman_with_interval(score, count, outcome, n_boot: int, seed: int):
+    s, c, y = (np.asarray(v, float) for v in (score, count, outcome))
+    value = _partial_spearman(s, c, y)
+    rng = np.random.RandomState(seed)
+    boot = []
+    for _ in range(n_boot):
+        i = rng.randint(0, len(s), len(s))
+        if len(np.unique(y[i])) < 2:
+            continue
+        v = _partial_spearman(s[i], c[i], y[i])
+        if np.isfinite(v):
+            boot.append(v)
+    if not boot:
+        return value, float("nan"), float("nan")
+    return value, np.percentile(boot, 2.5), np.percentile(boot, 97.5)
+
+
+def _standardise(values) -> np.ndarray:
+    values = np.asarray(values, float)
+    sd = values.std()
+    return (values - values.mean()) / (sd if sd > 0 else 1.0)
+
+
+def _proportional_odds_fit(y, design):
+    try:
+        return OrderedModel(np.asarray(y, int), design, distr="logit").fit(method="bfgs", disp=False)
+    except Exception:
+        return None
+
+
+def _auc_against_count(y_bin, a, b, n_boot: int, seed: int) -> Dict[str, float]:
+    """AUC of a and of b, and the bootstrap interval of a minus b (families resampled)."""
+    y_bin, a = np.asarray(y_bin, int), np.asarray(a, float)
+    b = None if b is None else np.asarray(b, float)
+    out = {"auc": roc_auc_score(y_bin, a)}
+    if b is not None:
+        out["auc_count"] = roc_auc_score(y_bin, b)
+    rng = np.random.RandomState(seed)
+    va, vd = [], []
+    for _ in range(n_boot):
+        i = rng.randint(0, len(y_bin), len(y_bin))
+        if y_bin[i].min() == y_bin[i].max():
+            continue
+        x = roc_auc_score(y_bin[i], a[i])
+        va.append(x)
+        if b is not None:
+            vd.append(x - roc_auc_score(y_bin[i], b[i]))
+    out["auc_ci_low"], out["auc_ci_high"] = np.percentile(va, 2.5), np.percentile(va, 97.5)
+    if b is not None:
+        out["auc_difference"] = out["auc"] - out["auc_count"]
+        out["difference_ci_low"] = np.percentile(vd, 2.5)
+        out["difference_ci_high"] = np.percentile(vd, 97.5)
+    return out
+
+
+def count_and_outcome_analyses(
+    analysis: pd.DataFrame,
+    output: str,
+    outcome_level_col: str = "outcome",
+    n_boot: int = 2000,
+    n_perm: int = 2000,
+) -> Dict[str, Any]:
+    """Score against simple counts, and outcomes that do not rest on termination.
+
+    Writes score_vs_counts_rank.csv, score_vs_counts_odds.csv,
+    termination_reported_separately.csv, continued_pregnancies_auc.csv,
+    unknown_nicu_sensitivity.csv and outcome_labels_by_source.csv.
+    """
+    fam = analysis.copy().reset_index(drop=True)
+    fam["y4"] = fam[outcome_level_col].astype(int)
+    cohort = fam[STUDY_COL].map(contributing_cohort)
+    fam["autopsy"] = cohort == "PED_cohort"
+    fam["pregen"] = cohort == "PreGen (in-house)"
+    fam["unknown_nicu"] = (
+        fam[OUTCOME_COL].astype(str).str.strip().str.lower().isin(["livebirth", "live birth"])
+    )
+
+    subsets = [
+        ("all families", fam),
+        ("without genomic-autopsy cohort", fam[~fam["autopsy"]]),
+        ("PreGen only", fam[fam["pregen"]]),
+        ("continued pregnancies (termination excluded)", fam[fam["y4"] != 2]),
+        (
+            "continued pregnancies, without genomic-autopsy cohort",
+            fam[(fam["y4"] != 2) & ~fam["autopsy"]],
+        ),
+    ]
+    rank_rows: List[Dict[str, Any]] = []
+    odds_rows: List[Dict[str, Any]] = []
+    for k, (label, frame) in enumerate(subsets):
+        y = frame["y4"].to_numpy()
+        if label.startswith("continued"):
+            y = frame["y4"].map({0: 0, 1: 1, 3: 2}).to_numpy()
+        if len(frame) < 4 or len(np.unique(y)) < 2:
+            continue
+        measures = [("severity score", "severity_score")] + list(COUNT_MEASURES.items())
+        for j, (name, column) in enumerate(measures):
+            rho, lo, hi, p = _spearman_with_interval(frame[column], y, n_boot, 10 * k + j, n_perm)
+            rank_rows.append(
+                {"subset": label, "n": len(frame), "measure": name, "spearman_rho": rho,
+                 "ci95_low": lo, "ci95_high": hi, "perm_p": p}
+            )
+        for name, column in COUNT_MEASURES.items():
+            rank_rows.append(
+                {"subset": label, "n": len(frame), "measure": f"score vs {name}",
+                 "spearman_rho": stats.spearmanr(frame["severity_score"], frame[column])[0]}
+            )
+            value, lo, hi = _partial_spearman_with_interval(
+                frame["severity_score"], frame[column], y, n_boot, 100 + 10 * k
+            )
+            rank_rows.append(
+                {"subset": label, "n": len(frame), "measure": f"score given {name} (partial)",
+                 "spearman_rho": value, "ci95_low": lo, "ci95_high": hi}
+            )
+            z_s, z_c = _standardise(frame["severity_score"]), _standardise(frame[column])
+            fits = {
+                "score only": _proportional_odds_fit(y, z_s.reshape(-1, 1)),
+                f"{name} only": _proportional_odds_fit(y, z_c.reshape(-1, 1)),
+                f"score + {name}": _proportional_odds_fit(y, np.column_stack([z_s, z_c])),
+            }
+            for model_name, fit in fits.items():
+                if fit is None:
+                    continue
+                names = (
+                    ["severity score"] if model_name == "score only"
+                    else [name] if model_name.endswith("only")
+                    else ["severity score", name]
+                )
+                for idx, covariate in enumerate(names):
+                    beta, se = float(fit.params[idx]), float(fit.bse[idx])
+                    odds_rows.append(
+                        {"subset": label, "n": len(frame), "model": model_name,
+                         "covariate": covariate, "or_per_sd": np.exp(beta),
+                         "ci95_low": np.exp(beta - 1.96 * se),
+                         "ci95_high": np.exp(beta + 1.96 * se), "log_likelihood": fit.llf}
+                    )
+            both, reduced = fits[f"score + {name}"], fits[f"{name} only"]
+            if both is not None and reduced is not None:
+                lr = 2 * (both.llf - reduced.llf)
+                odds_rows.append(
+                    {"subset": label, "n": len(frame),
+                     "model": f"likelihood-ratio test: score added to {name}",
+                     "lr_statistic": lr, "p_value": stats.chi2.sf(max(lr, 0), 1)}
+                )
+    rank = pd.DataFrame(rank_rows)
+    odds = pd.DataFrame(odds_rows).drop_duplicates()
+    rank.to_csv(os.path.join(output, "score_vs_counts_rank.csv"), index=False)
+    odds.to_csv(os.path.join(output, "score_vs_counts_odds.csv"), index=False)
+
+    term_rows: List[Dict[str, Any]] = []
+    for level, name in OUTCOME_GROUP_NAMES.items():
+        values = fam.loc[fam["y4"] == level, "severity_score"]
+        if len(values) < 2:
+            continue
+        se = values.std(ddof=1) / np.sqrt(len(values))
+        term_rows.append(
+            {"group": name, "n": len(values), "mean_score": values.mean(),
+             "ci95_low": values.mean() - 1.96 * se, "ci95_high": values.mean() + 1.96 * se}
+        )
+    contrasts = [
+        ("Termination vs all live births", fam[fam["y4"].isin([0, 1, 2])], 2),
+        ("Termination vs live birth without NICU", fam[fam["y4"].isin([0, 2])], 2),
+        ("Fetal or infant death vs termination", fam[fam["y4"].isin([2, 3])], 3),
+    ]
+    for i, (name, frame, positive_level) in enumerate(contrasts):
+        if frame["y4"].nunique() < 2:
+            continue
+        res = _auc_against_count(
+            (frame["y4"] == positive_level).astype(int), frame["severity_score"], frame["n_hpo"],
+            n_boot, 300 + i,
+        )
+        term_rows.append(
+            {"group": name, "n": len(frame), "auc": res["auc"], "ci95_low": res["auc_ci_low"],
+             "ci95_high": res["auc_ci_high"], "auc_hpo_term_count": res["auc_count"]}
+        )
+    termination = pd.DataFrame(term_rows)
+    termination.to_csv(os.path.join(output, "termination_reported_separately.csv"), index=False)
+
+    cont_rows: List[Dict[str, Any]] = []
+    cont_sets = [
+        ("all continued pregnancies", fam[fam["y4"] != 2]),
+        ("continued, without genomic-autopsy cohort", fam[(fam["y4"] != 2) & ~fam["autopsy"]]),
+        ("continued, PreGen only", fam[(fam["y4"] != 2) & fam["pregen"]]),
+        ("continued, unknown NICU status excluded", fam[(fam["y4"] != 2) & ~fam["unknown_nicu"]]),
+    ]
+    for k, (label, frame) in enumerate(cont_sets):
+        death = (frame["y4"] == 3).astype(int)
+        if death.nunique() < 2:
+            continue
+        for count_name, column in COUNT_MEASURES.items():
+            r = _auc_against_count(death, frame["severity_score"], frame[column], n_boot, 400 + 10 * k)
+            cont_rows.append(
+                {"subset": label, "contrast": "fetal or infant death vs live birth",
+                 "comparator": count_name, "n_positive": int(death.sum()),
+                 "n_negative": int(len(death) - death.sum()), **r}
+            )
+        live = frame[frame["y4"].isin([0, 1])]
+        nicu = (live["y4"] == 1).astype(int)
+        if nicu.nunique() == 2:
+            for count_name, column in COUNT_MEASURES.items():
+                r = _auc_against_count(nicu, live["severity_score"], live[column], n_boot, 500 + 10 * k)
+                cont_rows.append(
+                    {"subset": label, "contrast": "NICU or special care vs no NICU (live births)",
+                     "comparator": count_name, "n_positive": int(nicu.sum()),
+                     "n_negative": int(len(nicu) - nicu.sum()), **r}
+                )
+    continued = pd.DataFrame(cont_rows)
+    continued.to_csv(os.path.join(output, "continued_pregnancies_auc.csv"), index=False)
+
+    sens_rows: List[Dict[str, Any]] = []
+    for label, frame in [
+        ("all analysed families", fam),
+        ("unknown NICU status excluded", fam[~fam["unknown_nicu"]]),
+    ]:
+        rho, lo, hi, p = _spearman_with_interval(frame["severity_score"], frame["y4"], n_boot, 600, n_perm)
+        fit = _proportional_odds_fit(frame["y4"], _standardise(frame["severity_score"]).reshape(-1, 1))
+        row = {"analysis": label, "n": len(frame), "spearman_rho": rho, "ci95_low": lo,
+               "ci95_high": hi, "perm_p": p}
+        if fit is not None:
+            beta, se = float(fit.params[0]), float(fit.bse[0])
+            row.update(
+                {"or_per_sd": np.exp(beta), "or_ci95_low": np.exp(beta - 1.96 * se),
+                 "or_ci95_high": np.exp(beta + 1.96 * se)}
+            )
+        sens_rows.append(row)
+    unknown = pd.DataFrame(sens_rows)
+    unknown.to_csv(os.path.join(output, "unknown_nicu_sensitivity.csv"), index=False)
+
+    labels = fam.groupby([STUDY_COL, OUTCOME_COL]).size().rename("families").reset_index()
+    labels.to_csv(os.path.join(output, "outcome_labels_by_source.csv"), index=False)
+    return {
+        "n_families": int(len(fam)),
+        "n_genomic_autopsy": int(fam["autopsy"].sum()),
+        "n_pregen": int(fam["pregen"].sum()),
+        "n_unknown_nicu": int(fam["unknown_nicu"].sum()),
+        "score_vs_counts_rank": _records(rank),
+        "score_vs_counts_odds": _records(odds),
+        "termination_reported_separately": _records(termination),
+        "continued_pregnancies_auc": _records(continued),
+        "unknown_nicu_sensitivity": _records(unknown),
+    }
+
+
 def run(
     cohort: str,
     model: str,
@@ -966,6 +1261,20 @@ def run(
     families, audit = load_cohort(cohort, exclude_studies)
     scorer = load_scorer(model)
     families = score_families(families, scorer)
+    return analyse_scored_families(families, audit, model, heldout, output, n_boot, n_perm)
+
+
+def analyse_scored_families(
+    families: pd.DataFrame,
+    audit: Dict[str, Any],
+    model: str,
+    heldout: str,
+    output: str,
+    n_boot: int = 2000,
+    n_perm: int = 2000,
+) -> Dict[str, Any]:
+    """Association statistics, tables, ``statistics.json`` and Fig. 5 for scored families."""
+    os.makedirs(output, exist_ok=True)
     analysis = families[families["included_in_analysis"]].reset_index(drop=True)
     audit["n_scoreable"] = int(families["score_available"].sum())
     audit["n_not_scoreable"] = int((~families["score_available"]).sum())
@@ -986,9 +1295,12 @@ def run(
     means = mean_ci_by_outcome(analysis)
     contrasts = roc_contrasts(analysis)
     adjacent = adjacent_level_separation(analysis, n_boot=n_boot)
-    contributions = phenotype_contributions(analysis)
+    identity = scorer_identity(model)
+    with open(os.path.join(output, "scorer_identity.json"), "w", encoding="utf-8") as handle:
+        json.dump(identity, handle, indent=2, default=str)
+    counts_and_outcomes = count_and_outcome_analyses(analysis, output, n_boot=n_boot, n_perm=n_perm)
 
-    export = families.drop(columns=["hpo_list"])
+    export = families.drop(columns=["hpo_list"], errors="ignore")
     export.to_csv(os.path.join(output, "severity_by_family.csv"), index=False)
     export[export["included_in_analysis"]].to_csv(os.path.join(output, "severity_analysis.csv"), index=False)
     means.to_csv(os.path.join(output, "mean_by_outcome.csv"), index=False)
@@ -997,7 +1309,6 @@ def run(
         os.path.join(output, "roc_contrasts.csv"), index=False
     )
     adjacent.to_csv(os.path.join(output, "adjacent_level_separation.csv"), index=False)
-    contributions.to_csv(os.path.join(output, "phenotype_contributions.csv"), index=False)
     within.to_csv(os.path.join(output, "within_cohort_spearman.csv"), index=False)
 
     statistics = {
@@ -1008,6 +1319,8 @@ def run(
         "within_cohort_spearman": _records(within),
         "roc_contrasts": _records(roc_table),
         "adjacent_level_separation": _records(adjacent),
+        "scorer_identity": identity,
+        "counts_and_continued_pregnancies": counts_and_outcomes,
         "score_label": SCORE_LABEL,
     }
     with open(os.path.join(output, "statistics.json"), "w") as handle:

@@ -1,2 +1,2 @@
 Scenario,Model,group,rank,n_features,mean_abs_group_shap,mean_signed_group_shap,share_pairs_raised,top_feature,top_feature_label,top_feature_mean_abs_shap,share_of_total
-S3_Phenotype,MultinomialLogisticRegression,HPO findings,1,5200,0.6847481989179917,-0.178194311813062,0.4226415094339623,hpo_HP_0001250,Seizure,0.04829314503435949,1.0
+S3_Phenotype,OrdinalDecomp,HPO findings,1,4955,0.7507408833747502,-0.10830522606781853,0.42981760507533706,hpo_HP_0000252,Microcephaly,0.1005978556267808,1.0

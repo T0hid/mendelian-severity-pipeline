@@ -16,7 +16,7 @@ has its own regularisation, class weighting and isotonic calibration; the upper 
 scaling. Calibrated boundary probabilities are projected to be non-increasing (equation 8) and
 converted to class probabilities (equation 5), expected severity and a 0-1 score (equation 6).
 Twenty-four configurations are compared by five-fold cross-validation repeated three times
-within the 4,963 development diseases, using equation (7). The phenotype-only scorer, refitted
+within the 4,776 development diseases, using equation (7). The phenotype-only scorer, refitted
 on all diseases, is the deployed model.
 
 Severity classes: Mild = 0, Moderate = 1, Severe = 2, Profound = 3.

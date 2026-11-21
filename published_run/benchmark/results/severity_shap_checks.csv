@@ -1,5 +1,5 @@
 Scenario,Model,method,n_pairs,n_columns,n_features_after_merging_missing_flags,max_additivity_error,seconds,boundary_crossing_fraction,mean_abs_gap_to_expected_class,max_abs_gap_to_expected_class,background_n
-S1_Mechanistic,ExtraTrees,"tree-path-dependent TreeExplainer (probability), expected severity class",1325,48,48,5.359046539865631e-13,0.222724,,,,
-S1b_Disease_Context,ExtraTrees,"tree-path-dependent TreeExplainer (probability), expected severity class",1325,66,66,4.8405723873656825e-14,0.301811,,,,
-S2_Mech_Pheno,OrdinalDecomp,interventional TreeExplainer (probability) summed over the three ordinal boundaries; split cutoffs represented by exact ranks,1325,5377,5377,1.2982428465591056e-08,91.306246,0.39773584905660375,0.0027407880573594385,0.7950608883649375,100.0
-S3_Phenotype,MultinomialLogisticRegression,"permutation SHAP, expected severity class",1325,5200,5200,1.7763568394002505e-15,5211.406645,,,,25.0
+S1_Mechanistic,ExtraTrees,"tree-path-dependent TreeExplainer (probability), expected severity class",1261,50,50,5.5715432267788856e-12,0.216193,,,,
+S1b_Disease_Context,ExtraTrees,"tree-path-dependent TreeExplainer (probability), expected severity class",1261,67,67,8.260059303211165e-14,0.168961,,,,
+S2_Mech_Pheno,OrdinalDecomp,interventional TreeExplainer (probability) summed over the three ordinal boundaries; split cutoffs represented by exact ranks,1261,5130,5130,8.473290513677512e-09,85.093255,0.32275971451229185,0.002292262446355481,0.8785387226445411,100.0
+S3_Phenotype,OrdinalDecomp,interventional TreeExplainer (probability) summed over the three ordinal boundaries,1261,4955,4955,9.879871365470194e-09,55.921478,0.4639175257731959,0.015607731394761348,1.3672298128444051,100.0

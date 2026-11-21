@@ -2,13 +2,14 @@
 
 Checks that use the saved models and results (minutes):
     verify     rebuild the features, re-score the test set with the saved models (before and after
-               calibration), compare with Table 1 and Supplementary Table 5
+               calibration), compare with Table 1 and Supplementary Table 5, and recompute the
+               tables derived from the stored test predictions
     figures    redraw Figs 2-4, Extended Data Figs 1-3 and Table 1 from the saved results
     prenatal   apply the saved scorer to the public prenatal cohort and draw Fig. 5
     score      score your own HPO profiles with the saved scorer
 
 Full retraining (hours):
-    train-benchmark   rerun the whole benchmark (about 18 h on one workstation)
+    train-benchmark   rerun the whole benchmark (about 23 h on one workstation)
     train-scorer      retrain the disease-level scorer
 """
 
@@ -78,6 +79,8 @@ def cmd_verify(args) -> None:
         f"{report['metrics_matching']}/{report['metrics_checked']}"
     )
     print(f"Extended Data Fig. 3 data match the saved run: {report['extended_data_fig_3_matches_saved']}")
+    for name, matches in report["tables_from_stored_predictions_match_saved"].items():
+        print(f"{name} recomputed from stored predictions matches the saved table: {matches}")
     print("PASSED" if report["passed"] else "FAILED")
     if not report["passed"]:
         sys.exit(1)
@@ -195,7 +198,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--output", default="outputs/scores.csv")
     p.set_defaults(func=cmd_score)
 
-    p = sub.add_parser("train-benchmark", help="rerun the full benchmark (about 18 h)")
+    p = sub.add_parser("train-benchmark", help="rerun the full benchmark (about 23 h)")
     p.add_argument("--output", default="outputs/benchmark")
     p.set_defaults(func=cmd_train_benchmark)
 

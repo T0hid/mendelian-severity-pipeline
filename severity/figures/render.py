@@ -46,8 +46,17 @@ def load_cohort(run: Path, mapping_path: Path, config: dict) -> Tuple[SimpleName
     class_ids = cohort["severity"].str.title().map(panels.CLASS_INDICES)
     if class_ids.isna().any():
         raise ValueError("The gene-disease mapping does not cover the saved split.")
+    unknown = {str(value).strip().lower() for value in config.get("MOI_UNKNOWN", ("Unknown", ""))}
+    modes = [
+        {mode.strip() for mode in str(value).split("|") if mode.strip() and mode.strip().lower() not in unknown}
+        if pd.notna(value)
+        else set()
+        for value in cohort["moi_title"]
+    ]
+    # Same rule as the pipeline: a pair is flagged when any of its recorded modes is in the group.
     for column, key in MOI_KEYS:
-        cohort[column] = cohort["moi_title"].isin(config[key])
+        group = set(config[key])
+        cohort[column] = [bool(known & group) for known in modes]
 
     inventory = _read_csv(run / "results" / "feature_provenance_table.csv")
     active = inventory.loc[inventory["included_in_main_clean_run"]]

@@ -1,10 +1,9 @@
-"""HPO-verified gene-disease mapping (Data and severity labels).
+"""Gene-disease mapping filter (Data and severity labels).
 
-Every gene-disease pair is checked against the HPO gene-to-disease annotations
-(release 2025-11-24) using the disease's OMIM or Orphanet identifier. Pairs that HPO
-does not support are removed before any feature is built; this removes 59 of the
-6,684 candidate pairs. ``gene_disease_mapping_HPO_rebuilt.csv`` records the decision
-for each pair (``status`` and ``use_in_rebuilt_corpus``).
+``gene_disease_mapping_HPO_rebuilt.csv`` lists every candidate gene-disease pair (8,467) with
+its decision (``status`` KEPT or DROP, ``drop_reason`` and ``use_in_rebuilt_corpus``). Only the
+6,298 kept pairs are used; every other row of the training table is removed before any feature
+is built. The benchmark and the scorer apply the same filter.
 """
 
 import os
@@ -40,7 +39,7 @@ def apply_rebuilt_mapping(
     audit_dir: Optional[str] = None,
     audit_name: str = "gene_disease_mapping_filter_audit.csv",
 ) -> pd.DataFrame:
-    """Keep only the rows of ``df`` whose gene-disease pair is supported by HPO."""
+    """Keep only the rows of ``df`` whose gene-disease pair is kept in the mapping."""
 
     def emit(message: str) -> None:
         if log is not None:

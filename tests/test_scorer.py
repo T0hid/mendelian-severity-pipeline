@@ -27,11 +27,11 @@ def test_disease_split_matches_published(tmp_path):
     pairs, names, _ = load_pairs(str(inputs / "final_output_with_severity.csv"), str(tmp_path))
     expander = OntologyExpander().load(str(inputs / "hp.obo"))
     pairs, _ = prepare_terms(pairs, expander, names, severity_term_policy="phenotype")
-    assert len(pairs) == 6204
+    assert len(pairs) == 5970
     _, test = optimised_disease_disjoint_split(pairs, 0.2, RANDOM_SEED)
     published = pd.read_csv(PUBLISHED / "disease_split_membership.csv")
     assert set(test["mondo_id"]) == set(published.loc[published["partition"] == "test", "mondo_id"])
-    assert len(test) == 1241
+    assert len(test) == 1194
 
 
 def test_example_profiles_are_scored(scorer):

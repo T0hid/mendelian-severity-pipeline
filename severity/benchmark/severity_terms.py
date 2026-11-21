@@ -10,7 +10,7 @@ from typing import List, Optional, Tuple
 
 from .runtime import HPO_COLUMN_TERM_NAMES
 
-# Rule 1. Names are from hp.obo, release 2025-11-24.
+# Rule 1. Names are from hp.obo.
 SEVERITY_HPO_IDS = {
     "HP:0001522",  # Death in infancy
     "HP:0003811",  # Neonatal death

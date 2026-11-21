@@ -16,7 +16,7 @@ warnings.filterwarnings(
     module="sklearn",
 )
 
-PIPELINE_VERSION = "4.10.0"
+PIPELINE_VERSION = "4.11.0"
 RANDOM_SEED = 42
 np.random.seed(RANDOM_SEED)
 
@@ -71,11 +71,15 @@ class Config:
     TARGET_MAP = {"Mild": 0, "Moderate": 1, "Severe": 2, "Profound": 3}
     NUM_CLASSES = 4
     TARGET_LABEL_PROVENANCE = (
-        "Severity labels were assigned by evidence-grounded LLM agents that apply the Lazarin "
-        "framework to published phenotype evidence; they are not case-by-case expert adjudications."
+        "Severity labels were assigned by an evidence-grounded artificial-intelligence agent "
+        "operationalising the Lazarin and ACMG severity framework from published phenotype "
+        "evidence, with concordance reported against expert-curated cohorts; they are not case-"
+        "by-case expert adjudications. HPO-aware scenarios therefore assess reproducibility and"
+        " internal generalisation of phenotype-informed curation, not validation against a "
+        "phenotype-independent outcome."
     )
 
-    # ---- Data partitioning and nested cross-validation (equation 1) ----------------------
+    # ---- Data partitioning and grouped cross-validation (equation 1) ----------------------
     TEST_SIZE = 0.2
     VAL_SIZE = 0.15  # fraction of all pairs
     SPLIT_SEARCH_ITERATIONS = 1000
@@ -134,7 +138,56 @@ class Config:
     TEXT_VOCAB_TOP_N = 20
     TEXT_PLACEHOLDER_TOKENS = ("unknown", "na", "n/a", "none", "nan", "null", "-")
     TEXT_EXCLUDED_SOURCE_COLUMNS = ("Expression_Sites", "Interacting_Genes")
-    MONDO_CLASS_ROOT = "MONDO:0700096"  # "human disease"; its direct subclasses are the MONDO features
+    MONDO_CLASS_ROOT = "MONDO:0700096"  # "human disease"
+    # From MONDO 2026-09-01, "human disease" has only four grouping classes as direct
+    # subclasses. The disease classes are therefore fixed to the 44 direct subclasses of
+    # MONDO:0700096 in release 2026-03-03. Each ID is checked against its label at run time.
+    MONDO_CLASS_IDS = {
+        "MONDO:0002022": "disorder of orbital region",
+        "MONDO:0002025": "psychiatric disorder",
+        "MONDO:0002051": "integumentary system disorder",
+        "MONDO:0002081": "musculoskeletal system disorder",
+        "MONDO:0002118": "urinary system disorder",
+        "MONDO:0002254": "syndromic disease",
+        "MONDO:0002409": "auditory system disorder",
+        "MONDO:0002657": "breast disorder",
+        "MONDO:0003847": "hereditary disease",
+        "MONDO:0003900": "connective tissue disorder",
+        "MONDO:0004335": "digestive system disorder",
+        "MONDO:0004995": "cardiovascular disorder",
+        "MONDO:0005039": "reproductive system disorder",
+        "MONDO:0005046": "immune system disorder",
+        "MONDO:0005066": "metabolic disease",
+        "MONDO:0005071": "nervous system disorder",
+        "MONDO:0005087": "respiratory system disorder",
+        "MONDO:0005137": "nutritional disorder",
+        "MONDO:0005151": "endocrine system disorder",
+        "MONDO:0005550": "infectious disease",
+        "MONDO:0005570": "hematologic disorder",
+        "MONDO:0006858": "mouth disorder",
+        "MONDO:0019040": "chromosomal disorder",
+        "MONDO:0019303": "premature aging syndrome",
+        "MONDO:0020683": "acute disease",
+        "MONDO:0021147": "disorder of development or morphogenesis",
+        "MONDO:0021166": "inflammatory disease",
+        "MONDO:0021669": "post-infectious disorder",
+        "MONDO:0024322": "disorder of glycosylation",
+        "MONDO:0024458": "disorder of visual system",
+        "MONDO:0024623": "otorhinolaryngologic disease",
+        "MONDO:0029000": "poisoning",
+        "MONDO:0043459": "radiation-induced disorder",
+        "MONDO:0043543": "iatrogenic disease",
+        "MONDO:0043839": "ulcer disease",
+        "MONDO:0044970": "mitochondrial disease",
+        "MONDO:0044991": "upper digestive tract disorder",
+        "MONDO:0045024": "cancer or benign tumor",
+        "MONDO:0100081": "sleep disorder",
+        "MONDO:0100086": "perinatal disease",
+        "MONDO:0100366": "occupational disorder",
+        "MONDO:0700003": "obstetric disorder",
+        "MONDO:0700007": "idiopathic disease",
+        "MONDO:0700220": "disease related to transplantation",
+    }
     HPO_ANCESTOR_MAX_HOPS = 0  # HPO terms enter as directly recorded terms only
     HPO_ANCESTOR_EXCLUDED_IDS = ("HP:0000001", "HP:0000118")
 
@@ -234,7 +287,7 @@ class Config:
         "external": 40,
         "missingness_indicator": 20,
     }
-    # Limit on directly recorded HPO terms, chosen once for S3 by nested CV and shared with S2.
+    # Limit on directly recorded HPO terms, chosen once for S3 by grouped CV and shared with S2.
     HPO_BUDGET_ALL_ELIGIBLE = 10000  # "no limit": larger than the number of HPO columns
     HPO_BUDGET_CANDIDATES = [200, 300, 400, 600, 800, 1200, 1600, 2400, 3200, 5200, HPO_BUDGET_ALL_ELIGIBLE]
     SHARED_HPO_BUDGET_SCENARIOS = ("S2_Mech_Pheno", "S3_Phenotype")
@@ -277,7 +330,7 @@ class Config:
     # ---- SHAP (expected severity class of the uncalibrated model) -------------------------
     ORDINAL_EXPLANATION_POLICY = "uncalibrated_boundary_models_only"
     SEVERITY_SHAP_BACKGROUND_N = 100
-    SEVERITY_SHAP_PERMUTATION_BACKGROUND_N = 25
+    SEVERITY_SHAP_PERMUTATION_BACKGROUND_N = 100
 
     # ---- Statistics ------------------------------------------------------------------------
     N_BOOTSTRAP = 1000

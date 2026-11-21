@@ -3,7 +3,7 @@
 | File | Content |
 |---|---|
 | `training_tables.zip` | Inputs of the benchmark and the scorer (below) |
-| `ontologies.zip` | `hp.obo` (HPO release 2025-11-24) and `mondo.obo` (MONDO release 2026-03-03), as used for the published run |
+| `ontologies.zip` | `hp.obo` (HPO release 2026-09-01) and `mondo.obo` (MONDO release 2026-09-01), as used for the published run. The MONDO disease-class features are the 44 direct subclasses of "human disease" in MONDO release 2026-03-03, fixed by identifier (`severity/benchmark/config.py: MONDO_CLASS_IDS`) |
 | `checksums.json` | SHA-256 of every unpacked file; `run.py` checks them before use |
 | `prenatal_cohort_public.csv` | Published prenatal cases (275 rows). The in-house part of the cohort is not shared |
 | `example_profiles.csv` | Two synthetic HPO profiles for `run.py score` |
@@ -13,7 +13,7 @@ Contents of `training_tables.zip`:
 | File | Content |
 |---|---|
 | `final_output_with_severity.csv` | Gene, MONDO disease, HPO terms and severity label of each gene-disease pair |
-| `gene_disease_mapping_HPO_rebuilt.csv` | The rebuilt gene-disease mapping; only pairs marked `KEPT` are used |
+| `gene_disease_mapping_HPO_rebuilt.csv` | Every candidate gene-disease pair (8,467) with its decision; only the 6,298 pairs marked `KEPT` are used |
 | `final_gnn_dataset.csv` | Gene-level annotation terms. No graph neural network is used; the name is kept so that the checksums match the published run |
 | `CONSOLIDATED_FEATURES_v2/*.csv` | Gene-level constraint, expression, paralogue and mouse features |
 
@@ -25,4 +25,4 @@ The source of every feature is listed in Supplementary Table 1. The published ru
 
 `family_id`, `study`, `hpo_ids` (HPO identifiers separated by `;`) and `pregnancy_outcome` are used. Rows with the same `family_id` are combined into one profile. Outcome labels are mapped to four ordered groups in `severity/prenatal/analysis.py: map_outcome`.
 
-The gene annotation table and the two ontology files are also archived at Zenodo: [10.5281/zenodo.24026146](https://doi.org/10.5281/zenodo.24026146) (CC BY 4.0).
+The gene annotation table is also archived at Zenodo as `final__dataset.csv`: [10.5281/zenodo.24026146](https://doi.org/10.5281/zenodo.24026146) (CC BY 4.0). The ontology files in that record are earlier releases (HPO 2025-11-24, MONDO 2026-03-03); the releases used for the published run are the ones in `ontologies.zip`.

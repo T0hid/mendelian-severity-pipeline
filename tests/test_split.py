@@ -8,7 +8,7 @@ SPLIT = ROOT / "published_run" / "benchmark" / "results" / "split_identifiers_pr
 
 def test_partition_sizes():
     split = pd.read_csv(SPLIT)
-    assert split["partition"].value_counts().to_dict() == {"train": 4306, "test": 1325, "validation": 994}
+    assert split["partition"].value_counts().to_dict() == {"train": 4093, "test": 1261, "validation": 944}
 
 
 def test_each_pair_in_one_partition():

@@ -54,10 +54,10 @@ def test_saved_figure_data_agree_with_fig_3_and_table_1():
 
 def test_saved_change_counts():
     changes = pd.read_csv(FIGURE_DATA / CHANGES_FILE).set_index("Scenario")
-    assert changes["n_test"].eq(1325).all()
+    assert changes["n_test"].eq(1261).all()
     assert json.loads(changes["n_changed"].to_json()) == {
-        "S1_Mechanistic": 182,
-        "S1b_Disease_Context": 134,
-        "S2_Mech_Pheno": 91,
-        "S3_Phenotype": 186,
+        "S1_Mechanistic": 249,
+        "S1b_Disease_Context": 105,
+        "S2_Mech_Pheno": 30,
+        "S3_Phenotype": 172,
     }

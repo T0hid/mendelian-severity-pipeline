@@ -5,8 +5,11 @@ The steps follow the Online Methods:
 1. assemble the feature table and the four feature sets (``features``);
 2. split the pairs into training, validation and test sets (``partition``);
 3. for each feature set, tune, select, calibrate and test the model families, and repeat the
-   whole workflow for the disease-disjoint and gene-and-disease-disjoint evaluations (``workflow``);
-4. bootstrap confidence intervals, paired comparisons and calibration tables (``evaluation``);
+   whole workflow for the disease-disjoint and gene-and-disease-disjoint evaluations, saving
+   their test predictions (``workflow``);
+4. bootstrap confidence intervals, paired comparisons, calibration tables, the moderate/severe
+   cut-off, the comparison by number of recorded HPO terms, and metrics before and after
+   calibration (``evaluation``);
 5. sensitivity analyses and robustness checks (``sensitivity``);
 6. SHAP feature attributions (``interpretation``);
 7. figures (``severity.figures``);
@@ -24,7 +27,10 @@ from .evaluation import (
     analyze_error_types,
     compute_ece_table,
     create_publication_table,
+    raw_vs_calibrated_table,
     run_bootstrap_all,
+    run_hpo_term_count_comparison,
+    run_moderate_severe_cutoff_analysis,
     run_paired_scenario_contrasts,
 )
 from .features import assemble_full_dataframe
@@ -65,6 +71,11 @@ def run_publication_analyses(all_results: Dict, container: DataContainer) -> Non
     run_budget_sensitivity(container, all_results)  # Extended Data Fig. 2d
     run_permutation_test(container, all_results)  # Extended Data Fig. 2c
     run_paired_scenario_contrasts(all_results, container)  # Fig. 2f, Supplementary Table 6
+    run_moderate_severe_cutoff_analysis(all_results)  # Supplementary Table 27
+    run_hpo_term_count_comparison(all_results, container)  # Supplementary Table 28
+    raw_vs_calibrated_table(os.path.join(Config.OUTPUT_DIR, "results")).to_csv(
+        os.path.join(Config.OUTPUT_DIR, "results", "raw_vs_calibrated.csv"), index=False
+    )  # Table 1a and Supplementary Tables 5 and 8: before and after calibration
     run_disease_overlap_audit(container)  # Supplementary Table 15
     run_imbalance_sensitivity(container, all_results)  # Extended Data Fig. 2e
     run_severity_hpo_term_sensitivity(container, all_results)  # Supplementary Table 13

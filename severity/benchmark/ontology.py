@@ -1,8 +1,9 @@
 """HPO and MONDO ontologies (Disease-context and phenotype features).
 
 HPO terms are resolved to current identifiers and encoded as one binary column per term.
-MONDO features are the direct subclasses of "human disease" (MONDO:0700096) that a disease
-belongs to.
+MONDO features are the 44 direct subclasses of "human disease" (MONDO:0700096) in MONDO release
+2026-03-03 that a disease belongs to (Config.MONDO_CLASS_IDS); each identifier is checked against
+its label in the release that is read.
 """
 
 import hashlib
@@ -199,9 +200,22 @@ def parse_mondo_obo(obo_path: str) -> Dict[str, Dict]:
         raise ValueError(f"MONDO class root {class_root} not found (or obsolete) in {obo_path}.")
     disease_class_roots: Dict[str, str] = {}
     used_labels: set = set()
-    for tid in sorted(terms):
-        if not tid.startswith("MONDO:") or class_root not in terms[tid]["parents"]:
-            continue
+    pinned_classes = getattr(Config, "MONDO_CLASS_IDS", None)
+    if pinned_classes:
+        class_candidates = []
+        for pinned_id, expected_name in pinned_classes.items():
+            if pinned_id not in terms:
+                raise ValueError(f"MONDO class {pinned_id} ({expected_name}) not found (or obsolete) in {obo_path}.")
+            if terms[pinned_id]["name"].strip().lower() != expected_name.strip().lower():
+                raise ValueError(
+                    f"MONDO class {pinned_id}: label is '{terms[pinned_id]['name']}', expected '{expected_name}'."
+                )
+            class_candidates.append(pinned_id)
+    else:
+        class_candidates = [
+            tid for tid in sorted(terms) if tid.startswith("MONDO:") and class_root in terms[tid]["parents"]
+        ]
+    for tid in sorted(class_candidates):
         label = re.sub("[^a-z0-9]+", "_", terms[tid]["name"].lower()).strip("_")[:40]
         label = label or tid.replace(":", "_")
         if label in used_labels:
@@ -211,7 +225,12 @@ def parse_mondo_obo(obo_path: str) -> Dict[str, Dict]:
     if not disease_class_roots:
         raise ValueError(f"No direct subclasses of {class_root} found in {obo_path}.")
     logger.log(
-        f"  MONDO disease classes: {len(disease_class_roots)} direct subclasses of {class_root} ({terms[class_root]['name']})"
+        f"  MONDO disease classes: {len(disease_class_roots)} "
+        + (
+            "fixed classes (Config.MONDO_CLASS_IDS)"
+            if pinned_classes
+            else f"direct subclasses of {class_root} ({terms[class_root]['name']})"
+        )
     )
 
     def get_ancestors(tid: str, visited: Optional[set] = None) -> set:

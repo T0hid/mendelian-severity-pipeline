@@ -1,4 +1,4 @@
-"""Model development: nested cross-validation, model selection and the single test evaluation.
+"""Model development: grouped three-fold cross-validation, model selection and the single test evaluation.
 
 For each feature set and each of the four model families, hyperparameters are tuned by random
 search over three gene-grouped training folds (preprocessing and feature selection refitted in
@@ -307,7 +307,7 @@ def _tune_model_nested(
         raise RuntimeError(f"No hyperparameter candidates generated for {scenario}/{model_name}.")
     expected_folds = int(len(fold_cache))
     if expected_folds == 0:
-        raise RuntimeError(f"No nested CV folds available for {scenario}/{model_name}.")
+        raise RuntimeError(f"No grouped CV folds available for {scenario}/{model_name}.")
     rows: List[Dict[str, Any]] = []
     best_params: Optional[Dict[str, Any]] = None
     best_key = (-np.inf, -np.inf, -np.inf)
@@ -331,7 +331,7 @@ def _tune_model_nested(
                 message = f"fold={fold}:{type(exc).__name__}:{exc}"
                 failures.append(message)
                 logger.log(
-                    f"    Nested CV failed: {scenario}/{model_name}/candidate {candidate_index}/{message}",
+                    f"    Grouped CV failed: {scenario}/{model_name}/candidate {candidate_index}/{message}",
                     level="WARNING",
                 )
         base_row: Dict[str, Any] = {
@@ -389,7 +389,7 @@ def _tune_model_nested(
             int((table.get("status") == "invalid_nonfinite_metric").sum()) if not table.empty else 0
         )
         raise RuntimeError(
-            f"No valid hyperparameter candidate completed all {expected_folds} nested CV folds with finite selection metrics for {scenario}/{model_name}; fold_failures={n_fold_failures}, metric_failures={n_metric_failures}."
+            f"No valid hyperparameter candidate completed all {expected_folds} grouped CV folds with finite selection metrics for {scenario}/{model_name}; fold_failures={n_fold_failures}, metric_failures={n_metric_failures}."
         )
     return (best_params, table)
 
@@ -428,7 +428,7 @@ def _choose_shared_hpo_budget_training_cv(
             )
             expected_folds = len(cache)
             if expected_folds == 0:
-                raise RuntimeError("no nested folds were created")
+                raise RuntimeError("no grouped cross-validation folds were created")
             fold_metrics: List[Dict[str, float]] = []
             for fold, item in enumerate(cache):
                 model = _fit_model_matrix(
@@ -459,7 +459,7 @@ def _choose_shared_hpo_budget_training_cv(
                     "mean_training_cv_qwk": means["qwk"],
                     "mean_training_cv_mcc": means["mcc"],
                     "mean_training_cv_balanced_accuracy": means["balanced_accuracy"],
-                    "selection_partition": "training_only_nested_cv",
+                    "selection_partition": "training_only_grouped_cv",
                     "selection_scenario": "S3_Phenotype",
                     "applied_to_scenarios": "S2_Mech_Pheno|S3_Phenotype",
                 }
@@ -482,7 +482,7 @@ def _choose_shared_hpo_budget_training_cv(
                     "mean_training_cv_qwk": np.nan,
                     "mean_training_cv_mcc": np.nan,
                     "mean_training_cv_balanced_accuracy": np.nan,
-                    "selection_partition": "training_only_nested_cv",
+                    "selection_partition": "training_only_grouped_cv",
                     "selection_scenario": "S3_Phenotype",
                     "applied_to_scenarios": "S2_Mech_Pheno|S3_Phenotype",
                 }
@@ -495,7 +495,7 @@ def _choose_shared_hpo_budget_training_cv(
                 index=False,
             )
         raise RuntimeError(
-            f"No HPO budget completed the S3 training-only nested CV selection for analysis {analysis_label}."
+            f"No HPO budget completed the S3 training-only grouped CV selection for analysis {analysis_label}."
         )
     table["selected_for_s2_and_s3"] = (table["status"] == "valid") & (
         table["hpo_binary_budget"].astype(int) == int(best_budget["hpo_binary"])
@@ -798,6 +798,13 @@ def _run_workflow_for_split(
 
 
 def run_additional_generalisation_evaluations(container: DataContainer) -> pd.DataFrame:
+    """Rerun the workflow on the disease-disjoint and gene-and-disease-disjoint splits.
+
+    The test predictions of each split are saved, and the intervals and paired contrasts
+    resample the groups that define that split.
+    """
+    from .evaluation import generalisation_outputs_for_mode
+
     logger.section("ADDITIONAL GENERALISATION EVALUATIONS")
     metadata = container.metadata.reset_index(drop=True)
     grouping_modes = {
@@ -805,7 +812,9 @@ def run_additional_generalisation_evaluations(container: DataContainer) -> pd.Da
         "gene_and_disease_disjoint": _gene_disease_component_groups(container),
     }
     summary_rows: List[Dict[str, Any]] = []
+    contrast_rows: List[Dict[str, Any]] = []
     all_idx = np.arange(len(container.y), dtype=int)
+    results_dir = os.path.join(Config.OUTPUT_DIR, "results")
     for mode in Config.ADDITIONAL_GENERALISATION_MODES:
         grouping = grouping_modes[mode]
         try:
@@ -825,32 +834,28 @@ def run_additional_generalisation_evaluations(container: DataContainer) -> pd.Da
             _write_split_identifiers(
                 container, details["train_idx"], details["val_idx"], details["test_idx"], mode
             )
-            for scenario, model_name in _pick_best_model_per_scenario(results).items():
-                result = results[scenario]["all"][model_name]
-                metrics = result.get("metrics", {})
-                summary_rows.append(
-                    {
-                        "generalisation_mode": mode,
-                        "Scenario": scenario,
-                        "Model": model_name,
-                        "mcc": metrics.get("mcc", np.nan),
-                        "qwk": metrics.get("qwk", np.nan),
-                        "balanced_accuracy": metrics.get("balanced_accuracy", np.nan),
-                        "ranked_probability_score": metrics.get("ranked_probability_score", np.nan),
-                        "n_test": len(details["test_idx"]),
-                    }
+            test_rows = np.asarray(details["test_idx"], dtype=int)
+            predictions, rows, contrasts = generalisation_outputs_for_mode(
+                mode, results, test_rows, np.asarray(grouping)[test_rows], metadata
+            )
+            if not predictions.empty:
+                predictions.to_csv(
+                    os.path.join(results_dir, f"generalisation_test_predictions_{mode}.csv"), index=False
                 )
+            summary_rows.extend(rows)
+            contrast_rows.extend(contrasts)
         except Exception as exc:
             logger.log(f"  {mode} evaluation skipped/failed: {exc}", level="WARNING")
     dataframe = pd.DataFrame(summary_rows)
-    dataframe.to_csv(
-        os.path.join(Config.OUTPUT_DIR, "results", "generalisation_evaluations.csv"), index=False
+    dataframe.to_csv(os.path.join(results_dir, "generalisation_evaluations.csv"), index=False)
+    pd.DataFrame(contrast_rows).to_csv(
+        os.path.join(results_dir, "generalisation_paired_contrasts.csv"), index=False
     )
     return dataframe
 
 
 def run_experiments(container: DataContainer):
-    logger.section("RUNNING NESTED MANUSCRIPT-COMPLETE EXPERIMENTS")
+    logger.section("RUNNING MANUSCRIPT-COMPLETE EXPERIMENTS")
     _fold_artifacts.clear()
     _test_evaluation_registry.clear()
     _high_mi_audit_records.clear()

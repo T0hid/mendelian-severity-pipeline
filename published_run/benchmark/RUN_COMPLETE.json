@@ -1,6 +1,6 @@
 {
-  "pipeline_version": "4.10.0-hpo-id-severity-fix-20261107",
-  "completed_at": "2026-11-08T16:34:17.985635",
+  "pipeline_version": "4.11.0-review-revisions-20261118",
+  "completed_at": "2026-11-21T09:53:47.594637",
   "status": "complete",
   "required_output_validation": "passed"
 }

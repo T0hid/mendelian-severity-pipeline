@@ -101,9 +101,9 @@ def write_pipeline_manifest(container: DataContainer, all_results: Dict):
         "workflow": {
             "outer_split": "optimised gene-disjoint 65/15/20 train/validation/test split",
             "feature_vocabulary": "annotation terms learned on each training fold only",
-            "shared_hpo_budget": "selected on S3 training-only nested CV and used for both S2 and S3",
-            "feature_selection": "repeated inside nested grouped training CV",
-            "hyperparameter_tuning": "nested grouped training CV",
+            "shared_hpo_budget": "selected on S3 training-only grouped CV and used for both S2 and S3",
+            "feature_selection": "repeated inside grouped three-fold training CV",
+            "hyperparameter_tuning": "grouped three-fold training CV",
             "model_selection": Config.MODEL_SELECTION_RULE,
             "calibration": "isotonic or Platt scaling, chosen from validation class counts, after model selection",
             "test_policy": "single evaluation of one frozen model and calibrator per feature set",
