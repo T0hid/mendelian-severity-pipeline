@@ -416,7 +416,7 @@ def run_permutation_test(
     """Conditional validation permutation test using complete gene label blocks.
 
     Feature selection and candidate-family selection are repeated for every
-    permutation. Hyperparameters remain fixed at their nested-CV-selected values,
+    permutation. Hyperparameters remain fixed at the values selected by grouped cross-validation,
     so this remains a conditional rather than a fully re-tuned pipeline test.
     """
     n_permutations = int(n_permutations or Config.N_PERMUTATIONS)
@@ -623,7 +623,7 @@ def run_severity_hpo_term_sensitivity(container: DataContainer, all_results: Dic
     """Validation-only ablation of the explicit severity-related HPO terms.
 
     Two arms are refitted on the same training indices with the same selected
-    model family and the same nested-CV hyperparameters, differing only in
+    model family and the same hyperparameters from grouped cross-validation, differing only in
     whether the severity-naming HPO terms are admitted to the feature space:
 
         retained arm  drop_severity_hpo_terms=False  (terms available)

@@ -1,0 +1,26 @@
+study,pregnancy_outcome,families
+EP_TOP_diagnosed,TOP,16
+EP_TOP_diagnosed | EP_pES_uninformative,TOP,3
+EP_pES_uninformative,Livebirth,8
+EP_pES_uninformative,Neonatal death,6
+EP_pES_uninformative,Stillbirth,1
+EP_pES_uninformative | EP_variant_table,Livebirth,1
+EP_pES_uninformative | EP_variant_table,Neonatal death,2
+ES_negative_cohort,Livebirth,12
+ES_negative_cohort,Neonatal death,2
+ES_negative_cohort,Stillbirth,1
+ES_negative_cohort,TOP,8
+PED_cohort,Miscarriage,4
+PED_cohort,Neonatal death,20
+PED_cohort,Stillbirth,23
+PED_cohort,TOP,134
+PreGen,Live born child - NICU 1-7 days,24
+PreGen,Live born child - NICU 2-4 weeks,23
+PreGen,Live born child - NICU 4+ weeks,26
+PreGen,Live born child - death after 28 days,2
+PreGen,Live born child - no NICU/special care required,69
+PreGen,Live born child - special care nursery at birth,27
+PreGen,Neonatal death (following birth),12
+PreGen,Stillbirth (FDIU from 20 weeks to birth),11
+PreGen,TOP before interview,15
+PreGen,TOP following genomic result,81

@@ -1,4 +1,4 @@
-"""Data partitioning and nested cross-validation.
+"""Data partitioning and grouped cross-validation.
 
 The test set (20% of pairs) is chosen first and the validation set (15% of all pairs) second,
 from the remaining genes. At each stage 1,000 random gene-disjoint candidates are generated

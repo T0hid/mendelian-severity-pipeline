@@ -9,14 +9,14 @@ S1b_Disease_Context,external,External,candidate,13
 S1b_Disease_Context,gene_constraint_v2,Constraint and expression,candidate,12
 S1b_Disease_Context,inheritance,Inheritance,candidate,4
 S1b_Disease_Context,mechanistic_core,Gene-level core,candidate,26
-S1b_Disease_Context,mondo,Disease context,candidate,38
-S1b_Disease_Context,organ_system,Organ systems,candidate,24
+S1b_Disease_Context,mondo,Disease context,candidate,37
+S1b_Disease_Context,organ_system,Organ systems,candidate,23
 S2_Mech_Pheno,engineered,Engineered,candidate,9
 S2_Mech_Pheno,external,External,candidate,13
 S2_Mech_Pheno,gene_constraint_v2,Constraint and expression,candidate,12
-S2_Mech_Pheno,hpo_binary,HPO terms,candidate,9595
+S2_Mech_Pheno,hpo_binary,HPO terms,candidate,8865
 S2_Mech_Pheno,inheritance,Inheritance,candidate,4
 S2_Mech_Pheno,mechanistic_core,Gene-level core,candidate,26
-S2_Mech_Pheno,mondo,Disease context,candidate,38
+S2_Mech_Pheno,mondo,Disease context,candidate,37
 S2_Mech_Pheno,mouse_phenotype,Mouse model phenotype,candidate,49
-S3_Phenotype,hpo_binary,HPO terms,candidate,9595
+S3_Phenotype,hpo_binary,HPO terms,candidate,8865

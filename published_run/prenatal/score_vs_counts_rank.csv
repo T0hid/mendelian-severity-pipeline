@@ -1,0 +1,36 @@
+subset,n,measure,spearman_rho,ci95_low,ci95_high,perm_p
+all families,531,severity score,0.38546977134830424,0.3099883577598204,0.4579299683510215,0.0004997501249375312
+all families,531,HPO term count,0.404156115133269,0.3328998197825785,0.4751675687005627,0.0004997501249375312
+all families,531,organ-system count,0.31883775237227197,0.24435677386407403,0.38908128176680534,0.0004997501249375312
+all families,531,score vs HPO term count,0.7401354899374859,,,
+all families,531,score given HPO term count (partial),0.14036877346142257,0.05180913974121356,0.22827952608221558,
+all families,531,score vs organ-system count,0.5305516173533499,,,
+all families,531,score given organ-system count (partial),0.269238699830284,0.18300773899849374,0.3483984885237986,
+without genomic-autopsy cohort,350,severity score,0.3469226637864442,0.25186060166268603,0.43578188048641164,0.0004997501249375312
+without genomic-autopsy cohort,350,HPO term count,0.3686462877817895,0.2719791057943247,0.45013145498850493,0.0004997501249375312
+without genomic-autopsy cohort,350,organ-system count,0.27677318571431636,0.18027495097237936,0.36508658732035537,0.0004997501249375312
+without genomic-autopsy cohort,350,score vs HPO term count,0.6971995509501084,,,
+without genomic-autopsy cohort,350,score given HPO term count (partial),0.13491049639685537,0.02733472823153657,0.24030872205270754,
+without genomic-autopsy cohort,350,score vs organ-system count,0.42562156182377614,,,
+without genomic-autopsy cohort,350,score given organ-system count (partial),0.2634944771562716,0.1605749158014831,0.36543625865670143,
+PreGen only,290,severity score,0.331913820583374,0.21960150805897558,0.43356465624978274,0.0004997501249375312
+PreGen only,290,HPO term count,0.33715374518577335,0.23024984184744007,0.43839148165988134,0.0004997501249375312
+PreGen only,290,organ-system count,0.22671487715741143,0.11921667007785915,0.32983286446259363,0.0004997501249375312
+PreGen only,290,score vs HPO term count,0.6830715652691622,,,
+PreGen only,290,score given HPO term count (partial),0.14778257423414473,0.03127531580471187,0.2603323962817383,
+PreGen only,290,score vs organ-system count,0.37715023576921763,,,
+PreGen only,290,score given organ-system count (partial),0.27316892293734674,0.15633422861709656,0.3775115909048014,
+continued pregnancies (termination excluded),274,severity score,0.4335573169213087,0.32889150445079557,0.5331843822514799,0.0004997501249375312
+continued pregnancies (termination excluded),274,HPO term count,0.4364465200844524,0.3339007428965715,0.5305475159415985,0.0004997501249375312
+continued pregnancies (termination excluded),274,organ-system count,0.37628103957571885,0.2696225551142872,0.4745989403257953,0.0004997501249375312
+continued pregnancies (termination excluded),274,score vs HPO term count,0.7299500123759057,,,
+continued pregnancies (termination excluded),274,score given HPO term count (partial),0.18695856453350054,0.06831066759710365,0.3039706943380257,
+continued pregnancies (termination excluded),274,score vs organ-system count,0.502598143915299,,,
+continued pregnancies (termination excluded),274,score given organ-system count (partial),0.3051740700552339,0.18663551964232028,0.4163241720309852,
+"continued pregnancies, without genomic-autopsy cohort",227,severity score,0.3226207976463985,0.19992463637047492,0.4389966407165355,0.0004997501249375312
+"continued pregnancies, without genomic-autopsy cohort",227,HPO term count,0.30608005454679904,0.17822737452896611,0.4193945349396813,0.0004997501249375312
+"continued pregnancies, without genomic-autopsy cohort",227,organ-system count,0.27154963813797744,0.1525983281238924,0.3877959625813711,0.0004997501249375312
+"continued pregnancies, without genomic-autopsy cohort",227,score vs HPO term count,0.6924811640777109,,,
+"continued pregnancies, without genomic-autopsy cohort",227,score given HPO term count (partial),0.16113034499394757,0.028374381838401675,0.28291954285017007,
+"continued pregnancies, without genomic-autopsy cohort",227,score vs organ-system count,0.4051090002913978,,,
+"continued pregnancies, without genomic-autopsy cohort",227,score given organ-system count (partial),0.24162990507461535,0.11548035538893253,0.3671679478884855,

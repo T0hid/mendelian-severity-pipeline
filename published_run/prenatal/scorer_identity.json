@@ -1,0 +1,13 @@
+{
+  "model_file": "/media/tower1/DATA4/Tohid/2025/Main_Codes/PHENOTYPE_SEVERITY_MODEL_V3_DISEASE_LEVEL_18nov/model.pkl",
+  "model_sha256": "14ae18795204d1c311e29bcb375606828539c03e16e10ad20ee2cf37f76c1d58",
+  "model_bytes": 5133970,
+  "model_file_modified": "2026-11-20T01:34:39.082672",
+  "model_created": "2026-11-20T01:34:38",
+  "scorer_version": "3.3-disease-level-ontology-severity-terms-configurable",
+  "diseases_used_for_final_fit": 5970,
+  "development_diseases": 4776,
+  "held_out_diseases": 1194,
+  "phenotype_features": 2544,
+  "prenatal_outcomes_used_to_fit_scorer": false
+}

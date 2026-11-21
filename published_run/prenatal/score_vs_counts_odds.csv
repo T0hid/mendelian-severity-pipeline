@@ -1,0 +1,46 @@
+subset,n,model,covariate,or_per_sd,ci95_low,ci95_high,log_likelihood,lr_statistic,p_value
+all families,531,score only,severity score,2.1490881201518945,1.8067422270047107,2.5563025423028214,-627.32129793003,,
+all families,531,HPO term count only,HPO term count,2.164887714140913,1.8203976059519622,2.5745687642713495,-626.1550229330853,,
+all families,531,score + HPO term count,severity score,1.5804705742061145,1.268585453562749,1.9690334844343618,-617.7683647619671,,
+all families,531,score + HPO term count,HPO term count,1.6200418816921038,1.3015161308033525,2.0165218365880064,-617.7683647619671,,
+all families,531,likelihood-ratio test: score added to HPO term count,,,,,,16.773316342236512,4.212146957239983e-05
+all families,531,organ-system count only,organ-system count,1.837169484221596,1.5569614536493994,2.1678068560039505,-640.7792513309032,,
+all families,531,score + organ-system count,severity score,1.8325737982873884,1.5056566691416828,2.2304731184725655,-621.8644800919743,,
+all families,531,score + organ-system count,organ-system count,1.372435090462181,1.136116726641677,1.6579089396031765,-621.8644800919743,,
+all families,531,likelihood-ratio test: score added to organ-system count,,,,,,37.829542477857785,7.720374121211435e-10
+without genomic-autopsy cohort,350,score only,severity score,1.900402905752673,1.5570394811650898,2.3194859525917693,-438.06443885741476,,
+without genomic-autopsy cohort,350,HPO term count only,HPO term count,2.110101754944177,1.7199021926924667,2.5888271060624475,-432.083985961981,,
+without genomic-autopsy cohort,350,score + HPO term count,severity score,1.3904219120671846,1.091028515766301,1.771973019604076,-428.5403194387138,,
+without genomic-autopsy cohort,350,score + HPO term count,HPO term count,1.730956557904188,1.3493402853660954,2.2205003718084346,-428.5403194387138,,
+without genomic-autopsy cohort,350,likelihood-ratio test: score added to HPO term count,,,,,,7.087333046534354,0.007763068790180021
+without genomic-autopsy cohort,350,organ-system count only,organ-system count,1.6742666866273979,1.376757359679408,2.036066063669369,-445.518032234719,,
+without genomic-autopsy cohort,350,score + organ-system count,severity score,1.6831063565537774,1.3579410442564224,2.086134018449184,-433.86459527886416,,
+without genomic-autopsy cohort,350,score + organ-system count,organ-system count,1.3660443116775323,1.10514381151332,1.6885377649730895,-433.86459527886416,,
+without genomic-autopsy cohort,350,likelihood-ratio test: score added to organ-system count,,,,,,23.30687391170966,1.3810554967595456e-06
+PreGen only,290,score only,severity score,1.7841643992865825,1.4361825068259353,2.2164610615658056,-358.497655994179,,
+PreGen only,290,HPO term count only,HPO term count,1.9358693554136484,1.5505595838087602,2.4169275404587527,-355.0381791551492,,
+PreGen only,290,score + HPO term count,severity score,1.3666406039554326,1.0525236126677169,1.7745032205460904,-352.2792580496799,,
+PreGen only,290,score + HPO term count,HPO term count,1.61165151705481,1.2330679089056193,2.1064700440792032,-352.2792580496799,,
+PreGen only,290,likelihood-ratio test: score added to HPO term count,,,,,,5.517842210938511,0.01882346334570438
+PreGen only,290,organ-system count only,organ-system count,1.5441346805407439,1.2461717415886027,1.9133413413861606,-364.89310334677606,,
+PreGen only,290,score + organ-system count,severity score,1.6303062420805083,1.2954760676963903,2.0516769929165357,-355.9283939179977,,
+PreGen only,290,score + organ-system count,organ-system count,1.3013416339263162,1.03555145720463,1.6353509392584171,-355.9283939179977,,
+PreGen only,290,likelihood-ratio test: score added to organ-system count,,,,,,17.929418857556698,2.292499791687819e-05
+continued pregnancies (termination excluded),274,score only,severity score,2.9858841548869606,2.232908462644703,3.992776388085927,-265.68061504038485,,
+continued pregnancies (termination excluded),274,HPO term count only,HPO term count,3.1036717481770233,2.309876147549253,4.170257496555591,-263.6577112162057,,
+continued pregnancies (termination excluded),274,score + HPO term count,severity score,1.8326415640119595,1.2807457177644477,2.622359033147206,-257.6522513366559,,
+continued pregnancies (termination excluded),274,score + HPO term count,HPO term count,2.07231022319166,1.4335659448998004,2.995655467697952,-257.6522513366559,,
+continued pregnancies (termination excluded),274,likelihood-ratio test: score added to HPO term count,,,,,,12.010919759099579,0.0005288974989548661
+continued pregnancies (termination excluded),274,organ-system count only,organ-system count,2.2783473121406277,1.7670202611609944,2.9376383445246077,-277.2008570981087,,
+continued pregnancies (termination excluded),274,score + organ-system count,severity score,2.3804349406113046,1.7333969223095942,3.268997673615969,-260.61470267114265,,
+continued pregnancies (termination excluded),274,score + organ-system count,organ-system count,1.575831017660276,1.1853035886652703,2.0950273161802504,-260.61470267114265,,
+continued pregnancies (termination excluded),274,likelihood-ratio test: score added to organ-system count,,,,,,33.17230885393212,8.434313099665584e-09
+"continued pregnancies, without genomic-autopsy cohort",227,score only,severity score,2.0284631434452853,1.54094011161166,2.670228838428008,-218.27412414733976,,
+"continued pregnancies, without genomic-autopsy cohort",227,HPO term count only,HPO term count,2.0746379348716215,1.5894798657908435,2.707881146180405,-216.9502344279988,,
+"continued pregnancies, without genomic-autopsy cohort",227,score + HPO term count,severity score,1.4995583503957697,1.0750057648282463,2.091779709293887,-214.02302359380383,,
+"continued pregnancies, without genomic-autopsy cohort",227,score + HPO term count,HPO term count,1.6263367556845314,1.169885495864027,2.2608804470535175,-214.02302359380383,,
+"continued pregnancies, without genomic-autopsy cohort",227,likelihood-ratio test: score added to HPO term count,,,,,,5.854421668389932,0.015537963079197099
+"continued pregnancies, without genomic-autopsy cohort",227,organ-system count only,organ-system count,1.7331997502634016,1.340830117951592,2.2403892440172424,-223.21355348528635,,
+"continued pregnancies, without genomic-autopsy cohort",227,score + organ-system count,severity score,1.7811425846448907,1.3327291295493575,2.380430378908432,-215.05885662143788,,
+"continued pregnancies, without genomic-autopsy cohort",227,score + organ-system count,organ-system count,1.4238262087151092,1.0817954658666578,1.8739966440882874,-215.05885662143788,,
+"continued pregnancies, without genomic-autopsy cohort",227,likelihood-ratio test: score added to organ-system count,,,,,,16.309393727696943,5.379660642580128e-05

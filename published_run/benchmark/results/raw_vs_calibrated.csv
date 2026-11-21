@@ -1,0 +1,37 @@
+Scenario,Model,metric,uncalibrated,calibrated
+S1_Mechanistic,ExtraTrees,MCC,0.2977734717398522,0.3002647290998378
+S1_Mechanistic,ExtraTrees,QWK,0.4939688172940356,0.4597868922845729
+S1_Mechanistic,ExtraTrees,Balanced accuracy,0.4532470266305132,0.4195944013423631
+S1_Mechanistic,ExtraTrees,Ranked probability score,0.1316800466339812,0.1254736233569128
+S1_Mechanistic,ExtraTrees,Multiclass Brier score,0.6081179858532849,0.5911609152434448
+S1b_Disease_Context,ExtraTrees,MCC,0.5745010552233015,0.5781692278556871
+S1b_Disease_Context,ExtraTrees,QWK,0.780193137195866,0.7821090640508416
+S1b_Disease_Context,ExtraTrees,Balanced accuracy,0.6972215426486903,0.6898358000759659
+S1b_Disease_Context,ExtraTrees,Ranked probability score,0.0734423472043627,0.0705375612240225
+S1b_Disease_Context,ExtraTrees,Multiclass Brier score,0.4070681375851283,0.3909655369035918
+S2_Mech_Pheno,OrdinalDecomp,MCC,0.7128705036965919,0.7142653440847153
+S2_Mech_Pheno,OrdinalDecomp,QWK,0.8462903777259145,0.8476380635806998
+S2_Mech_Pheno,OrdinalDecomp,Balanced accuracy,0.7426854016082554,0.722759482092582
+S2_Mech_Pheno,OrdinalDecomp,Ranked probability score,0.0533160097434784,0.051553235013622
+S2_Mech_Pheno,OrdinalDecomp,Multiclass Brier score,0.3006454240048127,0.2869071094451803
+S3_Phenotype,OrdinalDecomp,MCC,0.6701394098779595,0.7088920915838629
+S3_Phenotype,OrdinalDecomp,QWK,0.7902005181796685,0.838309183016673
+S3_Phenotype,OrdinalDecomp,Balanced accuracy,0.7795846583547464,0.7294148484329983
+S3_Phenotype,OrdinalDecomp,Ranked probability score,0.0627471249132957,0.0507886216872919
+S3_Phenotype,OrdinalDecomp,Multiclass Brier score,0.3253984590950866,0.2816319685360934
+S1_Mechanistic,ExtraTrees,"Expected calibration error, Mild",0.0467369381328992,0.0140180271724452
+S1_Mechanistic,ExtraTrees,"Expected calibration error, Moderate",0.0590050360263666,0.0150546326992745
+S1_Mechanistic,ExtraTrees,"Expected calibration error, Severe",0.0701947792284981,0.0184937232685192
+S1_Mechanistic,ExtraTrees,"Expected calibration error, Profound",0.0474124494183071,0.0423692611676651
+S1b_Disease_Context,ExtraTrees,"Expected calibration error, Mild",0.0241138801651429,0.0062366515356437
+S1b_Disease_Context,ExtraTrees,"Expected calibration error, Moderate",0.0365922953149338,0.0178992977557097
+S1b_Disease_Context,ExtraTrees,"Expected calibration error, Severe",0.0774445871162751,0.0210515749470626
+S1b_Disease_Context,ExtraTrees,"Expected calibration error, Profound",0.0555553219223463,0.0357997509368433
+S2_Mech_Pheno,OrdinalDecomp,"Expected calibration error, Mild",0.0096515052018917,0.0294223962316515
+S2_Mech_Pheno,OrdinalDecomp,"Expected calibration error, Moderate",0.0480626862405385,0.0240923761289732
+S2_Mech_Pheno,OrdinalDecomp,"Expected calibration error, Severe",0.0599243234347502,0.0098214722354905
+S2_Mech_Pheno,OrdinalDecomp,"Expected calibration error, Profound",0.0362424994846371,0.0162105789537523
+S3_Phenotype,OrdinalDecomp,"Expected calibration error, Mild",0.0859053534933136,0.0079839218836469
+S3_Phenotype,OrdinalDecomp,"Expected calibration error, Moderate",0.0403054891309823,0.0085459451062589
+S3_Phenotype,OrdinalDecomp,"Expected calibration error, Severe",0.0603607406332161,0.0233074082181841
+S3_Phenotype,OrdinalDecomp,"Expected calibration error, Profound",0.0290099775432342,0.0090804264898375

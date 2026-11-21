@@ -4,16 +4,17 @@ These files come from the run reported in the paper. `run.py verify`, `run.py fi
 
 `benchmark/`
 - `models/*.pkl.xz`: the four validation-selected models (preprocessing, selected features, model and calibrator), xz-compressed. `run.py` decompresses them on first use.
-- `results/`: the tables behind Table 1 and Supplementary Tables 1-16 (see the main README). `all_results.pkl` holds the test-set predictions and metrics of the selected models.
+- `results/`: the tables behind Table 1 and Supplementary Tables 1-16, 27 and 28 (see the main README). `all_results.pkl` holds the test-set predictions and metrics of the selected models. `generalisation_test_predictions_*.csv` hold the test predictions of the disease-disjoint and gene-and-disease-disjoint evaluations. `hpo_term_count_s2_vs_s3.csv` (Supplementary Table 28) was computed from this run's stored test predictions with `benchmark/evaluation.py: hpo_term_count_comparison`, without refitting; new runs write it themselves.
 - `per_disease_explanations/severity_shap_*.npz`: SHAP values used in Fig. 4.
-- `figures/publication/figure_data/`: panel data written by the run. `figure_2_candidate_validation_metrics.csv` and `figure_5e_s3_true_predicted_pca.csv` are inputs to `run.py figures`. The `extended_data_fig_3_*.csv` files (predicted classes before and after calibration) were computed afterwards from this run's saved test predictions, without refitting; `run.py figures` draws Extended Data Fig. 3 from them and `run.py verify` recomputes and checks them.
+- `figures/publication/figure_data/`: panel data written by the run. `figure_2_candidate_validation_metrics.csv` and `figure_5e_s3_true_predicted_pca.csv` are inputs to `run.py figures`. The `extended_data_fig_3_*.csv` files (predicted classes before and after calibration) were computed from this run's stored test predictions, without refitting; `run.py figures` draws Extended Data Fig. 3 from them and `run.py verify` recomputes and checks them.
 - `pipeline_manifest.json`: input checksums, ontology releases, seeds, settings, selected models and features, software versions.
 
 `scorer/`
-- `model.pkl`: the scorer refitted on all 6,204 diseases, used for the prenatal cohort.
-- `held_out_test_predictions.csv`: predictions for the 1,241 held-out diseases from the model fitted on the 4,963 development diseases (Fig. 5a,b).
+- `model.pkl`: the scorer refitted on all 5,970 diseases, used for the prenatal cohort.
+- `held_out_test_predictions.csv`: predictions for the 1,194 held-out diseases from the model fitted on the 4,776 development diseases (Fig. 5a,b).
+- `phenotype_feature_weights.csv`: the weights of `model.pkl` for its 2,544 HPO features (Supplementary Table 19), written with `scorer/model.py: write_phenotype_weights`.
 - the remaining files are Supplementary Tables 17-19 (see the main README).
 
 `prenatal/`
 - Results for the full cohort (531 analysed families), including the in-house families. Only summary tables are included; family-level rows are not shared.
-- `without_autopsy_cohort/`: the same summary tables with the genomic-autopsy cohort (`PED_cohort`) left out, 350 analysed families.
+- `without_autopsy_cohort/`: group means, neighbouring-group comparisons, ROC contrasts and within-cohort correlations with the genomic-autopsy cohort (`PED_cohort`) left out, 350 analysed families. Spearman's rho with its interval and the proportional-odds model for this subset are the "without genomic-autopsy cohort" rows of `score_vs_counts_rank.csv` and `score_vs_counts_odds.csv`.

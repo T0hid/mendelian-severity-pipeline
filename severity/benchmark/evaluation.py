@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics import matthews_corrcoef
 
 from .config import RANDOM_SEED, Config
 from .metrics import (
@@ -545,3 +546,430 @@ def _benjamini_hochberg(p_values: Sequence[float]) -> np.ndarray:
         running = min(running, p[index] * n / rank)
         adjusted[index] = min(running, 1.0)
     return adjusted
+
+
+# Moderate/severe cut-off, raw against calibrated metrics, and stricter-split summaries.
+# All three use stored test predictions; nothing is refitted and the test set is not
+# evaluated again.
+
+SEVERITY_CLASS_NAMES: Tuple[str, ...] = ("Mild", "Moderate", "Severe", "Profound")
+SEVERE_OR_WORSE_CLASS = 2  # Severe and Profound are positive; Mild and Moderate are negative.
+CUTOFF_STATISTICS: Tuple[str, ...] = ("sensitivity", "specificity", "ppv", "npv")
+GENERALISATION_CI_METRICS: Tuple[str, ...] = (
+    "mcc",
+    "qwk",
+    "balanced_accuracy",
+    "ranked_probability_score",
+)
+
+
+def cutoff_statistics(y_true, y_pred) -> Dict[str, float]:
+    """Sensitivity, specificity, PPV and NPV for Severe or Profound against Mild or Moderate."""
+    positive = np.asarray(y_true) >= SEVERE_OR_WORSE_CLASS
+    called = np.asarray(y_pred) >= SEVERE_OR_WORSE_CLASS
+    tp = float(np.sum(called & positive))
+    tn = float(np.sum(~called & ~positive))
+    return {
+        "sensitivity": tp / positive.sum() if positive.sum() else np.nan,
+        "specificity": tn / (~positive).sum() if (~positive).sum() else np.nan,
+        "ppv": tp / called.sum() if called.sum() else np.nan,
+        "npv": tn / (~called).sum() if (~called).sum() else np.nan,
+    }
+
+
+def moderate_severe_cutoff(
+    y_true: np.ndarray,
+    predictions: Dict[str, np.ndarray],
+    models: Dict[str, str],
+    groups: np.ndarray,
+    n_bootstrap: Optional[int] = None,
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Cut-off statistics with gene-cluster intervals, and paired differences between feature sets.
+
+    One set of replicates (severity-stratified gene-cluster bootstrap, RANDOM_SEED) is shared
+    by every model, so each difference compares two models on the same resampled pairs.
+    """
+    y_true = np.asarray(y_true, dtype=int)
+    groups = np.asarray(groups)
+    n_bootstrap = Config.N_BOOTSTRAP if n_bootstrap is None else int(n_bootstrap)
+    rng = np.random.RandomState(RANDOM_SEED)
+    replicates = [_cluster_bootstrap_indices(y_true, groups, rng) for _ in range(n_bootstrap)]
+    replicates = [idx for idx in replicates if len(idx)]
+    rows: List[Dict[str, Any]] = []
+    for scenario, y_pred in predictions.items():
+        y_pred = np.asarray(y_pred, dtype=int)
+        observed = cutoff_statistics(y_true, y_pred)
+        boot = pd.DataFrame([cutoff_statistics(y_true[idx], y_pred[idx]) for idx in replicates])
+        row: Dict[str, Any] = {
+            "Scenario": scenario,
+            "Model": models[scenario],
+            "n_test": int(len(y_true)),
+            "n_severe_or_profound": int(np.sum(y_true >= SEVERE_OR_WORSE_CLASS)),
+            "n_mild_or_moderate": int(np.sum(y_true < SEVERE_OR_WORSE_CLASS)),
+        }
+        for name in CUTOFF_STATISTICS:
+            row[name] = observed[name]
+            row[f"{name}_ci_low"] = float(np.nanpercentile(boot[name], 2.5))
+            row[f"{name}_ci_high"] = float(np.nanpercentile(boot[name], 97.5))
+        row["bootstrap_unit"] = "gene_cluster"
+        rows.append(row)
+
+    contrast_rows: List[Dict[str, Any]] = []
+    for scenario_a, scenario_b in PAIRED_SCENARIO_CONTRASTS:
+        if scenario_a not in predictions or scenario_b not in predictions:
+            continue
+        pred_a = np.asarray(predictions[scenario_a], dtype=int)
+        pred_b = np.asarray(predictions[scenario_b], dtype=int)
+        observed_a = cutoff_statistics(y_true, pred_a)
+        observed_b = cutoff_statistics(y_true, pred_b)
+        differences = []
+        for idx in replicates:
+            stats_a = cutoff_statistics(y_true[idx], pred_a[idx])
+            stats_b = cutoff_statistics(y_true[idx], pred_b[idx])
+            differences.append({name: stats_a[name] - stats_b[name] for name in CUTOFF_STATISTICS})
+        differences_df = pd.DataFrame(differences)
+        for name in CUTOFF_STATISTICS:
+            contrast_rows.append(
+                {
+                    "contrast": f"{scenario_a}_minus_{scenario_b}",
+                    "metric": name,
+                    "observed_difference": observed_a[name] - observed_b[name],
+                    "difference_percentile_2.5": float(np.nanpercentile(differences_df[name], 2.5)),
+                    "difference_percentile_97.5": float(np.nanpercentile(differences_df[name], 97.5)),
+                    "n_valid_replicates": int(len(replicates)),
+                    "bootstrap_unit": "gene_cluster",
+                }
+            )
+    return pd.DataFrame(rows), pd.DataFrame(contrast_rows)
+
+
+def run_moderate_severe_cutoff_analysis(all_results: Dict) -> pd.DataFrame:
+    """Write moderate_severe_cutoff.csv and its paired contrasts from the stored test predictions."""
+    logger.subsection("Moderate/severe cut-off: sensitivity and specificity")
+    predictions: Dict[str, np.ndarray] = {}
+    models: Dict[str, str] = {}
+    y_true: Optional[np.ndarray] = None
+    groups: Optional[np.ndarray] = None
+    for scenario, model_name in _pick_best_model_per_scenario(all_results).items():
+        payload = results_collector.predictions.get(f"{scenario}_{model_name}")
+        if not payload:
+            continue
+        predictions[scenario] = np.asarray(payload["y_pred"], dtype=int)
+        models[scenario] = model_name
+        if y_true is None:
+            y_true = np.asarray(payload["y_true"], dtype=int)
+            result = all_results[scenario]["all"][model_name]
+            groups = np.asarray(result.get("test_gene_groups", result.get("test_groups")))
+    results_dir = os.path.join(Config.OUTPUT_DIR, "results")
+    if y_true is None or groups is None:
+        logger.log("  No stored test predictions; cut-off analysis skipped.", level="WARNING")
+        return pd.DataFrame()
+    table, contrasts = moderate_severe_cutoff(y_true, predictions, models, groups)
+    table.to_csv(os.path.join(results_dir, "moderate_severe_cutoff.csv"), index=False)
+    contrasts.to_csv(
+        os.path.join(results_dir, "moderate_severe_cutoff_paired_contrasts.csv"), index=False
+    )
+    return table
+
+
+HPO_TERM_COUNT_GROUPS: Tuple[Tuple[str, int, Optional[int]], ...] = (
+    ("1-5 HPO terms", 1, 5),
+    ("6-20 HPO terms", 6, 20),
+    ("more than 20 HPO terms", 21, None),
+)
+HPO_TERM_COUNT_FILE = "hpo_term_count_s2_vs_s3.csv"
+
+
+def recorded_hpo_term_counts(primary_data_path: str) -> pd.Series:
+    """Number of distinct HPO terms recorded for each gene-disease pair in the training table."""
+    table = pd.read_csv(
+        primary_data_path, usecols=["Gene Name", "MONDO_ID", "HPO_ID"], dtype=str, low_memory=False
+    )
+    return table.groupby(["Gene Name", "MONDO_ID"])["HPO_ID"].nunique()
+
+
+def hpo_term_count_comparison(
+    y_true: np.ndarray,
+    pred_combined: np.ndarray,
+    pred_phenotype: np.ndarray,
+    genes: np.ndarray,
+    n_terms: np.ndarray,
+    n_bootstrap: Optional[int] = None,
+) -> pd.DataFrame:
+    """Combined (S2) against phenotype-only (S3) MCC within groups of test pairs defined by the
+    number of recorded HPO terms (Supplementary Table 28).
+
+    Within each group, genes are resampled with replacement (all pairs of a sampled gene are
+    kept) and the MCC difference is recomputed on each sample; one random generator, seeded with
+    RANDOM_SEED, is used for the three groups in turn.
+    """
+    n_bootstrap = Config.N_BOOTSTRAP if n_bootstrap is None else int(n_bootstrap)
+    y_true = np.asarray(y_true, dtype=int)
+    pred_combined = np.asarray(pred_combined, dtype=int)
+    pred_phenotype = np.asarray(pred_phenotype, dtype=int)
+    genes = np.asarray(genes).astype(str)
+    n_terms = np.asarray(n_terms, dtype=int)
+    rng = np.random.default_rng(RANDOM_SEED)
+    rows: List[Dict[str, Any]] = []
+    for label, low, high in HPO_TERM_COUNT_GROUPS:
+        mask = n_terms >= low if high is None else (n_terms >= low) & (n_terms <= high)
+        y, a, b, g = y_true[mask], pred_combined[mask], pred_phenotype[mask], genes[mask]
+        gene_ids = np.unique(g)
+        rows_of = {gene: np.where(g == gene)[0] for gene in gene_ids}
+        differences = []
+        for _ in range(n_bootstrap):
+            sample = rng.choice(gene_ids, size=len(gene_ids), replace=True)
+            idx = np.concatenate([rows_of[gene] for gene in sample])
+            differences.append(matthews_corrcoef(y[idx], a[idx]) - matthews_corrcoef(y[idx], b[idx]))
+        mcc_a, mcc_b = matthews_corrcoef(y, a), matthews_corrcoef(y, b)
+        rows.append(
+            {
+                "group": label,
+                "n_test_pairs": int(mask.sum()),
+                "n_genes": int(len(gene_ids)),
+                "mcc_S2_combined": float(mcc_a),
+                "mcc_S3_phenotype": float(mcc_b),
+                "difference_S2_minus_S3": float(mcc_a - mcc_b),
+                "ci95_low": float(np.percentile(differences, 2.5)),
+                "ci95_high": float(np.percentile(differences, 97.5)),
+                "n_bootstrap": int(n_bootstrap),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def run_hpo_term_count_comparison(all_results: Dict, container: DataContainer) -> pd.DataFrame:
+    """Write hpo_term_count_s2_vs_s3.csv from the stored test predictions of S2 and S3."""
+    logger.subsection("Combined against phenotype-only models by number of recorded HPO terms")
+    selected = _pick_best_model_per_scenario(all_results)
+    payloads = {}
+    for scenario in ("S2_Mech_Pheno", "S3_Phenotype"):
+        model_name = selected.get(scenario)
+        payload = results_collector.predictions.get(f"{scenario}_{model_name}") if model_name else None
+        if not payload:
+            logger.log("  Stored S2 or S3 test predictions missing; comparison skipped.", level="WARNING")
+            return pd.DataFrame()
+        payloads[scenario] = payload
+    test_idx = np.asarray(container.test_idx, dtype=int)
+    metadata = container.metadata.reset_index(drop=True)
+    counts = recorded_hpo_term_counts(Config.PRIMARY_DATA)
+    n_terms = [
+        int(counts.get((gene, mondo), 0))
+        for gene, mondo in zip(metadata.loc[test_idx, "gene_symbol"], metadata.loc[test_idx, "mondo_id"])
+    ]
+    table = hpo_term_count_comparison(
+        payloads["S2_Mech_Pheno"]["y_true"],
+        payloads["S2_Mech_Pheno"]["y_pred"],
+        payloads["S3_Phenotype"]["y_pred"],
+        metadata.loc[test_idx, "gene_symbol"].to_numpy(),
+        np.asarray(n_terms),
+    )
+    table.to_csv(os.path.join(Config.OUTPUT_DIR, "results", HPO_TERM_COUNT_FILE), index=False)
+    return table
+
+
+def raw_vs_calibrated_table(results_dir: str) -> pd.DataFrame:
+    """Test metrics before and after calibration, with per-class ECE, in one long table.
+
+    Reads publication_table.csv and calibration_ece.csv from ``results_dir``.
+    """
+    rows: List[Dict[str, Any]] = []
+    publication = pd.read_csv(os.path.join(results_dir, "publication_table.csv"))
+    pairs = (
+        ("MCC", "Uncalibrated_MCC", "MCC"),
+        ("QWK", "Uncalibrated_QWK", "QWK"),
+        ("Balanced accuracy", "Uncalibrated_BalAcc", "BalAcc"),
+        ("Ranked probability score", "Uncalibrated_RPS", "RPS"),
+        ("Multiclass Brier score", "Uncalibrated_Multiclass_Brier", "Multiclass_Brier"),
+    )
+    for _, record in publication.iterrows():
+        for label, raw_column, calibrated_column in pairs:
+            rows.append(
+                {
+                    "Scenario": record["Scenario"],
+                    "Model": record["Model"],
+                    "metric": label,
+                    "uncalibrated": record.get(raw_column, np.nan),
+                    "calibrated": record.get(calibrated_column, np.nan),
+                }
+            )
+    ece = pd.read_csv(os.path.join(results_dir, "calibration_ece.csv"))
+    for (scenario, model, severity_class), part in ece.groupby(
+        ["Scenario", "Model", "severity_class"], sort=False
+    ):
+        values = dict(zip(part["calibration_status"], part["ece"]))
+        rows.append(
+            {
+                "Scenario": scenario,
+                "Model": model,
+                "metric": f"Expected calibration error, {severity_class}",
+                "uncalibrated": values.get("uncalibrated", np.nan),
+                "calibrated": values.get("calibrated", np.nan),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def _generalisation_contrasts(
+    mode: str,
+    payload: Dict[str, Tuple[np.ndarray, np.ndarray]],
+    models: Dict[str, str],
+    groups: np.ndarray,
+    n_bootstrap: int,
+) -> List[Dict[str, Any]]:
+    """Paired differences between feature sets on one stricter split, on shared resamples."""
+    rows: List[Dict[str, Any]] = []
+    if len(payload) < 2:
+        return rows
+    reference = next(iter(payload.values()))[0]
+    rng = np.random.RandomState(RANDOM_SEED)
+    replicates = [_cluster_bootstrap_indices(reference, groups, rng) for _ in range(n_bootstrap)]
+    replicates = [idx for idx in replicates if len(idx)]
+    for scenario_a, scenario_b in PAIRED_SCENARIO_CONTRASTS:
+        if scenario_a not in payload or scenario_b not in payload:
+            continue
+        y_true, pred_a = payload[scenario_a]
+        pred_b = payload[scenario_b][1]
+        for metric in PAIRED_CONTRAST_METRICS:
+            observed_a = _paired_contrast_metric(y_true, pred_a, metric)
+            observed_b = _paired_contrast_metric(y_true, pred_b, metric)
+            differences = np.asarray(
+                [
+                    _paired_contrast_metric(y_true[idx], pred_a[idx], metric)
+                    - _paired_contrast_metric(y_true[idx], pred_b[idx], metric)
+                    for idx in replicates
+                ],
+                dtype=float,
+            )
+            rows.append(
+                {
+                    "generalisation_mode": mode,
+                    "contrast": f"{scenario_a}_minus_{scenario_b}",
+                    "scenario_a": scenario_a,
+                    "scenario_b": scenario_b,
+                    "model_a": models[scenario_a],
+                    "model_b": models[scenario_b],
+                    "metric": metric,
+                    "observed_a": observed_a,
+                    "observed_b": observed_b,
+                    "observed_difference": observed_a - observed_b,
+                    "difference_percentile_2.5": float(np.percentile(differences, 2.5)),
+                    "difference_percentile_97.5": float(np.percentile(differences, 97.5)),
+                    "bootstrap_tail_fraction_at_or_below_zero": float(np.mean(differences <= 0)),
+                    "n_valid_replicates": int(len(differences)),
+                    "n_test_pairs": int(len(y_true)),
+                    "n_test_groups": int(len(np.unique(groups))),
+                    "bootstrap_unit": "split_group",
+                    "random_seed": RANDOM_SEED,
+                    "tail_fraction_interpretation": "bootstrap tail fraction, not a P value",
+                }
+            )
+    return rows
+
+
+def generalisation_outputs_for_mode(
+    mode: str,
+    results: Dict,
+    test_idx: np.ndarray,
+    groups: np.ndarray,
+    metadata: pd.DataFrame,
+) -> Tuple[pd.DataFrame, List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """Test predictions, metrics with intervals, and paired contrasts for one stricter split.
+
+    Intervals and paired contrasts resample the groups that define the split (diseases, or
+    connected genes and diseases), stratified by severity, with the scheme and seed of Table 1.
+    Nothing is refitted and the test set is not evaluated again.
+    """
+    test_idx = np.asarray(test_idx, dtype=int)
+    groups = np.asarray(groups)
+    frames: List[pd.DataFrame] = []
+    summary_rows: List[Dict[str, Any]] = []
+    payload: Dict[str, Tuple[np.ndarray, np.ndarray]] = {}
+    models: Dict[str, str] = {}
+    for scenario, model_name in _pick_best_model_per_scenario(results).items():
+        result = results[scenario]["all"][model_name]
+        y_true = np.asarray(result["y_true"], dtype=int)
+        y_pred = np.asarray(result["predictions"]["y_pred"], dtype=int)
+        y_prob = np.asarray(result["predictions"]["y_prob"], dtype=float)
+        raw = result.get("predictions_uncalibrated", {})
+        payload[scenario] = (y_true, y_pred)
+        models[scenario] = model_name
+        frame = pd.DataFrame(
+            {
+                "generalisation_mode": mode,
+                "Scenario": scenario,
+                "Model": model_name,
+                "row_index": test_idx,
+                "gene_symbol": metadata.loc[test_idx, "gene_symbol"].to_numpy(),
+                "mondo_id": metadata.loc[test_idx, "mondo_id"].to_numpy(),
+                "split_group": groups,
+                "y_true": y_true,
+                "y_pred_calibrated": y_pred,
+                "y_pred_uncalibrated": np.asarray(raw.get("y_pred", np.full(len(y_true), -1)), dtype=int),
+            }
+        )
+        for k, name in enumerate(SEVERITY_CLASS_NAMES):
+            frame[f"p_{name}"] = y_prob[:, k]
+        frames.append(frame)
+
+        metrics = result.get("metrics", {})
+        raw_metrics = result.get("test_metrics_uncalibrated", {})
+        ci = compute_bootstrap_ci(
+            y_true, y_pred, y_prob, n_bootstrap=Config.N_BOOTSTRAP,
+            metrics_list=list(GENERALISATION_CI_METRICS), groups=groups,
+        )
+        row: Dict[str, Any] = {"generalisation_mode": mode, "Scenario": scenario, "Model": model_name}
+        for metric in GENERALISATION_CI_METRICS:
+            row[metric] = metrics.get(metric, np.nan)
+        row["n_test"] = len(test_idx)
+        for metric in GENERALISATION_CI_METRICS:
+            row[f"{metric}_ci_low"] = ci[metric]["ci_low"]
+            row[f"{metric}_ci_high"] = ci[metric]["ci_high"]
+            row[f"uncalibrated_{metric}"] = raw_metrics.get(metric, np.nan)
+        row["n_test_groups"] = int(len(np.unique(groups)))
+        row["bootstrap_unit"] = "split_group"
+        summary_rows.append(row)
+    predictions = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+    contrasts = _generalisation_contrasts(mode, payload, models, groups, Config.N_BOOTSTRAP)
+    return predictions, summary_rows, contrasts
+
+
+def summarise_generalisation_predictions(
+    predictions: pd.DataFrame, n_bootstrap: Optional[int] = None
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Recompute the calibrated metrics, intervals and paired contrasts of one stricter split
+    from its saved test predictions (used by ``run.py verify``)."""
+    n_bootstrap = Config.N_BOOTSTRAP if n_bootstrap is None else int(n_bootstrap)
+    if predictions.empty:
+        return pd.DataFrame(), pd.DataFrame()
+    mode = str(predictions["generalisation_mode"].iloc[0])
+    probability_columns = [f"p_{name}" for name in SEVERITY_CLASS_NAMES]
+    summary_rows: List[Dict[str, Any]] = []
+    payload: Dict[str, Tuple[np.ndarray, np.ndarray]] = {}
+    models: Dict[str, str] = {}
+    groups: Optional[np.ndarray] = None
+    for scenario, part in predictions.groupby("Scenario", sort=False):
+        y_true = part["y_true"].to_numpy(int)
+        y_pred = part["y_pred_calibrated"].to_numpy(int)
+        y_prob = part[probability_columns].to_numpy(float)
+        groups = part["split_group"].to_numpy()  # keep the stored type: it sets the group order
+        model_name = str(part["Model"].iloc[0])
+        payload[scenario] = (y_true, y_pred)
+        models[scenario] = model_name
+        metrics = compute_all_metrics(y_true, y_pred, y_prob)
+        ci = compute_bootstrap_ci(
+            y_true, y_pred, y_prob, n_bootstrap=n_bootstrap,
+            metrics_list=list(GENERALISATION_CI_METRICS), groups=groups,
+        )
+        row: Dict[str, Any] = {"generalisation_mode": mode, "Scenario": scenario, "Model": model_name}
+        for metric in GENERALISATION_CI_METRICS:
+            row[metric] = metrics.get(metric, np.nan)
+            row[f"{metric}_ci_low"] = ci[metric]["ci_low"]
+            row[f"{metric}_ci_high"] = ci[metric]["ci_high"]
+        row["n_test"] = int(len(y_true))
+        row["n_test_groups"] = int(len(np.unique(groups)))
+        summary_rows.append(row)
+    contrasts = (
+        _generalisation_contrasts(mode, payload, models, groups, n_bootstrap) if groups is not None else []
+    )
+    return pd.DataFrame(summary_rows), pd.DataFrame(contrasts)

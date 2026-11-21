@@ -1,4 +1,4 @@
 partition,n_pairs,n_genes,class_labels_exposed,n_class_0,n_class_1,n_class_2,n_class_3
-train,4306,3007,True,205,824,1481,1796
-val,994,707,True,45,190,344,415
-test,1325,916,True,63,252,458,552
+train,4093,2758,True,192,848,1561,1492
+val,944,641,True,44,193,361,346
+test,1261,830,True,57,263,481,460
